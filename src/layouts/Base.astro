@@ -1,0 +1,66 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Robert Straubmüller',
+  url: 'https://straubmueller.com',
+  email: 'mailto:robert@straubmueller.com',
+  jobTitle: 'UX Researcher & Designer',
+  knowsAbout: ['UX research', 'Interface design', 'Design systems', 'Front-end development'],
+  address: { '@type': 'PostalAddress', addressLocality: 'Konstanz', addressCountry: 'DE' },
+  sameAs: ['https://straubmuellerstudios.com'],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --paper: #f4f5f2;
+    --ink: #121413;
+    --rule: #c7cac3;
+    --mute: #5d615c;
+    --f-serif: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --f-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #111312;
+      --ink: #e7e8e3;
+      --rule: #2e322f;
+      --mute: #9a9e97;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-serif);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+</style>
