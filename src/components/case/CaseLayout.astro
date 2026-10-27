@@ -418,16 +418,18 @@ const reel = films.find((item) => item.key === film);
     align-items: start;
   }
 
+  /* A row may set --row (src/lib/row.ts) so its columns follow the images' aspect ratios and all stand equally
+     high; without it the columns are even. */
   .c-body :global(.c-pair) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: var(--row, 1fr 1fr);
   }
 
   .c-body :global(.c-split) {
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: var(--row, 2fr 1fr);
   }
 
   .c-body :global(.c-trio) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: var(--row, repeat(3, 1fr));
   }
 
   /* The few figures that carry the result, in one row between hairlines. */

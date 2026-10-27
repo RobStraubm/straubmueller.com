@@ -3,6 +3,7 @@
 // Facts from befund/cases/sustainable-iot.md (files in ~/Desktop/Job/IOT: lab deck of 13 Mar 2024, wireframes of 16
 // May and 18 Jun 2024) and Robert's account of 26 Oct 2026. The finding about phone access is Robert's reading of the
 // model (Robert, 27 Oct 2026: calculated). Two finished screens redrawn in 2026 from the June wireframes, marked so.
+import { row } from '../../lib/row';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
 import hmw from '../../assets/cases/iot/workshop-hmw-zettel.jpg';
@@ -79,7 +80,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <figcaption>From a sustainability question to printed results, in ten panels.</figcaption>
       </figure>
     </div>
-    <div class="c-split">
+    <div class="c-split" style={row(flowWall, flipchart)}>
       <figure>
         <Shot
           src={flowWall}

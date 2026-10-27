@@ -4,6 +4,7 @@
 // Überblick"), Sketch file of Dec 2022 (mobile app, formerly Kapago), Robert's boards (palette, token architecture,
 // components). Robert, 27 Oct 2026: lead UX at goconut for the web app, design system by him alone, base UX of the
 // mobile app by ugd, still in use at goconut. Left out: the ten test participants, the share of desktop and mobile use. Only boards without photos of people.
+import { row } from '../../lib/row';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
@@ -121,7 +122,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       />
       <figcaption>Value, global token, alias with four modes, component token.</figcaption>
     </figure>
-    <div class="c-pair">
+    <div class="c-pair" style={row(components, bookings)}>
       <figure>
         <Shot
           src={components}

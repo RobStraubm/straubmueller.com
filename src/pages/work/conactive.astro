@@ -3,6 +3,7 @@
 // Konstanz, submitted 5 Jul 2022), 1st prize of the Konstanzer Designpreis, summer semester 2022. Facts from
 // befund/cases/conactive.md (thesis, exposé of 17 May 2022, HTWG award page, PAGE article draft). Speculative design:
 // physical models, no user tests (the thesis names tests as the next step). Interviewees are not named.
+import { row } from '../../lib/row';
 import { Image } from 'astro:assets';
 import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
@@ -79,7 +80,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <li><strong>concup</strong> is a cup that tells colleagues in other places that you are open for a chat.</li>
       <li><strong>condesk</strong> is a booth for working together across a distance.</li>
     </ul>
-    <div class="c-pair">
+    <div class="c-pair" style={row(sketchbook, story)}>
       <figure>
         <Image
           src={sketchbook}
