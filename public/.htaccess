@@ -13,3 +13,6 @@ ErrorDocument 404 /404.html
 
 # Notenprogramm was renamed Colla parte on 27 Oct 2026.
 Redirect 301 /work/notenprogramm/ /work/colla-parte/
+
+# Belegscanner was renamed Stub on 27 Oct 2026.
+Redirect 301 /work/belegscanner/ /work/stub/

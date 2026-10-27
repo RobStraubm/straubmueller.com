@@ -1,31 +1,32 @@
 ---
-// Case: Belegscanner, Robert's own receipt scanner (27.10.2026: "für mich selbst"). Facts from the code
-// (~/Belegscanner/belegscanner.py: find_regions, PROMPT, analyse_ki, analyse_simple, write_pdf, update_list) and
-// file dates (first files and the first filed receipt on 2 Oct 2026, four receipts from one scan on 27 Oct 2026).
+// Case: Stub, Robert's own receipt scanner (27.10.2026: "für mich selbst"; named Belegscanner until 27.10.2026,
+// "das ganze Programm soll Stub heißen"). Facts from the code (github.com/RobStraubm/stub, first as
+// ~/Belegscanner/belegscanner.py) and file dates (first files and the first filed receipt on 2 Oct 2026, four
+// receipts from one scan on 27 Oct 2026). The screens are the repo's own (docs/screenshots, from tools/demo.py).
 // Robert's real receipts are never shown: the film, the stage and the screens use invented receipts
 // (befund/belegscanner/fakten.md).
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
 import { row } from '../../lib/row';
-import read from '../../assets/cases/belegscanner/app-bewirtung.jpg';
-import crop from '../../assets/cases/belegscanner/app-zuschneiden.jpg';
+import read from '../../assets/cases/stub/app-read.jpg';
+import crop from '../../assets/cases/stub/app-crop.jpg';
 
 const half = '(max-width: 900px) 100vw, 45vw';
 ---
 
 <CaseLayout
-  title="Belegscanner"
+  title="Stub"
   years="2026"
   summary="Receipts go on the scanner glass and come back as searchable PDFs, named and listed for the books. My own tool, built with Claude Code."
   meta={[
     ['Role', 'Problem, workflow, interaction design, decisions, testing on my own receipts'],
     ['Built with', 'Claude Code as pair programmer'],
     ['Client', 'Own project'],
-    ['Status', 'Open source as Stub (AGPL-3.0)'],
+    ['Status', 'Open source (AGPL-3.0)'],
   ]}
   links={[{ href: 'https://github.com/RobStraubm/stub', label: 'Code on GitHub' }]}
-  film="belegscanner"
+  film="stub"
   stage="beleg"
   next={{ href: '/work/sayfit/', title: 'SayFit' }}
 >
@@ -35,7 +36,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
     <p>
       As a freelancer I collect receipts for fuel, parking, post and business meals. Each one meant a scan, a crop, a
       file name with date, shop and amount, and a line in a list. A business meal also needs the occasion and the
-      guests, written by hand on the receipt. Belegscanner (German for receipt scanner) does all of that from one press
+      guests, written by hand on the receipt. Stub does all of that from one press
       of the space bar.
     </p>
   </section>
@@ -55,9 +56,9 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <figure>
         <Shot
           src={read}
-          source="Belegscanner"
+          source="Stub"
           label="Read"
-          alt="Belegscanner after a scan of three receipts: a restaurant receipt with a handwritten note on the left; on the right the fields date, amount, merchant, kind and the note “Projektgespräch; M. Muster, E. Beispiel”, the new file name, and the three receipts of the session with their total"
+          alt="Stub after a scan of three receipts: a café receipt with handwritten guests and occasion on the left; on the right the fields date, amount, merchant, kind and the note “Projektplanung Q4; Anna Berger, Jonas Weil”, the new file name, and the three receipts of the session with their total"
           widths={[800, 1600]}
           sizes={half}
         />
@@ -66,7 +67,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <figure>
         <Shot
           src={crop}
-          source="Belegscanner"
+          source="Stub"
           label="Crop"
           alt="Crop dialog over the whole scan: three receipts on the grey glass, each in its own frame labelled Beleg 1 to 3, with buttons for the whole scan and automatic detection"
           widths={[800, 1600]}
@@ -147,13 +148,13 @@ const half = '(max-width: 900px) 100vw, 45vw';
     <p class="c-lead">My part was the problem, the workflow, every decision above and testing on my own receipts.</p>
     <p>
       The code was written with Claude Code as pair programmer. It started as one Python file and one page for the
-      interface, opened from a small Mac app. The public version is called Stub: split into modules, with the tests and
-      a demo that runs without a scanner. Like Saunter, it started as an annoyance and became a tool I use.
+      interface, opened from a small Mac app. For the public version it was split into modules, with the tests
+      and a demo that runs without a scanner. Like Saunter, it started as an annoyance and became a tool I use.
     </p>
     <ol class="c-timeline">
       <li><time>2 Oct 2026</time><span>First version in use</span></li>
       <li><time>27 Oct</time><span>Several receipts per scan</span></li>
-      <li><time>27 Oct</time><span>Open source as Stub, with tests</span></li>
+      <li><time>27 Oct</time><span>Open source on GitHub, with tests</span></li>
     </ol>
   </section>
 

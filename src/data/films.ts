@@ -24,7 +24,7 @@ export const films: Film[] = [
   film('saunter', 'Saunter', [[0, 'Remote'], [64, 'App'], [136, 'Lake']]),
   film('notenprogramm', 'Colla parte', [[0, 'PDF'], [64, 'Check'], [136, 'Practice']]),
   film('sayfit', 'SayFit', [[0, 'Say'], [64, 'Match'], [136, 'Test']]),
-  film('belegscanner', 'Belegscanner', [[0, 'Scan'], [64, 'Read'], [136, 'File']]),
+  film('stub', 'Stub', [[0, 'Scan'], [64, 'Read'], [136, 'File']]),
   film('flowculate', 'Flowculate', [[0, 'Numbers'], [34, 'Plan'], [100, 'Web app']]),
   film('sustainable-iot', 'Sustainable IoT', [[0, 'Setup'], [64, 'Use'], [136, 'Footprint']]),
   film('tealucent', 'Tealucent', [[0, 'Colour'], [64, 'Layers'], [136, 'Office']]),

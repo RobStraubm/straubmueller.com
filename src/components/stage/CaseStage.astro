@@ -269,18 +269,18 @@ const { scene, title, years, summary, acts } = Astro.props;
     font-size: 2.5cqw;
   }
 
-  /* Belegscanner: the title top left, a long word, so smaller than the others and stopping short of the glass;
-     the summary under it, the captions and the count below. */
+  /* Stub (scene key beleg): the title top left, the summary under it, the captions and the count below; the glass
+     on the right. */
   [data-stage='beleg'] .st-title {
-    top: 3.6cqw;
+    top: 3.4cqw;
     left: -0.4cqw;
-    font-size: 7.6cqw;
+    font-size: 11cqw;
   }
 
   [data-stage='beleg'] .st-summary {
-    top: 12.5cqw;
+    top: 15cqw;
     width: 44cqw;
-    font-size: 2.4cqw;
+    font-size: 2.5cqw;
   }
 
   /* Tealucent: the title top left, its name spelled out under it (teal, translucent, overlapping at the "l");
@@ -401,10 +401,6 @@ const { scene, title, years, summary, acts } = Astro.props;
     }
     [data-stage='flowculate'] .st-kicker {
       display: block;
-    }
-    /* One long word with no place to break: it has to fit the width as it is. */
-    [data-stage='beleg'] .st-title {
-      font-size: clamp(44px, 15vw, 120px) !important;
     }
   }
 

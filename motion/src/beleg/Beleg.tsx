@@ -1,10 +1,9 @@
-// Belegscanner in seven seconds, on one stage that never empties: three receipts lie on the scanner glass, the
+// Stub in seven seconds, on one stage that never empties: three receipts lie on the scanner glass, the
 // scan runs over them and each one gets its own box where the white gaps between them are; then the restaurant
 // receipt comes forward and its fields are read one by one, the handwritten note on the back of a hospitality
 // receipt included; then the three receipts become named PDFs in the day's folder and a row each in its list.
 // The receipts are invented (no real receipt is shown anywhere on the site); the steps, the field names, the
-// file name pattern and the folder layout are the app's (belegscanner.py: find_regions, PROMPT, filename_for,
-// update_list). The poster film and the stage of the case page draw the same scene with different layouts.
+// file name pattern and the folder layout are the app's (stub/regions.py, analysis.py, filing.py). The poster film and the stage of the case page draw the same scene with different layouts.
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { ActWord, Labels, type Act } from '../parts';
 import { fonts, palettes, progress, SIZE, stepped, type Palette, type Theme, POSTER_VIEW } from '../style';
@@ -339,7 +338,7 @@ export const Beleg = ({ theme }: { theme: Theme }) => {
   return (
     <AbsoluteFill style={{ backgroundColor: c.ground }}>
       <svg width={SIZE.width} height={SIZE.height} viewBox={POSTER_VIEW}>
-        <Labels frame={f} project="Belegscanner" acts={BELEG_ACTS} palette={c} />
+        <Labels frame={f} project="Stub" acts={BELEG_ACTS} palette={c} />
         <ActWord frame={f} acts={BELEG_ACTS} palette={c} />
         <BelegScene f={f} c={c} layout={POSTER_LAYOUT} />
 

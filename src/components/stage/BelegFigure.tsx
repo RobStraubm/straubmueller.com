@@ -1,8 +1,8 @@
-// Belegscanner, several receipts on one scan (version J): how the glass is cut, drawn as the reader scrolls past.
+// Stub, several receipts on one scan (version J): how the glass is cut, drawn as the reader scrolls past.
 // Four receipts and a speck of dust lie on the glass, seen as the app's mask (where print is darker than the
 // paper). First the columns: wherever the mask is empty for 10 mm across, the glass is cut. Then, inside each
 // column, the rows, cut at 30 mm. What is smaller than 15 × 10 mm is dropped, and every box gets 5 mm of margin.
-// The thresholds are find_regions() in belegscanner.py; the receipts and their places are invented.
+// The thresholds are find_regions() in stub/regions.py; the receipts and their places are invented.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
 import { seeded } from '../../../motion/src/random';

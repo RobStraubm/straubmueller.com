@@ -1,4 +1,4 @@
-// Belegscanner as the opening of its case page (version J): the film's scene across the whole width, with no
+// Stub as the opening of its case page (version J): the film's scene across the whole width, with no
 // ground of its own. The page sets the title and the summary as real text in the left column of the same
 // 1600 × 900 box; the glass, the read receipt and the folder fill the right. Under the summary, what each act
 // means, and in act 3 the count in the title's type. Receipts, words and numbers are the film's.

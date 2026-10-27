@@ -53,7 +53,7 @@ const I_FILMS = {
   saunter: ['Saunter', {}],
   notenprogramm: ['Notenprogramm', {}],
   sayfit: ['SayFit', {}],
-  belegscanner: ['Beleg', {}],
+  stub: ['Beleg', {}],
   flowculate: ['Flowculate', { titles: true }],
   'sustainable-iot': ['Iot', {}],
   tealucent: ['Tealucent', {}],

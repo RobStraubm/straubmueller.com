@@ -24,7 +24,7 @@ export const log: LogEntry[] = [
   {
     date: 'Oct 2026',
     sort: '2026-10',
-    text: 'Belegscanner, my receipt scanner, is open source as Stub',
+    text: 'Stub, my receipt scanner, is open source',
     kind: 'Open source',
     href: 'https://github.com/RobStraubm/stub',
     linkLabel: 'GitHub',

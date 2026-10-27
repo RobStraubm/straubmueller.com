@@ -56,7 +56,7 @@ export const recent: Project[] = [
   {
     years: '2026',
     start: 2026.76,
-    title: 'Belegscanner',
+    title: 'Stub',
     line: 'Receipts on the scanner glass become named, searchable PDFs and a list. Built with Claude Code.',
     client: 'Own',
     field: 'Product',
