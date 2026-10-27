@@ -6,7 +6,6 @@ import { Image } from 'astro:assets';
 import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import maths from '../../assets/cases/flowculate/maths.jpg';
-import pocNotes from '../../assets/cases/flowculate/poc-notes.jpg';
 import workshop from '../../assets/cases/flowculate/workshop.jpg';
 import uiTests from '../../assets/cases/flowculate/ui-tests.jpg';
 import components from '../../assets/cases/flowculate/components.jpg';
@@ -61,10 +60,6 @@ const { stage = true } = Astro.props as { stage?: boolean };
       <Image src={maths} alt="Simulation output as the mathematicians saw it: 3D density plots and a velocity field around two obstacles" widths={full(widths, maths)} sizes={wide} loading="lazy" />
       <figcaption>The starting point: density and velocity fields, readable for mathematicians only.</figcaption>
     </figure>
-    <figure class="c-wide">
-      <Image src={pocNotes} alt="Diagram of the proof-of-concept workflow, annotated by hand in green and purple marker" widths={full(widths, pocNotes)} sizes={wide} loading="lazy" />
-      <figcaption>Working through the proof of concept, 2022: five manual steps, no evaluation, no graphics.</figcaption>
-    </figure>
   </section>
 
   <section>
@@ -110,14 +105,6 @@ const { stage = true } = Astro.props as { stage?: boolean };
       the rest of the interface stays quiet. Tooltips explain each parameter in plain words, a DXF import brings in real
       floor plans, and results go out as CSV, a PDF report or raw data.
     </p>
-    {
-      stage && (
-        <figure>
-          <ScrubFigure kind="flowculate-pages" ratio="830 / 670" />
-          <figcaption>The plan from the top of the page, through the app's three pages as you scroll: plan, scenario, simulation.</figcaption>
-        </figure>
-      )
-    }
     <figure class="c-wide">
       <Image src={tools} alt="Interface details: interactive graph, DXF import, tooltips, interactive module, guidelines and the density heat map in a floor plan" widths={full(widths, tools)} sizes={wide} loading="lazy" />
       <figcaption>Tools from version 2.0: graphs, DXF import, tooltips, guidelines, the density map.</figcaption>
