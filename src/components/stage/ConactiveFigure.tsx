@@ -1,7 +1,7 @@
-// Conactive, "Add to the screen, don't replace it" and "One object per kind of contact" (version J). Drawn as the
+// Conactive, "One form for each kind of contact, and the screen only shows" (version J). Drawn as the
 // reader scrolls past it, starting from the interview result: before digitalisation five channels, each with a
 // form of its own; after it eight, and almost all of them on one screen. Then the kinds of contact Conactive gives a
-// body leave the screen as objects, and the rest stays on it. Only the moves the thesis backs are drawn as lines:
+// body leave the screen as objects, and the screen is left to show (thesis p. 148: it "only serves to present"). Only the moves the thesis backs are drawn as lines:
 // the day's appointments become conblocks ("a physical visualisation of the appointments agreed online"), notes go
 // to the connote ("digitises the handwritten notes"), and the concup takes over what the status in a chat window
 // said ("a cup in your hand says 'talk to me' more clearly"), while the chat itself stays on the screen. The condesk
@@ -88,7 +88,7 @@ const wide = (): Layout => {
       booth: [916, 370],
       boothLines: ['CONDESK', 'WORKING TOGETHER', 'ACROSS A DISTANCE'],
       stays: [40, 628],
-      staysLines: ['THE REST STAYS ON THE SCREEN'],
+      staysLines: ['THE SCREEN ONLY SHOWS'],
     },
   };
 };
@@ -133,7 +133,7 @@ const narrow = (): Layout => {
       booth: [300, 762],
       boothLines: ['CONDESK', 'WORKING TOGETHER', 'ACROSS A DISTANCE'],
       stays: [20, 664],
-      staysLines: ['THE REST STAYS', 'ON THE SCREEN'],
+      staysLines: ['THE SCREEN', 'ONLY SHOWS'],
     },
   };
 };
