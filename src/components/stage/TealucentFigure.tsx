@@ -27,10 +27,14 @@ const MODE_AT = [0.56, 0.68, 0.8, 0.92];
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
-/** Hard step: off until the share reaches it, then on. */
-const at = (share: number, from: number) => (share >= from ? 1 : 0);
-/** The mode the alias is in, or -1 while the chain is still drawing. */
-const activeAt = (share: number) => MODE_AT.reduce((active, from, k) => (share >= from ? k : active), -1);
+/** Fade in: from nothing to full over a short stretch of scroll, so that nothing pops (Robert, 27 Oct 2026). */
+const FADE = 0.05;
+const at = (share: number, from: number) => span(share, from, from + FADE);
+/** How far mode k has been switched on, 0 to 1: the components take on its colour over a stretch of scroll. */
+const MODE_FADE = 0.06;
+const filledAt = (share: number, k: number) => span(share, MODE_AT[k], MODE_AT[k] + MODE_FADE);
+/** How much mode k is the one that is on: it fades in with its colour and out as the next mode comes. */
+const litAt = (share: number, k: number) => filledAt(share, k) * (k < MODES.length - 1 ? 1 - filledAt(share, k + 1) : 1);
 
 const drawn = (progress: number, length: number) => ({
   strokeDasharray: length,
@@ -58,9 +62,24 @@ const Swatch = ({ c, k, x, y, size, id }: { c: Palette; k: number; x: number; y:
   );
 };
 
-/** A field of the component, empty until its mode has been switched on, then filled with that mode's colour.
- * The text is a bar, the dropdown has its chevron, the input its magnifier. */
-const Field = ({ c, k, r, kind, filled }: { c: Palette; k: number; r: Shape; kind: 0 | 1; filled: boolean }) => {
+/** A field of the component, empty until its mode is switched on, then cross-fading into that mode's colour. */
+const Field = ({ c, k, r, kind, amount }: { c: Palette; k: number; r: Shape; kind: 0 | 1; amount: number }) => (
+  <g>
+    {amount < 1 && (
+      <g opacity={1 - amount}>
+        <FieldFace c={c} k={k} r={r} kind={kind} filled={false} />
+      </g>
+    )}
+    {amount > 0 && (
+      <g opacity={amount}>
+        <FieldFace c={c} k={k} r={r} kind={kind} filled={true} />
+      </g>
+    )}
+  </g>
+);
+
+/** One face of a field, empty or filled. The text is a bar, the dropdown has its chevron, the input its magnifier. */
+const FieldFace = ({ c, k, r, kind, filled }: { c: Palette; k: number; r: Shape; kind: 0 | 1; filled: boolean }) => {
   const m = MODES[k];
   const mark = filled ? onTone(c, m.share) : c.hair;
   const s = r.h;
@@ -128,7 +147,6 @@ const ROW = { value: 40, global: 120, alias: 172, slot: 216, tile: 300, field: 5
 const TokensWide = ({ c, share }: { c: Palette; share: number }) => {
   const label = { fontFamily: fonts.mono, fontSize: 17, letterSpacing: 1, fill: c.mute };
   const name = { fontFamily: fonts.mono, fontSize: 19, fill: c.ink };
-  const active = activeAt(share);
   const box = { x: COL.x - 12, y: ROW.alias, w: 4 * COL.pitch - 20 + 24, h: 76 };
   const boxDrawn = span(share, 0.2, 0.3);
   const field = (k: number, i: number): Shape => ({ x: colX(k), y: ROW.tile + 18 + i * 100, w: COL.w, h: ROW.field });
@@ -172,8 +190,8 @@ const TokensWide = ({ c, share }: { c: Palette; share: number }) => {
 
       {MODES.map((m, k) => {
         const x = colX(k);
-        const lit = active === k;
-        const filled = active >= k;
+        const lit = litAt(share, k);
+        const filled = filledAt(share, k);
         const toGlobal = span(share, 0.08 + k * 0.02, 0.14 + k * 0.02);
         const toAlias = span(share, 0.18 + k * 0.02, 0.24 + k * 0.02);
         const toTile = span(share, 0.28 + k * 0.02, 0.34 + k * 0.02);
@@ -210,8 +228,8 @@ const TokensWide = ({ c, share }: { c: Palette; share: number }) => {
               x2={x + 12}
               y1={ROW.slot + 18}
               y2={ROW.tile + 18}
-              stroke={lit ? c.signal : c.hair}
-              strokeWidth={lit ? 3 : 2}
+              stroke={mix(c.hair, c.signal, lit)}
+              strokeWidth={2 + lit}
               opacity={toTile > 0 ? 1 : 0}
               style={drawn(toTile, down)}
             />
@@ -222,8 +240,8 @@ const TokensWide = ({ c, share }: { c: Palette; share: number }) => {
                 const r = field(k, i);
                 return (
                   <g key={token}>
-                    <Field c={c} k={k} r={r} kind={i as 0 | 1} filled={filled} />
-                    <text x={r.x} y={r.y + r.h + 24} style={{ ...name, fontSize: 17, fill: filled ? c.ink : c.mute }}>
+                    <Field c={c} k={k} r={r} kind={i as 0 | 1} amount={filled} />
+                    <text x={r.x} y={r.y + r.h + 24} style={{ ...name, fontSize: 17, fill: mix(c.mute, c.ink, filled) }}>
                       {token}
                     </text>
                   </g>
@@ -232,8 +250,8 @@ const TokensWide = ({ c, share }: { c: Palette; share: number }) => {
             </g>
 
             {/* The mode that is on: framed in red from the alias down to its components. */}
-            {lit && (
-              <rect x={x - 8} y={ROW.slot - 20} width={COL.w + 16} height={ROW.tile + 18 + 100 + ROW.field + 36 - (ROW.slot - 20)} fill="none" stroke={c.signal} strokeWidth={3} />
+            {lit > 0 && (
+              <rect x={x - 8} y={ROW.slot - 20} width={COL.w + 16} height={ROW.tile + 18 + 100 + ROW.field + 36 - (ROW.slot - 20)} fill="none" stroke={c.signal} strokeWidth={3} opacity={lit} />
             )}
           </g>
         );
@@ -251,7 +269,6 @@ const tileAt = (k: number) => ({ x: 6 + (k % 2) * 306, y: N.tileTop + Math.floor
 const TokensNarrow = ({ c, share }: { c: Palette; share: number }) => {
   const label = { fontFamily: fonts.mono, fontSize: 22, letterSpacing: 0.5, fill: c.mute };
   const name = { fontFamily: fonts.mono, fontSize: 22, fill: c.ink };
-  const active = activeAt(share);
   const box = { x: N.alias - 14, y: rowY(0) - 34, w: 600 - (N.alias - 14), h: 4 * N.row + 4 };
   const boxDrawn = span(share, 0.2, 0.3);
 
@@ -315,7 +332,7 @@ const TokensNarrow = ({ c, share }: { c: Palette; share: number }) => {
                 {m.mode}
               </text>
             </g>
-            {active === k && <rect x={N.alias - 6} y={y - 30} width={600 - N.alias + 4} height={42} fill="none" stroke={c.signal} strokeWidth={3} />}
+            {litAt(share, k) > 0 && <rect x={N.alias - 6} y={y - 30} width={600 - N.alias + 4} height={42} fill="none" stroke={c.signal} strokeWidth={3} opacity={litAt(share, k)} />}
           </g>
         );
       })}
@@ -329,26 +346,26 @@ const TokensNarrow = ({ c, share }: { c: Palette; share: number }) => {
       </g>
       {MODES.map((m, k) => {
         const t = tileAt(k);
-        const lit = active === k;
-        const filled = active >= k;
+        const lit = litAt(share, k);
+        const filled = filledAt(share, k);
         return (
           <g key={m.mode} opacity={at(share, 0.34 + k * 0.02)}>
             <Floor c={c} r={{ x: t.x, y: t.y + 40, w: N.tileW, h: N.tileH - 40 }} pitch={30} />
-            <text x={t.x} y={t.y + 26} style={{ ...name, fontSize: 24, fill: filled ? c.ink : c.mute }}>
+            <text x={t.x} y={t.y + 26} style={{ ...name, fontSize: 24, fill: mix(c.mute, c.ink, filled) }}>
               {m.mode}
             </text>
             {COMPONENTS.map((token, i) => {
               const r = { x: t.x, y: t.y + 48 + i * 100, w: N.tileW, h: N.field };
               return (
                 <g key={token}>
-                  <Field c={c} k={k} r={r} kind={i as 0 | 1} filled={filled} />
-                  <text x={r.x} y={r.y + r.h + 28} style={{ ...name, fontSize: 21, fill: filled ? c.ink : c.mute }}>
+                  <Field c={c} k={k} r={r} kind={i as 0 | 1} amount={filled} />
+                  <text x={r.x} y={r.y + r.h + 28} style={{ ...name, fontSize: 21, fill: mix(c.mute, c.ink, filled) }}>
                     {token}
                   </text>
                 </g>
               );
             })}
-            {lit && <rect x={t.x - 6} y={t.y - 6} width={N.tileW + 12} height={N.tileH + 18} fill="none" stroke={c.signal} strokeWidth={3} />}
+            {lit > 0 && <rect x={t.x - 6} y={t.y - 6} width={N.tileW + 12} height={N.tileH + 18} fill="none" stroke={c.signal} strokeWidth={3} opacity={lit} />}
           </g>
         );
       })}

@@ -328,8 +328,13 @@ export function mountFigure(root: HTMLElement) {
   // The page gives a ratio per version; the narrow one only where the figure has one.
   const ratio = { wide: root.dataset.ratio ?? '', narrow: root.dataset.ratioNarrow ?? root.dataset.ratio ?? '' };
   let narrow: boolean | null = null;
+  // The drawing follows the scroll with a short glide instead of jumping with every notch of a mouse wheel
+  // (Robert, 27 Oct 2026: "nicht so ruckelig"): each frame it closes part of the gap to where the scroll is.
+  let shown = share();
+  let glideFrom = 0;
+  let gliding = false;
   const draw = (force = false) => {
-    const now = Math.round(share() * 400) / 400;
+    const now = Math.round(shown * 2000) / 2000;
     const thin = root.clientWidth < NARROW;
     if (now === drawn && thin === narrow && !force) return;
     drawn = now;
@@ -337,20 +342,33 @@ export function mountFigure(root: HTMLElement) {
     narrow = thin;
     render(figure(palette, now, thin), root);
   };
-  new ResizeObserver(() => draw()).observe(root);
+  const glide = (time: number) => {
+    const target = share();
+    const dt = glideFrom ? Math.min(64, time - glideFrom) : 16;
+    glideFrom = time;
+    shown = reduce.matches ? target : shown + (target - shown) * (1 - Math.exp(-dt / 110));
+    if (Math.abs(target - shown) < 0.0005) shown = target;
+    draw();
+    if (shown !== target) requestAnimationFrame(glide);
+    else {
+      gliding = false;
+      glideFrom = 0;
+    }
+  };
+  new ResizeObserver(() => {
+    shown = share();
+    draw();
+  }).observe(root);
 
-  let queued = false;
   const onScroll = () => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => {
-      queued = false;
-      draw();
-    });
+    if (gliding) return;
+    gliding = true;
+    requestAnimationFrame(glide);
   };
   new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
       window.addEventListener('scroll', onScroll, { passive: true });
+      shown = share();
       draw();
     } else window.removeEventListener('scroll', onScroll);
   }).observe(root);
