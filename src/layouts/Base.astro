@@ -49,5 +49,14 @@ const person = {
     </main>
     {chrome && <SiteFooter />}
     <slot name="footer" />
+    <script>
+      // The bar's height, which wraps to two lines on a phone, for the room the page keeps above its content.
+      const bar = document.querySelector<HTMLElement>('.bar');
+      if (bar) {
+        const set = () => document.documentElement.style.setProperty('--bar-h', `${bar.offsetHeight}px`);
+        new ResizeObserver(set).observe(bar);
+        set();
+      }
+    </script>
   </body>
 </html>

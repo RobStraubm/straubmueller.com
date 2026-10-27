@@ -49,10 +49,11 @@ const { scene, title, years, summary, acts } = Astro.props;
 
 <style>
   /* The scroll length the acts run over; the box stays pinned meanwhile. */
+  /* The stage starts at the top of the page, under the floating bar (global.css), and keeps its box clear of it. */
   .st {
     position: relative;
     height: 320svh;
-    margin: 0 calc(-1 * var(--m));
+    margin: calc(-1 * var(--bar-h, 58px)) calc(-1 * var(--m)) 0;
   }
 
   .st-pin {
@@ -61,14 +62,14 @@ const { scene, title, years, summary, acts } = Astro.props;
     height: 100svh;
     display: grid;
     place-items: center;
-    padding: var(--m);
+    padding: calc(var(--bar-h, 58px) + var(--m) / 2) var(--m) var(--m);
     overflow: hidden;
   }
 
   /* 1600 × 900 units: 1 unit = 0.0625cqw. */
   .st-box {
     position: relative;
-    width: min(100%, calc((100svh - 2 * var(--m)) * 16 / 9));
+    width: min(100%, calc((100svh - var(--bar-h, 58px) - 1.5 * var(--m)) * 16 / 9));
     aspect-ratio: 16 / 9;
     container-type: inline-size;
   }
@@ -335,7 +336,7 @@ const { scene, title, years, summary, acts } = Astro.props;
     }
     .st-pin {
       display: block;
-      padding: 20px var(--m) 16px;
+      padding: calc(var(--bar-h, 58px) + 12px) var(--m) 16px;
     }
     .st-box {
       width: 100%;

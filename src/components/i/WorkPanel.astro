@@ -393,7 +393,7 @@ const { films, portrait = seated } = Astro.props;
   /* One frame for the person and the work: the portrait is the resting state. */
   .wp {
     position: sticky;
-    top: 24px;
+    top: calc(var(--bar-h, 58px) + 16px);
     align-self: start;
     display: grid;
   }

@@ -37,6 +37,38 @@ html {
   scroll-padding-top: calc(var(--header-h) + 16px);
 }
 
+/* The bar: each page's header stays at the top and floats over the content on a soft fade of the paper. Its
+   height is measured into --bar-h (Base.astro), so the page keeps that much room above its first line; a case
+   stage instead starts under the bar, so its animation runs from the first pixel of scroll. The fade below the
+   bar lets clicks through. */
+html:has(.bar) {
+  scroll-padding-top: calc(var(--bar-h, 58px) + 16px);
+}
+
+body:has(.bar) {
+  padding-top: var(--bar-h, 58px);
+}
+
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: linear-gradient(var(--paper) 40%, color-mix(in srgb, var(--paper) 82%, transparent));
+}
+
+.bar::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: linear-gradient(color-mix(in srgb, var(--paper) 82%, transparent), transparent);
+  pointer-events: none;
+}
+
 body {
   margin: 0;
   background: var(--paper);

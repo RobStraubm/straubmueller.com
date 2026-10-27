@@ -36,7 +36,7 @@ const reel = films.find((item) => item.key === film);
 ---
 
 <Base title={`${title} · Robert Straubmüller`} description={description ?? summary} chrome={false}>
-  <header class="c-header" slot="header">
+  <header class="c-header bar" slot="header">
     <a class="c-name" href="/">Robert Straubmüller</a>
     <span>Co-founder, Levelwork</span>
     <span class="c-place">Konstanz</span>
@@ -216,6 +216,11 @@ const reel = films.find((item) => item.key === film);
     counter-reset: section;
   }
 
+  /* A case that opens with its stage starts right under the bar (CaseStage keeps its text clear of it). */
+  .c-case:has(> .st) {
+    padding-top: 0;
+  }
+
   .c-kicker {
     margin: 0 0 12px;
     font-size: 14px;
@@ -319,7 +324,7 @@ const reel = films.find((item) => item.key === film);
     grid-column: 1 / 4;
     grid-row: 1 / span 20;
     position: sticky;
-    top: 24px;
+    top: calc(var(--bar-h, 58px) + 16px);
     margin: 0;
     font-size: 15px;
     font-weight: 600;
