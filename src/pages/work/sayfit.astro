@@ -3,7 +3,8 @@
 // (~/Desktop/Job/sayfit-showcase), Robert's commits in the team repo (~/bootcamp/capstone1/sayfit-alpha, 9–11 Mar
 // 2026), the capstone 1 slides (~/bootcamp/capstone1/presentation_slides_en.txt: 29 tests, 11 runs, ~12 % → ~71 %)
 // and the capstone 2 deck (~/bootcamp/capstone2/SayFit_Capstone2.pptx: roles, V3 → V4, prompt lengths).
-// Run 09 used simpler test cases (slides), so the case does not quote its score. The 12 → 71 % is the pipeline's own
+// Robert, 27 Oct 2026: the team built everything itself, about seven weeks of work (capstone 1 four weeks, capstone 2
+// three weeks). Run 09 used simpler test cases (slides), so the case does not quote its score. The 12 → 71 % is the pipeline's own
 // confidence, not accuracy against known answers; no accuracy figure exists, so none is claimed (Robert, 27 Oct 2026).
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
@@ -23,8 +24,8 @@ const half = '(max-width: 900px) 100vw, 45vw';
   summary="Say what you ate and get nutrition data back. I worked on the two language-model steps, the search between them and the web UI."
   meta={[
     ['Role', 'ML engineering in a team of four: prompts and evaluation of both LLM steps, retrieval quality, web UI'],
-    ['Team', 'Four participants of the AI Engineering bootcamp at neue fische; most backend commits by Kevin Schmitt'],
-    ['Period', 'Mar – Jun 2026'],
+    ['Team', 'Four participants of the AI Engineering bootcamp at neue fische, who built all of it themselves; most backend commits by Kevin Schmitt'],
+    ['Period', 'Mar – Jun 2026: two capstones of four and three weeks'],
     ['Status', 'Team project; my part open source (MIT)'],
   ]}
   links={[
@@ -87,6 +88,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
     <dl class="c-numbers">
       <div><dt>12 → 71 %</dt><dd>matches the pipeline itself rated as high confidence, without and with the LLM steps, 29 test meals</dd></div>
       <div><dt>−23 %</dt><dd>end-to-end latency from prompt version 3 to 4, 16.4 s to 12.6 s</dd></div>
+      <div><dt>7 weeks</dt><dd>of work in two capstones, from an empty repository to a web app</dd></div>
       <div><dt>1.88 M</dt><dd>food entries from USDA and OpenFoodFacts in the search index</dd></div>
     </dl>
   </section>

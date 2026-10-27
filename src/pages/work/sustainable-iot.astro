@@ -3,6 +3,10 @@
 // Facts from befund/cases/sustainable-iot.md (files in ~/Desktop/Job/IOT: lab deck of 13 Mar 2024, wireframes of 16
 // May and 18 Jun 2024) and Robert's account of 26 Oct 2026. The finding about phone access is Robert's reading of the
 // model (Robert, 27 Oct 2026: calculated). Two finished screens redrawn in 2026 from the June wireframes, marked so.
+// Robert, 27 Oct 2026: UX and research for the application on his own, mainly with Doris Bohnet, Sonja Meyer and a
+// computer scientist; outside interview partners; the lab's programmers were to build the tool. Whether they did is
+// not known to Robert. Public since: the lab presented its software IoT ecoSIM (Corinna Baumgartner, ZHAW) at its
+// conference in Vaduz on 23 Sep 2026 (bzi-netzwerk.com recap and programme). No claim that it builds on the wireframes.
 import { row } from '../../lib/row';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
@@ -24,11 +28,13 @@ const half = '(max-width: 900px) 100vw, 45vw';
   years="2024"
   summary="The lab planned a tool that simulates how smart devices are wired. A design sprint changed the question: what does their use cost the planet?"
   meta={[
-    ['Role', 'Led the design sprint, UX concept, all wireframes'],
+    ['Role', 'Led the design sprint; UX and research for the application on my own, all wireframes'],
+    ['Team', 'Mainly with Prof. Doris Bohnet, who leads the lab, Sonja Meyer and a computer scientist; interview partners from outside'],
     ['Client', 'IoT Sustainability Lab, HTWG Konstanz (Interreg project)'],
     ['Period', 'Mar – Jun 2024'],
-    ['Status', 'Research: concept and wireframes'],
+    ['Status', 'My part: concept and wireframes. The lab presented its simulation software in September 2026'],
   ]}
+  links={[{ href: 'https://bzi-netzwerk.com/rueckblick-iot-sustainability-lab-konferenz/', label: 'Lab conference 2026' }]}
   film="sustainable-iot"
   stage="iot"
   next={{ href: '/work/tealucent/', title: 'Tealucent' }}
@@ -169,6 +175,12 @@ const half = '(max-width: 900px) 100vw, 45vw';
       phone, data travels through the network, and access and transfer take the most energy. The lab then turned its
       work towards the ecological footprint of the whole system.
     </p>
+    <p>
+      The wireframes were the brief for the lab's programmers, who were to build the tool. I was not part of that. In
+      September 2026 the lab presented a software that simulates the ecological performance of IoT systems in building
+      automation, IoT ecoSIM, at its conference in Vaduz. How much of the 2024 concept is in it, I can't tell from the
+      outside.
+    </p>
     <figure class="c-wide">
       <Shot source="Results view, redrawn 2026" label="From the June 2024 wireframe">
         <IotResultsScreen />
@@ -188,6 +200,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <li><time>13 Mar 2024</time><span>Sprint results, analysis and first wireframes presented to the lab.</span></li>
       <li><time>16 May 2024</time><span>Second round: rooms, people and devices; results by usage.</span></li>
       <li><time>18 Jun 2024</time><span>Third round: results as a life cycle assessment.</span></li>
+      <li><time>23 Sep 2026</time><span>The lab presents its simulation software, IoT ecoSIM, at its conference in Vaduz.</span></li>
     </ol>
   </section>
 </CaseLayout>
