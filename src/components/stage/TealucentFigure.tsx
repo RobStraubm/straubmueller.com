@@ -1,21 +1,22 @@
 // Tealucent, tokens in three tiers (version J). Drawn as the reader scrolls past it: four values become four
 // global tokens, the global tokens feed one alias token, action_background_, in its four modes, and the
 // component tokens of the dropdown and the input use the alias. Then the alias steps through its modes, light,
-// dark, side, trans, and each time the dropdown and the input take on that mode's colour while their own token
-// names stay the same: a new mode changes the alias, not the components. The end state keeps all four modes side
-// by side, so it tells the whole story without the scroll. Values, token and mode names are from the token board
-// (tokens.jpg); the colours are drawn as steps between the house ground and ink, as in the film, and the fields,
-// the text bars and the floor under them are an illustration.
+// dark, translucent, action, and each time the dropdown and the input take on that mode's colour while their own
+// token names stay the same: a new mode changes the alias, not the components. The end state keeps all four modes
+// side by side, so it tells the whole story without the scroll. Values and token names are from the token board
+// (tokens.jpg); the modes carry the names Robert gives them (27 Oct 2026), where the board's alias says side and
+// trans. The colours are drawn as steps between the house ground and ink, as in the film, and the fields, the text
+// bars and the floor under them are an illustration.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
 import { mix } from '../../../motion/src/tealucent/Tealucent';
 
-/** One column per mode, in the board's order: the value, its global token, the mode of the alias. */
+/** One column per mode, in the order of the case text: the value, its global token, the mode of the alias. */
 const MODES = [
   { value: '#CED7D8', token: 'teal_20', mode: 'light', share: 0.2, see: false },
   { value: '#2F5558', token: 'teal_85', mode: 'dark', share: 0.85, see: false },
-  { value: '#47696B', token: 'teal_75', mode: 'side', share: 0.75, see: false },
-  { value: '#CED7D8 20%', token: 'trans_20G50', mode: 'trans', share: 0.2, see: true },
+  { value: '#CED7D8 20%', token: 'trans_20G50', mode: 'translucent', share: 0.2, see: true },
+  { value: '#47696B', token: 'teal_75', mode: 'action', share: 0.75, see: false },
 ];
 const ALIAS = 'action_background_';
 const COMPONENTS = ['dropdown-background', 'input-background'];
@@ -308,10 +309,11 @@ const TokensNarrow = ({ c, share }: { c: Palette; share: number }) => {
             </g>
             <line x1={392} x2={N.alias} y1={y - 8} y2={y - 8} stroke={c.mute} strokeWidth={2} strokeDasharray="2 5" opacity={toAlias > 0 ? 1 : 0} style={drawn(toAlias, 28)} />
             <g opacity={at(share, 0.24 + k * 0.02)}>
-              <text x={N.alias + 8} y={y} style={{ ...name, fontSize: 24 }}>
+              {/* Swatch first, as in the other two columns, so that "translucent" has the room it needs. */}
+              <Swatch c={c} k={k} x={N.alias + 6} y={y - 22} size={28} id="tealucent-figure-hatch-narrow" />
+              <text x={N.alias + 42} y={y} style={{ ...name, fontSize: 20 }}>
                 {m.mode}
               </text>
-              <Swatch c={c} k={k} x={600 - 46} y={y - 22} size={28} id="tealucent-figure-hatch-narrow" />
             </g>
             {active === k && <rect x={N.alias - 6} y={y - 30} width={600 - N.alias + 4} height={42} fill="none" stroke={c.signal} strokeWidth={3} />}
           </g>
