@@ -29,7 +29,7 @@ interface Props {
   next?: { href: string; title: string };
   description?: string;
   /** Version J: open with the film as a stage across the width instead of title and film side by side. */
-  stage?: 'saunter' | 'flowculate' | 'constat' | 'minutes' | 'notenprogramm' | 'sayfit' | 'tealucent' | 'conactive' | 'stayin' | 'iot';
+  stage?: 'saunter' | 'flowculate' | 'constat' | 'minutes' | 'notenprogramm' | 'sayfit' | 'tealucent' | 'conactive' | 'stayin' | 'iot' | 'beleg';
 }
 const { title, years, summary, meta, links = [], film, next, description, stage } = Astro.props;
 const reel = films.find((item) => item.key === film);

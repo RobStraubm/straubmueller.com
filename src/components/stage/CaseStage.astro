@@ -6,7 +6,7 @@
 // (stage.tsx). Text sizes are in container units, so text and drawing keep their registration at any width.
 interface Props {
   /** Key of a scene in stage.tsx. */
-  scene: 'saunter' | 'flowculate' | 'constat' | 'minutes' | 'notenprogramm' | 'sayfit' | 'tealucent' | 'conactive' | 'stayin' | 'iot';
+  scene: 'saunter' | 'flowculate' | 'constat' | 'minutes' | 'notenprogramm' | 'sayfit' | 'tealucent' | 'conactive' | 'stayin' | 'iot' | 'beleg';
   title: string;
   years: string;
   summary: string;
@@ -269,6 +269,20 @@ const { scene, title, years, summary, acts } = Astro.props;
     font-size: 2.5cqw;
   }
 
+  /* Belegscanner: the title top left, a long word, so smaller than the others and stopping short of the glass;
+     the summary under it, the captions and the count below. */
+  [data-stage='beleg'] .st-title {
+    top: 3.6cqw;
+    left: -0.4cqw;
+    font-size: 7.6cqw;
+  }
+
+  [data-stage='beleg'] .st-summary {
+    top: 12.5cqw;
+    width: 44cqw;
+    font-size: 2.4cqw;
+  }
+
   /* Tealucent: the title top left, its name spelled out under it (teal, translucent, overlapping at the "l");
      the summary under the name, the month on the right. The scene measured the letters at this size. */
   [data-stage='tealucent'] .st-title {
@@ -387,6 +401,10 @@ const { scene, title, years, summary, acts } = Astro.props;
     }
     [data-stage='flowculate'] .st-kicker {
       display: block;
+    }
+    /* One long word with no place to break: it has to fit the width as it is. */
+    [data-stage='beleg'] .st-title {
+      font-size: clamp(44px, 15vw, 120px) !important;
     }
   }
 

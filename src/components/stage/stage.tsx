@@ -21,6 +21,8 @@ import { Minutes, MINUTES_FRAMES } from '../../../motion/src/minutes/Minutes';
 import { MinutesStage } from '../../../motion/src/stage/MinutesStage';
 import { SayFit, SAYFIT_FRAMES } from '../../../motion/src/sayfit/SayFit';
 import { SayFitStage } from '../../../motion/src/stage/SayFitStage';
+import { Beleg, BELEG_FRAMES } from '../../../motion/src/beleg/Beleg';
+import { BelegStage } from '../../../motion/src/stage/BelegStage';
 import { Tealucent, TEALUCENT_FRAMES } from '../../../motion/src/tealucent/Tealucent';
 import { TealucentStage } from '../../../motion/src/stage/TealucentStage';
 import { Conactive, CONACTIVE_FRAMES } from '../../../motion/src/conactive/Conactive';
@@ -41,6 +43,7 @@ import { TealucentFigure } from './TealucentFigure';
 import { ConactiveFigure } from './ConactiveFigure';
 import { StayinFigure } from './StayinFigure';
 import { IotFigure } from './IotFigure';
+import { BelegFigure } from './BelegFigure';
 
 interface Scene {
   frames: number;
@@ -97,6 +100,13 @@ const scenes: Record<string, Scene> = {
     acts: [0, 64, 136],
     wide: (palette) => h(SayFitStage, { palette }),
     tall: (theme) => h(SayFit, { theme }),
+  },
+  beleg: {
+    frames: BELEG_FRAMES,
+    intro: 52,
+    acts: [0, 64, 136],
+    wide: (palette) => h(BelegStage, { palette }),
+    tall: (theme) => h(Beleg, { theme }),
   },
   tealucent: {
     frames: TEALUCENT_FRAMES,
@@ -286,6 +296,8 @@ const figures: Record<string, (palette: Palette, share: number, narrow: boolean)
   'stayin-floors': (palette, share, narrow) => h(StayinFigure, { palette, share, narrow }),
   // "Model the use, not the network": the wiring sorts itself into rooms, people and services.
   'iot-model': (palette, share, narrow) => h(IotFigure, { palette, share, narrow }),
+  // "Several receipts, one scan": where the glass is cut, columns first, then rows, specks dropped.
+  'beleg-split': (palette, share, narrow) => h(BelegFigure, { palette, share, narrow }),
 };
 
 export function mountFigure(root: HTMLElement) {

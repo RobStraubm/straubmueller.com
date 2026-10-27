@@ -83,6 +83,17 @@ const work: Row[] = [
   },
   {
     years: '2026',
+    title: 'Belegscanner',
+    line: 'Receipt scanner for my own books: lay receipts on the glass, get named, searchable PDFs. Built with Claude Code.',
+    more: 'Several receipts per scan are split at the white gaps between them; Claude reads date, shop, amount and the handwritten note of a business meal.',
+    client: 'Own',
+    status: 'Open source',
+    href: 'https://github.com/RobStraubm/stub',
+    link: 'GitHub',
+    case: '/work/belegscanner/',
+  },
+  {
+    years: '2026',
     title: 'SayFit',
     line: 'Voice food logger, team of four. Co-built the pipeline, tests and web UI.',
     more: 'Two LLM steps around a vector search of 1.88 million food entries. In testing, confident matches rose from 12 % to 71 %.',
@@ -627,6 +638,11 @@ const work: Row[] = [
 
   .i-rows li.is-open .i-title {
     font-size: clamp(24px, 2.1vw, 32px);
+  }
+
+  /* The one long title: grown like the others it would run into the line beside it. */
+  .i-rows li.is-open[data-row='belegscanner'] .i-title {
+    font-size: clamp(22px, 1.85vw, 27px);
   }
 
   .i-rows li.is-open .i-line {

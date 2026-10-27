@@ -1,0 +1,169 @@
+---
+// Case: Belegscanner, Robert's own receipt scanner (27.10.2026: "für mich selbst"). Facts from the code
+// (~/Belegscanner/belegscanner.py: find_regions, PROMPT, analyse_ki, analyse_simple, write_pdf, update_list) and
+// file dates (first files and the first filed receipt on 2 Oct 2026, four receipts from one scan on 27 Oct 2026).
+// Robert's real receipts are never shown: the film, the stage and the screens use invented receipts
+// (befund/belegscanner/fakten.md).
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import Shot from '../../components/case/Shot.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import { row } from '../../lib/row';
+import read from '../../assets/cases/belegscanner/app-bewirtung.jpg';
+import crop from '../../assets/cases/belegscanner/app-zuschneiden.jpg';
+
+const half = '(max-width: 900px) 100vw, 45vw';
+---
+
+<CaseLayout
+  title="Belegscanner"
+  years="2026"
+  summary="Receipts go on the scanner glass and come back as searchable PDFs, named and listed for the books. My own tool, built with Claude Code."
+  meta={[
+    ['Role', 'Problem, workflow, interaction design, decisions, testing on my own receipts'],
+    ['Built with', 'Claude Code as pair programmer'],
+    ['Client', 'Own project'],
+    ['Status', 'Open source as Stub (AGPL-3.0)'],
+  ]}
+  links={[{ href: 'https://github.com/RobStraubm/stub', label: 'Code on GitHub' }]}
+  film="belegscanner"
+  stage="beleg"
+  next={{ href: '/work/sayfit/', title: 'SayFit' }}
+>
+  <section>
+    <h2>The itch</h2>
+    <p class="c-lead">Every receipt had to be scanned, cropped, named and typed into a list. I wanted to lay it down and be done.</p>
+    <p>
+      As a freelancer I collect receipts for fuel, parking, post and business meals. Each one meant a scan, a crop, a
+      file name with date, shop and amount, and a line in a list. A business meal also needs the occasion and the
+      guests, written by hand on the receipt. Belegscanner (German for receipt scanner) does all of that from one press
+      of the space bar.
+    </p>
+  </section>
+
+  <section>
+    <h2>What it does</h2>
+    <p class="c-lead">Scan, split, read, name, list. I only check and press space for the next one.</p>
+    <p>
+      The app talks to the network scanner directly over AirScan, with no driver or vendor software. It finds the
+      receipts on the glass, several at once if I lay them side by side, and crops each one. macOS reads the text for a
+      searchable PDF; Claude reads the image and fills in date, shop, kind, amount and the handwritten note. The PDF is
+      renamed to something like <code>2026-10-14_Gasthaus-Seeblick_Bewirtung_48,60EUR.pdf</code>, and a list per day
+      collects every receipt as a row that opens in Excel. Pressing space confirms the receipt on screen and starts the
+      next scan, so a stack of receipts is one rhythm: lay down, space, check.
+    </p>
+    <div class="c-pair" style={row(read, crop)}>
+      <figure>
+        <Shot
+          src={read}
+          source="Belegscanner"
+          label="Read"
+          alt="Belegscanner after a scan of three receipts: a restaurant receipt with a handwritten note on the left; on the right the fields date, amount, merchant, kind and the note “Projektgespräch; M. Muster, E. Beispiel”, the new file name, and the three receipts of the session with their total"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>One scan, three receipts. The handwritten occasion and guests are in the note field. Test receipts, German UI.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={crop}
+          source="Belegscanner"
+          label="Crop"
+          alt="Crop dialog over the whole scan: three receipts on the grey glass, each in its own frame labelled Beleg 1 to 3, with buttons for the whole scan and automatic detection"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>The frames the app found. Each frame becomes its own file; I can drag, add or delete frames.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">Four choices, each with the option I did not take.</p>
+    <div class="c-trio">
+      <div>
+        <p><strong>Claude reads the picture, not just the text.</strong></p>
+        <p>
+          Text recognition alone misses the handwriting on a business-meal receipt, and that note is what the tax office
+          asks for. So Claude gets the image and the recognised text as a hint. Text recognition still runs: it makes the
+          PDF searchable, and if Claude is unavailable, simple pattern matching for date, total and shop takes over.
+        </p>
+      </div>
+      <div>
+        <p><strong>Several receipts on the glass, split without a model.</strong></p>
+        <p>
+          A trained detector would have been one more thing to host and to trust. The app looks for empty paper
+          instead: columns first, where 10 mm are blank, then rows, where 30 mm are. The mask keeps faded thermal print
+          and ballpoint, ignores the shadow at the glass edge and drops dust. When it is wrong, I drag the boxes myself.
+        </p>
+      </div>
+      <div>
+        <p><strong>What I type wins.</strong></p>
+        <p>
+          Reading takes a while, so it runs in the background while I scan the next receipt. If I correct a field before
+          the result arrives, the late result does not overwrite it, and a receipt cropped again or given a second page
+          is read again from scratch. Deleted receipts go to the Trash, not into nothing.
+        </p>
+      </div>
+    </div>
+    <figure class="c-wide">
+      <ScrubFigure kind="beleg-split" ratio="1200 / 640" narrow="800 / 1000" />
+      <figcaption>How the glass is split: four receipts and a speck of dust, columns first, then rows, then a box with margin for each.</figcaption>
+    </figure>
+    <p>
+      The fourth: Claude runs with a fence. It is called through the Claude Code command line with only the permission
+      to read the image files, nothing to write, run or fetch, and the prompt says that whatever the receipt says is data,
+      not an instruction. Scans and PDFs stay on the Mac; only the receipt image goes to Claude for reading. The local
+      service quits itself fifteen minutes after the last browser window closes.
+    </p>
+  </section>
+
+  <section>
+    <h2>How I tested it</h2>
+    <p class="c-lead">41 automated tests on every push, my own receipts by eye, and three invented ones through the real app.</p>
+    <p>
+      The tests run on GitHub Actions with invented receipts only: receipt detection on synthetic scans, the scan
+      protocol against a simulated scanner, file names, lists and the session. They do not check how well Claude reads.
+    </p>
+    <p>
+      For this page I made three test receipts, a petrol station, a restaurant with a handwritten business-meal note
+      and a post office, and sent them through the unchanged app with a simulated scanner on 27 October 2026. Three
+      runs, every receipt cut out correctly and every field right, including the handwriting and “Postfiliale” filed
+      as Deutsche Post, postage. Three receipts are not a test set; see below.
+    </p>
+    <dl class="c-numbers">
+      <div><dt>15 / 15</dt><dd>fields right on three test receipts, in each of three runs</dd></div>
+      <div><dt>8 s</dt><dd>for Claude to read three receipts side by side; text recognition takes under a second each</dd></div>
+      <div><dt>4</dt><dd>of my own receipts cut out of one real scan on 27 October</dd></div>
+    </dl>
+    <p>
+      From pressing Scannen to three named files took 12.5 and 13.7 seconds, four seconds of that for the simulated
+      scan. The first run of the session was much slower, at 82 seconds.
+    </p>
+  </section>
+
+  <section>
+    <h2>Built with Claude Code</h2>
+    <p class="c-lead">My part was the problem, the workflow, every decision above and testing on my own receipts.</p>
+    <p>
+      The code was written with Claude Code as pair programmer. It started as one Python file and one page for the
+      interface, opened from a small Mac app. The public version is called Stub: split into modules, with the tests and
+      a demo that runs without a scanner. Like Saunter, it started as an annoyance and became a tool I use.
+    </p>
+    <ol class="c-timeline">
+      <li><time>2 Oct 2026</time><span>First version in use</span></li>
+      <li><time>27 Oct</time><span>Several receipts per scan</span></li>
+      <li><time>27 Oct</time><span>Open source as Stub, with tests</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>What I'd change</h2>
+    <p>
+      I check every receipt by eye, but I have not measured how often Claude gets a field wrong. A small test set of
+      real receipts with the right answers, run after every prompt change, would turn “seems right” into a number. And
+      calling the command line once per receipt is simple but slow to start; a direct API call with a fixed output
+      schema would be faster and easier to test.
+    </p>
+  </section>
+</CaseLayout>

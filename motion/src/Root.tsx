@@ -1,5 +1,6 @@
 import { Composition, Still } from 'remotion';
 import { Bauhaus } from './bauhaus/Bauhaus';
+import { Beleg, BELEG_FRAMES } from './beleg/Beleg';
 import { Constat, CONSTAT_FRAMES } from './constat/Constat';
 import { Conactive, CONACTIVE_FRAMES } from './conactive/Conactive';
 import { Dots } from './dots/Dots';
@@ -33,6 +34,7 @@ export const Root = () => (
     <Composition id="Minutes" component={Minutes} durationInFrames={MINUTES_FRAMES} {...frame} defaultProps={{ theme: 'dark' as Theme }} />
     <Composition id="Notenprogramm" component={Notenprogramm} durationInFrames={NOTENPROGRAMM_FRAMES} {...frame} defaultProps={{ theme: 'dark' as Theme }} />
     <Composition id="SayFit" component={SayFit} durationInFrames={SAYFIT_FRAMES} {...frame} defaultProps={{ theme: 'dark' as Theme }} />
+    <Composition id="Beleg" component={Beleg} durationInFrames={BELEG_FRAMES} {...frame} defaultProps={{ theme: 'dark' as Theme }} />
     <Composition id="Conactive" component={Conactive} durationInFrames={CONACTIVE_FRAMES} {...frame} defaultProps={{ theme: 'dark' as Theme }} />
     <Composition id="Stayin" component={Stayin} durationInFrames={STAYIN_FRAMES} {...frame} defaultProps={{ theme: 'dark' as Theme }} />
     <Composition id="Iot" component={Iot} durationInFrames={IOT_FRAMES} {...frame} defaultProps={{ theme: 'dark' as Theme }} />

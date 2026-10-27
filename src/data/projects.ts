@@ -55,6 +55,16 @@ export const recent: Project[] = [
   },
   {
     years: '2026',
+    start: 2026.76,
+    title: 'Belegscanner',
+    line: 'Receipts on the scanner glass become named, searchable PDFs and a list. Built with Claude Code.',
+    client: 'Own',
+    field: 'Product',
+    href: 'https://github.com/RobStraubm/stub',
+    link: 'GitHub',
+  },
+  {
+    years: '2026',
     start: 2026.6,
     title: 'Saunter',
     line: 'Walk while you work: a walking-pad companion for the Mac, built with Claude Code.',
