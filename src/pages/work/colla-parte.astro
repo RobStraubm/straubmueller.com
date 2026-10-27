@@ -4,6 +4,7 @@
 // Only public-domain pieces are shown (Victoria, Mundy, Parry, Schumann, Bach): the start screens are cropped so
 // that no Whitacre or Poulenc cover appears; the Poulenc check is mentioned in text only.
 import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
 import checkSchumann from '../../assets/cases/notenprogramm/check-schumann.jpg';
@@ -49,7 +50,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <Image
         src={checkSchumann}
         alt="Correction screen for bar 26, Tenor I, of Schumann’s “An die Sterne”: on the left the printed original with the bar and note in brackets and the page as a thumbnail, on the right the transcription with the tenor highlighted in yellow, the note in brackets, the note tool beside it and the question whether the bracketed note is right."
-        widths={[800, 1600]}
+        widths={full([800, 1600], checkSchumann)}
         sizes="(max-width: 900px) 100vw, 75vw"
       />
       <figcaption>Checking one uncertain note in Schumann’s “An die Sterne”: the printed original left, the transcription right. German UI.</figcaption>
@@ -75,7 +76,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={toolParry}
           alt="Correction screen for Parry’s “Crossing the Bar”: a small dark toolbar under the selected note offers higher, lower, accidentals and note values, and the panel below says nothing is open in the tenor any more."
-          widths={[800, 1600]}
+          widths={full([800, 1600], toolParry)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>The tool opens at the note you click. Parry’s “Crossing the Bar”, every question answered. German UI.</figcaption>
@@ -84,7 +85,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={exportDialog}
           alt="Export dialog for a Bach chorale: a practice MP3 for the tenor at tempo 80, the opening of the original, flute, clarinet and horn for the other voices, harmonica for mine, and MusicXML."
-          widths={[800, 1600]}
+          widths={full([800, 1600], exportDialog)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>The export: one instrument per voice, harmonica for mine. German UI.</figcaption>
@@ -149,7 +150,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <Image
         src={beforeUi}
         alt="The first version: score thumbnails as cards with status dots, a blue rounded button “PDF öffnen” and a pill-shaped play button."
-        widths={[430]}
+        widths={full([430], beforeUi)}
         sizes="(max-width: 640px) 100vw, 430px"
       />
       <figcaption>Before: blue pills, cards and status dots. German UI.</figcaption>
@@ -159,7 +160,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={pianoScore}
           alt="Direction one: a white page titled “Chorpartituren” with dark blue covers for each piece, set like a printed score."
-          widths={[440, 880]}
+          widths={full([440, 880], pianoScore)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>Direction one, not taken: a piano score.</figcaption>
@@ -168,7 +169,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={macNative}
           alt="Direction three: a Mac-native window with a sidebar of filters and the scores as a grid of thumbnails."
-          widths={[460, 920]}
+          widths={full([460, 920], macNative)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>Direction three, not taken: Mac-native.</figcaption>
@@ -178,7 +179,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <Image
         src={mappe}
         alt="The finished start page “Meine Mappe”: a black folder with five white score pages, Victoria, Mundy, Schumann and Bach still to check and Parry checked and ready to practise, programme numbers circled in pencil, tenor tags in yellow, and a player for the Bach practice MP3."
-        widths={[800, 1600]}
+        widths={full([800, 1600], mappe)}
         sizes="(max-width: 900px) 100vw, 75vw"
       />
       <figcaption>Direction two, chosen and built: the choir folder, with the practice MP3 playing. German UI.</figcaption>
@@ -197,7 +198,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <Image
         src={marks}
         alt="Three ways to mark an uncertain note on a highlighted line: drawn in grey pencil, in square brackets, or with a small question mark above it."
-        widths={[800, 1600]}
+        widths={full([800, 1600], marks)}
         sizes="(max-width: 900px) 100vw, 75vw"
       />
       <figcaption>Three marks for an uncertain note. Brackets won, the way urtext editions mark doubtful notes. German UI.</figcaption>
@@ -206,7 +207,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <Image
         src={layoutFolder}
         alt="Layout one: the printed page on the left, the transcription on the right with the question underneath, like an open folder."
-        widths={[800, 1200]}
+        widths={full([800, 1200], layoutFolder)}
         sizes="(max-width: 900px) 100vw, 75vw"
       />
       <figcaption>Layout one, chosen: the open folder, original left, transcription and question right. German UI.</figcaption>
@@ -216,7 +217,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={layoutMargin}
           alt="Layout two: the original above the transcription, with the question as a note in the right margin."
-          widths={[600, 1200]}
+          widths={full([600, 1200], layoutMargin)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>Proofreading with a margin note.</figcaption>
@@ -225,7 +226,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={layoutBar}
           alt="Layout three: one bar of the original and of the transcription, both very large, with the question above."
-          widths={[600, 1200]}
+          widths={full([600, 1200], layoutBar)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>One bar, large. Bach chorale, German UI.</figcaption>
