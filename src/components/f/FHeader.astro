@@ -1,0 +1,71 @@
+---
+// Versions F, G and H: the header as a row of small capitals on a four-column grid, like the reference sites.
+interface Props {
+  current?: 'home' | 'work' | 'about';
+  /** Root of the version, e.g. /varianten/f/. */
+  base?: string;
+}
+const { current = 'home', base = '/varianten/f/' } = Astro.props;
+const here = (page: Props['current']) => (page === current ? 'page' : undefined);
+---
+
+<header class="fh">
+  <a class="fh-name" href={base} aria-current={here('home')}>Robert Straubmüller</a>
+  <p>Co-founder, Levelwork<br />Konstanz, Germany</p>
+  <nav aria-label="Main">
+    <a href={`${base}work/`} aria-current={here('work')}>Projects</a>
+    <a href={`${base}about/`} aria-current={here('about')}>About</a>
+  </nav>
+  <p class="fh-out">
+    <a href="mailto:robert@straubmueller.com">Email ↗</a>
+    <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn ↗</a>
+    <a href="https://github.com/RobStraubm">GitHub ↗</a>
+  </p>
+</header>
+
+<style>
+  .fh {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px var(--m);
+    padding: 16px var(--m);
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .fh p {
+    margin: 0;
+  }
+
+  .fh a {
+    text-decoration: none;
+  }
+
+  .fh a:hover,
+  .fh a[aria-current='page'] {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .fh nav,
+  .fh-out {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fh-out {
+    align-items: flex-end;
+  }
+
+  @media (max-width: 640px) {
+    .fh {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .fh nav {
+      grid-row: 2;
+    }
+  }
+</style>

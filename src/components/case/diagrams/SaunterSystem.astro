@@ -1,0 +1,226 @@
+---
+// How Saunter's parts fit, redrawn from befund/saunter/system.html in the site's style: the pad speaks Bluetooth
+// to one daemon on the Mac, and every client talks to the daemon. Facts as in the case text and the README.
+const clients = [
+  { title: 'Menu bar app', note: 'SwiftUI · panel, overview, widget, setup' },
+  { title: 'Shortcuts, Siri', note: 'saunter://start\nsaunter://pause' },
+  { title: 'Terminal', note: 'saunter start 3.0\nsaunter status' },
+  { title: 'Claude', note: 'MCP · reads stats, moves the belt only when asked' },
+];
+---
+
+<div class="ss" role="img" aria-label="Diagram: the walking pad talks Bluetooth LE to a local daemon, which stores sessions in SQLite and sends finished walks to Apple Health. The menu bar app, Shortcuts and Siri, the terminal and Claude talk to the daemon over HTTP and WebSocket on 127.0.0.1. Everything runs on one Mac.">
+  <div class="ss-box ss-pad" aria-hidden="true">
+    <strong>Walking pad</strong>
+    <span>FitShow controller</span>
+  </div>
+  <div class="ss-link" aria-hidden="true"><span>Bluetooth LE, polled 2×/s</span></div>
+
+  <div class="ss-mid" aria-hidden="true">
+    <div class="ss-box ss-side">
+      <strong>saunter.db</strong>
+      <span>SQLite</span>
+    </div>
+    <div class="ss-box ss-daemon">
+      <strong>Daemon</strong>
+      <span>Python · keeps the connection, records sessions, serves the API</span>
+    </div>
+    <div class="ss-box ss-side">
+      <strong>Apple Health</strong>
+      <span>via iMessage + Shortcut</span>
+    </div>
+  </div>
+  <div class="ss-link" aria-hidden="true"><span>HTTP + WebSocket on 127.0.0.1</span></div>
+
+  <ol class="ss-clients" aria-hidden="true">
+    {
+      clients.map((client) => (
+        <li class="ss-box">
+          <strong>{client.title}</strong>
+          <span>{client.note}</span>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="ss-head" aria-hidden="true"><span>Everything runs on one Mac</span><span>local only</span></div>
+</div>
+
+<style>
+  .ss {
+    padding-top: 12px;
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .ss-head {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--hair);
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .ss-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border: 1px solid var(--ink);
+  }
+
+  .ss-box strong {
+    font-weight: 600;
+  }
+
+  .ss-box span {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+    white-space: pre-line;
+  }
+
+  .ss-pad {
+    width: min(100%, 260px);
+    margin: 0 auto;
+  }
+
+  /* A vertical line from box to box, with the transport written beside it. */
+  .ss-link {
+    position: relative;
+    height: 56px;
+    margin: 0;
+  }
+
+  .ss-link::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid var(--ink);
+  }
+
+  .ss-link span {
+    position: absolute;
+    left: calc(50% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--signal);
+    white-space: nowrap;
+  }
+
+  .ss-mid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr 1fr;
+    align-items: center;
+    gap: 0;
+  }
+
+  .ss-side {
+    border-color: var(--hair);
+  }
+
+  .ss-mid > .ss-side:first-child {
+    margin-right: 18px;
+  }
+
+  .ss-mid > .ss-side:last-child {
+    margin-left: 18px;
+  }
+
+  /* Short connectors between the daemon and its two neighbours. */
+  .ss-daemon {
+    position: relative;
+  }
+
+  .ss-daemon::before,
+  .ss-daemon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .ss-daemon::before {
+    right: 100%;
+  }
+
+  .ss-daemon::after {
+    left: 100%;
+  }
+
+  .ss-clients {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 20px 0 0;
+    list-style: none;
+  }
+
+  /* The bus the four clients hang from. */
+  .ss-clients::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 12.5%;
+    right: 12.5%;
+    border-top: 1px solid var(--ink);
+  }
+
+  .ss .ss-clients li {
+    position: relative;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .ss-clients li::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -21px;
+    height: 20px;
+    border-left: 1px solid var(--ink);
+  }
+
+  @media (max-width: 760px) {
+    .ss-link span {
+      right: 0;
+      white-space: normal;
+    }
+    .ss-mid {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .ss-daemon {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+    .ss-mid > .ss-side:first-child,
+    .ss-mid > .ss-side:last-child {
+      margin: 0;
+    }
+    .ss-daemon::before,
+    .ss-daemon::after {
+      display: none;
+    }
+    .ss-clients {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ss-clients::before {
+      left: 25%;
+      right: 25%;
+    }
+    .ss-clients li:nth-child(n + 3)::before {
+      display: none;
+    }
+  }
+</style>

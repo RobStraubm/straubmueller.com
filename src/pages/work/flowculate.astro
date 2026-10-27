@@ -1,0 +1,201 @@
+---
+// Case: Flowculate. Facts from CLAUDE.md (1h), befund/about-material.md and the old project pages; the dev team
+// wrote the code, Robert conceived the program, did UX research, UI, brand and project management.
+// Images are Robert's own presentation boards from the old site (~/Portfolio/flowculateUX) and the corporate design.
+import { Image } from 'astro:assets';
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import maths from '../../assets/cases/flowculate/maths.jpg';
+import pocNotes from '../../assets/cases/flowculate/poc-notes.jpg';
+import workshop from '../../assets/cases/flowculate/workshop.jpg';
+import uiTests from '../../assets/cases/flowculate/ui-tests.jpg';
+import components from '../../assets/cases/flowculate/components.jpg';
+import tools from '../../assets/cases/flowculate/tools.jpg';
+import version1 from '../../assets/cases/flowculate/version-1.jpg';
+import version2 from '../../assets/cases/flowculate/version-2.jpg';
+
+import FlowculateParts from '../../components/case/diagrams/FlowculateParts.astro';
+import FlowculateIdentity from '../../components/case/diagrams/FlowculateIdentity.astro';
+import FlowculateRoadmap from '../../components/case/diagrams/FlowculateRoadmap.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+
+const widths = [480, 800, 1200, 1800];
+const wide = '(max-width: 900px) 100vw, 75vw';
+const half = '(max-width: 640px) 100vw, 50vw';
+
+/** The film opens the page as a stage across the width (version J, live since 27 October 2026). */
+const { stage = true } = Astro.props as { stage?: boolean };
+---
+
+<CaseLayout
+  title="Flowculate"
+  years="2022–25"
+  summary="A crowd simulation that only mathematicians could run became a web app that event planners can use."
+  meta={[
+    ['Role', 'UX Researcher / UI Designer: concept, UX research, UI, brand, project management'],
+    ['Team', 'Mathematics lead Prof. Rebekka Axthelm, one developer on a half-time post, up to four student developers I led'],
+    ['Client', 'Institute for Optical Systems, HTWG Konstanz (half-time position)'],
+    ['Period', 'Oct 2022 – Sep 2025'],
+    ['Status', 'Live'],
+  ]}
+  links={[{ href: 'https://flowculate.eu', label: 'flowculate.eu' }]}
+  film="flowculate"
+  stage={stage ? 'flowculate' : undefined}
+  next={{ href: '/work/saunter/', title: 'Saunter' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">When I joined in October 2022, there was only the maths.</p>
+    <p>
+      The research group at HTWG Konstanz had a new continuous model for how crowds move through a building, and how an
+      infection could spread among them. It calculated faster and needed less computing power than the models before.
+      The model ran in MATLAB, and a floor plan had to be typed in as code. A first Java website, the proof of concept,
+      showed that the simulation could run in a browser, but there was nothing a planner could open and use.
+    </p>
+    <p>
+      The question that guided my research: how do we build one program that is precise enough for mathematicians and
+      simple enough for someone who plans a lecture hall, a fair stand or an evacuation route?
+    </p>
+    <figure class="c-wide">
+      <Image src={maths} alt="Simulation output as the mathematicians saw it: 3D density plots and a velocity field around two obstacles" widths={widths} sizes={wide} loading="lazy" />
+      <figcaption>The starting point: density and velocity fields, readable for mathematicians only.</figcaption>
+    </figure>
+    <figure class="c-wide">
+      <Image src={pocNotes} alt="Diagram of the proof-of-concept workflow, annotated by hand in green and purple marker" widths={widths} sizes={wide} loading="lazy" />
+      <figcaption>Working through the proof of concept, 2022: five manual steps, no evaluation, no graphics.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What I did</h2>
+    <p class="c-lead">I conceived the program around the simulation, then planned and steered how it was built.</p>
+    <p>
+      Everything except the calculation itself started with me: the split into a project website and the program,
+      the three steps of the program, what a user gets out at the end, and how students, researchers and the head
+      of the project work with it. What a user does first, what the maths needs as input, and how the results come
+      back: I ran the user research, benchmarked competitors, mapped the requirements and designed the interface
+      and the brand. The code was written by the development team.
+    </p>
+    <p>
+      On 28 June 2023 I ran a user-testing workshop at HTWG Konstanz with the project partners, the people who would use
+      and fund the tool. They tested version 1.0, and we sorted every wish by effort and timing, so that a small team
+      built the things that mattered first.
+    </p>
+    <figure class="c-wide">
+      <Image src={workshop} alt="Digital summary of the user-testing workshop: the partners' wishes as sticky notes, sorted by effort and time, most of them ticked off" widths={widths} sizes={wide} loading="lazy" />
+      <figcaption>The workshop summary: the partners’ wishes, sorted by effort (up) and timing (across), ticked off as they shipped.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">Three separate parts, one page per step, and a brand drawn from the maths.</p>
+    <p>
+      <strong>Three parts instead of one.</strong> I split the project into a project website, the web application and
+      the computational simulation, each with its own owner and pace. The mathematicians could change the model without
+      breaking the interface, and the student developers could work on the app without touching the maths.
+    </p>
+    <figure class="c-wide">
+      <FlowculateParts />
+      <figcaption>Project website, web application, computational simulation: three parts, three owners.</figcaption>
+    </figure>
+    <p>
+      <strong>One page per step.</strong> Instead of one screen full of parameters, the app follows the order of the
+      work: draw or import the plan, set up the scenario, run the simulation. Colour is kept for the simulation data,
+      the rest of the interface stays quiet. Tooltips explain each parameter in plain words, a DXF import brings in real
+      floor plans, and results go out as CSV, a PDF report or raw data.
+    </p>
+    {
+      stage && (
+        <figure>
+          <ScrubFigure kind="flowculate-pages" ratio="810 / 630" />
+          <figcaption>The plan from the top of the page, through the app's three pages as you scroll: plan, scenario, simulation.</figcaption>
+        </figure>
+      )
+    }
+    <figure class="c-wide">
+      <Image src={tools} alt="Interface details: interactive graph, DXF import, tooltips, interactive module, guidelines and the density heat map in a floor plan" widths={widths} sizes={wide} loading="lazy" />
+      <figcaption>Tools from version 2.0: graphs, DXF import, tooltips, guidelines, the density map.</figcaption>
+    </figure>
+    <div class="c-pair">
+      <figure>
+        <Image src={uiTests} alt="Four colour variants of the same floor-plan screen, tested side by side" widths={widths} sizes={half} loading="lazy" />
+        <figcaption>UI tests: four variants of one screen.</figcaption>
+      </figure>
+      <figure>
+        <Image src={components} alt="Component overview on a dark background: labels, text fields, toggles, sliders, tabs and buttons in their states" widths={widths} sizes={half} loading="lazy" />
+        <figcaption>The components, with every state.</figcaption>
+      </figure>
+    </div>
+    <p>
+      <strong>A brand drawn from the maths.</strong> I named the project Flowculate, from flow and calculate, and built
+      the logo from the Delaunay triangulation that divides a room into the triangles the model computes on. The density
+      gradients of the simulation became the colours of posters, documents and presentations.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="flowculate-name" ratio="1200 / 520" narrow="600 / 920" />
+      <figcaption>Flow plus calculate: the name, the mark and the lockup, from the logo presentation of May 2023.</figcaption>
+    </figure>
+    <figure>
+      <FlowculateIdentity />
+      <figcaption>The UX identity: six principles for one calm, precise tool.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Team</h2>
+    <p class="c-lead">Mathematicians, developers and partners, kept on one plan.</p>
+    <p>
+      Prof. Rebekka Axthelm led the mathematics and the research. The application was built by one developer on a
+      half-time post and, at its peak, four student developers. I planned their work, set the priorities and wrote
+      the requirements they implemented. Most people on the project had no design background, so a large part of
+      my job was explaining design decisions in their terms.
+    </p>
+    <p>
+      I left the project in September 2025. The team page on flowculate.eu lists only the current team.
+    </p>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <p class="c-lead">Flowculate runs in the browser at flowculate.eu.</p>
+    <p>
+      A planner can import a floor plan, place people and exits, run the simulation and export the result without knowing
+      the model behind it. The same identity carries the website, the app, the project film I made to show how the
+      program works, posters for fairs and conferences, the media for the Tag der Wissenschaft at HTWG, and the project's
+      documents.
+    </p>
+    <div class="c-pair">
+      <figure>
+        <Image src={version1} alt="Version 1 of the web app: floor plan with a density heat map, parameters on the left, charts on the right" widths={widths} sizes={half} loading="lazy" />
+        <figcaption>Version 1.</figcaption>
+      </figure>
+      <figure>
+        <Image src={version2} alt="Version 2 of the web app: a calmer layout with the floor plan in the centre and grouped parameters" widths={widths} sizes={half} loading="lazy" />
+        <figcaption>Version 2: the plan in the centre, the parameters grouped and quiet.</figcaption>
+      </figure>
+    </div>
+    <dl class="c-numbers">
+      <div><dt>3 yrs</dt><dd>from maths only to a public web app</dd></div>
+      <div><dt>4</dt><dd>student developers at peak, led by me</dd></div>
+      <div><dt>3</dt><dd>parts: website, app, simulation</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <p class="c-lead">From proof of concept to version 2.0 in just under three years.</p>
+    <ol class="c-timeline">
+      <li><time>Before 10/2022</time><span>Proof of concept and MVP show the simulation runs in a browser.</span></li>
+      <li><time>10/2022</time><span>I start: user research, competitor benchmark, requirements map.</span></li>
+      <li><time>01/2023</time><span>Development of version 1.0, usability and performance evaluation.</span></li>
+      <li><time>06/2023</time><span>User-testing workshop with the partners, priorities for a small team.</span></li>
+      <li><time>01/2024</time><span>Version 1.5; UX design for version 2.0.</span></li>
+      <li><time>2024</time><span>UI design 2.0, design system and style guide.</span></li>
+      <li><time>01/2025</time><span>Development of version 2.0, live at flowculate.eu.</span></li>
+    </ol>
+    <figure class="c-wide">
+      <FlowculateRoadmap />
+      <figcaption>The roadmap I kept for the project, redrawn for this page.</figcaption>
+    </figure>
+  </section>
+</CaseLayout>

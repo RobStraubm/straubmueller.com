@@ -1,0 +1,136 @@
+---
+// The three parts of Flowculate, redrawn from Robert's segmentation board (old site, image 22): project website,
+// web application and the computational simulation, each with its own owner, stack and content.
+const parts = [
+  {
+    title: 'Project website',
+    where: 'flowculate.eu · Astro',
+    items: ['Project presentation', 'Introduction video', 'Help pages for the editor', 'The mathematical model explained', 'Team and project partners'],
+    glyph: 'site',
+  },
+  {
+    title: 'Web application',
+    where: 'flowculate.eu · Astro',
+    items: ['Online editor for the simulation set-up', 'Analysis of the simulation results'],
+    glyph: 'app',
+  },
+  {
+    title: 'Computational simulation',
+    where: 'eFlowAgent.c · C, as WebAssembly',
+    items: ['The calculation itself, owned by the mathematicians'],
+    glyph: 'sim',
+  },
+];
+---
+
+<ol class="pt" aria-label="Flowculate in three parts">
+  {
+    parts.map((part, i) => (
+      <li>
+        <div class="pt-head">
+          <strong>{part.title}</strong>
+          <span>{i + 1}/3</span>
+        </div>
+        <div class="pt-where">{part.where}</div>
+        <svg class="pt-glyph" viewBox="0 0 240 150" aria-hidden="true">
+          <rect x="1" y="1" width="238" height="148" fill="none" stroke="currentColor" stroke-width="1.5" />
+          {part.glyph === 'site' && (
+            <g fill="currentColor">
+              <rect x="1" y="1" width="238" height="16" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <rect x="16" y="34" width="96" height="14" />
+              <rect x="16" y="56" width="140" height="4" opacity="0.5" />
+              <rect x="16" y="66" width="120" height="4" opacity="0.5" />
+              <rect x="16" y="86" width="208" height="50" opacity="0.18" />
+            </g>
+          )}
+          {part.glyph === 'app' && (
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="54" y1="1" x2="54" y2="149" />
+              <path d="M76 26 H220 V124 H76 Z M76 74 H150 M150 26 V124" />
+              <rect x="12" y="20" width="30" height="4" fill="currentColor" stroke="none" opacity="0.5" />
+              <rect x="12" y="32" width="24" height="4" fill="currentColor" stroke="none" opacity="0.5" />
+              <rect x="12" y="44" width="28" height="4" fill="currentColor" stroke="none" opacity="0.5" />
+            </g>
+          )}
+          {part.glyph === 'sim' && (
+            <g>
+              <rect x="20" y="68" width="200" height="6" fill="currentColor" />
+              {[
+                [34, 30], [62, 44], [90, 24], [118, 50], [150, 32], [184, 46], [206, 26],
+                [40, 98], [70, 116], [102, 94], [130, 122], [160, 102], [192, 118], [214, 96],
+              ].map(([x, y], k) => (
+                <circle cx={x} cy={y} r="4" fill={k === 9 ? 'var(--signal)' : 'currentColor'} />
+              ))}
+            </g>
+          )}
+        </svg>
+        <ul>
+          {part.items.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .pt {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 32px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pt > li {
+    padding-top: 12px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .pt-head {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .pt-head span,
+  .pt-where {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .pt-where {
+    margin: 4px 0 16px;
+  }
+
+  .pt-glyph {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: var(--ink);
+  }
+
+  .pt ul {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pt ul li {
+    margin: 0;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 760px) {
+    .pt {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

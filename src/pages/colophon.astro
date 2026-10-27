@@ -1,0 +1,34 @@
+---
+// How the site is made, and what it does not do.
+import TextPage from '../components/i/TextPage.astro';
+
+const updated = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<TextPage
+  title="Colophon · Robert Straubmüller"
+  description="How straubmueller.com is made: Astro, Remotion films, three typefaces, no cookies."
+  heading="Colophon"
+>
+  <h2>Built</h2>
+  <p>
+    A static site made with Astro and hosted by webgo in Germany. I designed it and built it with Claude Code as my
+    pair programmer. The code is public on <a href="https://github.com/RobStraubm/straubmueller.com">GitHub</a>, so you
+    can see how it was made, commit by commit.
+  </p>
+
+  <h2>Films</h2>
+  <p>
+    The short films next to the projects are drawn in code with Remotion, one stage per project that changes over three
+    acts. Every word and number in them comes from the project's own material: slides, wireframes, test results and
+    commits. Where something is only an illustration, such as text drawn as bars, the film does not pretend it is data.
+  </p>
+
+  <h2>Type</h2>
+  <p>Schibsted Grotesk for text, Noto Serif Display and Fragment Mono for details. All three are free and served from this site.</p>
+
+  <h2>Privacy</h2>
+  <p>No cookies, no tracking, no analytics, nothing loaded from other servers. Details are in the <a href="/datenschutz">Datenschutz</a>.</p>
+
+  <p>Last updated {updated}.</p>
+</TextPage>

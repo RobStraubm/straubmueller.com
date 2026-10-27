@@ -1,0 +1,893 @@
+---
+// Homepage (version I): E with a film in the poster style for every selected project. Sweeping the pointer over
+// the list changes nothing; where it comes to rest, the row opens a little with one more line about Robert's
+// part, then the film starts in the frame. Every project, old ones included, is on /work/.
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import WorkPanel from '../components/i/WorkPanel.astro';
+import { awards } from '../data/cv';
+import { log } from '../data/log';
+import { films } from '../data/films';
+import { slug } from '../data/projects';
+import portrait from '../assets/variants/portrait.jpg';
+
+interface Row {
+  years: string;
+  title: string;
+  line: string;
+  /** One more sentence on Robert's part, shown when the row opens. */
+  more: string;
+  /** Who the work was for. 'Own' marks self-initiated work. */
+  client: string;
+  status?: string;
+  href?: string;
+  link?: string;
+  /** The case study page, if the project has one. */
+  case?: string;
+  /** Key of the film in src/data/films.ts, where it is not slug(title): a project renamed after its film was made. */
+  film?: string;
+}
+
+const now = [
+  {
+    text: 'Building Levelwork full time with Michael Gajda. Constat shows how work is really distributed in an organisation, one structured conversation per role.',
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+  },
+  { text: 'Working on Ambacta, AI meeting minutes now in pilot at a district administration (freelance, for gyv).' },
+  { text: 'Built Colla parte in nine days: choir sheet-music PDFs become editable scores and a practice MP3 for my own voice.' },
+];
+
+const work: Row[] = [
+  {
+    years: '2026–',
+    title: 'Levelwork',
+    line: 'Co-founder. Building Constat with Michael Gajda.',
+    more: 'Constat sets the week a role is meant to have against the week it actually has. A deviation is not a verdict, it is a finding.',
+    client: 'Own',
+    status: 'Startup',
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+    case: '/work/levelwork/',
+  },
+  {
+    years: '2026',
+    title: 'Ambacta',
+    film: 'ai-meeting-minutes',
+    line: 'AI meeting minutes: UX research and the minutes editor for the Landratsamt Konstanz.',
+    more: 'Recordings of council meetings become minutes: uncertain passages are flagged for review, and each contribution is kept verbatim, put into indirect speech or left out.',
+    client: 'gyv',
+    status: 'Pilot',
+    case: '/work/meeting-minutes/',
+  },
+  {
+    years: '2026',
+    title: 'Saunter',
+    line: 'Walk while you work: a walking-pad companion for the Mac, built with Claude Code.',
+    more: 'Fed up with the remote and wanting a record of every office walk: a Mac app with keyboard shortcuts that sends each walk to Apple Health and sets goals like once around Lake Constance.',
+    client: 'Own',
+    status: 'Open source',
+    href: 'https://github.com/RobStraubm/saunter',
+    link: 'GitHub',
+    case: '/work/saunter/',
+  },
+  {
+    years: '2026',
+    title: 'Colla parte',
+    film: 'notenprogramm',
+    line: 'Choir sheet-music PDFs become editable scores and a practice MP3 for my voice. Built in nine days with Claude Code.',
+    more: 'Two independent music readers check each other, so only the uncertain notes of my own voice need a look. Tested on seven pieces from the Renaissance to today, with 109 automated tests.',
+    client: 'Own',
+    status: 'Mac app',
+    case: '/work/colla-parte/',
+  },
+  {
+    years: '2026',
+    title: 'SayFit',
+    line: 'Voice food logger, team of four. Co-built the pipeline, tests and web UI.',
+    more: 'Two LLM steps around a vector search of 1.88 million food entries. In testing, confident matches rose from 12 % to 71 %.',
+    client: 'Own',
+    status: 'Team project',
+    href: 'https://github.com/RobStraubm/sayfit',
+    link: 'GitHub',
+    case: '/work/sayfit/',
+  },
+  {
+    years: '2022–25',
+    title: 'Flowculate',
+    line: 'From a math-only research tool to a public web app.',
+    more: 'Designed the app around the simulation maths, one page per function, plus UI and brand. Led up to four student developers.',
+    client: 'HTWG Konstanz',
+    status: 'Live',
+    href: 'https://flowculate.eu',
+    link: 'flowculate.eu',
+    case: '/work/flowculate/',
+  },
+  {
+    years: '2024',
+    title: 'Sustainable IoT',
+    line: 'A design sprint that changed the lab’s direction.',
+    more: 'Turned the lab’s planned setup simulator towards how the devices are used and by whom. The finding: how often people fetch the data on their phones matters most, because network access uses the most energy.',
+    client: 'HTWG Konstanz',
+    status: 'Research',
+    case: '/work/sustainable-iot/',
+  },
+  {
+    years: '2022–24',
+    title: 'Tealucent',
+    line: 'Lead UX for goconut’s web app and its design system, still in use.',
+    more: 'The whole design rests on one colour in different steps, with translucent layers on top. The aim: transparency about what is going on in the office.',
+    client: 'user generated design',
+    status: 'User-tested',
+    case: '/work/tealucent/',
+  },
+  {
+    years: '2022',
+    title: 'Conactive',
+    line: 'Master’s thesis on interacting with connected systems.',
+    more: 'A speculative office for 2045: an AI hands out the day’s appointments as blocks, a cup signals that you are open for a chat.',
+    client: 'Own',
+    status: '1st prize',
+    href: 'https://www.htwg-konstanz.de/bachelor/kommunikationsdesign/abschlussarbeiten/konstanzer-designpreis/straubueller-robert',
+    link: 'HTWG',
+    case: '/work/conactive/',
+  },
+  {
+    years: '2021',
+    title: 'Stayin’ Alive',
+    line: 'Exhibition on living with epidemics, built by about 80 students. Co-led the UX team.',
+    more: 'Shaped the iPad visitor guide through AR stations, historical documents and interactive infographics, and took the exhibition photographs.',
+    client: 'HTWG Konstanz',
+    status: 'Red Dot',
+    href: 'https://www.red-dot.org/project/stayin-alive-60726',
+    link: 'red-dot.org',
+    case: '/work/stayin-alive/',
+  },
+];
+---
+
+<Base
+  title="Robert Straubmüller"
+  description="Robert Straubmüller researches, designs and builds software for people who are not experts. Co-founder of Levelwork, Konstanz."
+  chrome={false}
+>
+  <header class="i-header" slot="header">
+    <a class="i-name" href="/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="i-place">Konstanz</span>
+    <span class="i-links">
+      <a href="/work/">Projects</a>
+      <a href="/about/">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <div class="i-layout">
+    <div class="i-flow">
+      <figure class="i-me">
+        <Image
+          src={portrait}
+          alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+          widths={[240, 480]}
+          sizes="240px"
+          loading="lazy"
+        />
+      </figure>
+
+      <h1 class="i-statement">I research, design and build software for people who are not experts.</h1>
+
+      <section class="i-now" aria-labelledby="i-now-h">
+        <div class="i-now-head">
+          <h2 id="i-now-h">Now</h2>
+          <p class="mute">Oct 2026</p>
+        </div>
+        <ul>
+          {
+            now.map((item) => (
+              <li>
+                {item.text}
+                {item.href && (
+                  <>
+                    {' '}
+                    <a href={item.href}>{item.link} ↗</a>
+                  </>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="i-list" aria-labelledby="i-work-h">
+        <h2 id="i-work-h" class="i-list-h">Selected work</h2>
+        <p class="i-cols mute" aria-hidden="true">
+          <span>Year</span><span>Project</span><span></span><span>Client</span><span>Status</span>
+        </p>
+        <ol class="i-rows">
+          {
+            work.map((row) => {
+              const film = films.find((item) => item.key === (row.film ?? slug(row.title)));
+              return (
+              <li data-row={row.film ?? slug(row.title)} data-href={row.case} class:list={{ 'has-film': film }}>
+                <span class="i-years">{row.years}</span>
+                <h3 class="i-title">
+                  <button type="button" data-row-trigger aria-expanded="false" aria-controls={`more-${slug(row.title)}`}>
+                    {row.title}
+                  </button>
+                </h3>
+                <span class="i-line">{row.line}</span>
+                <span class="i-meta">
+                  <span class:list={['i-client', { 'is-own': row.client === 'Own' }]}>
+                    <span class="visually-hidden">Client: </span>
+                    {row.client}
+                  </span>
+                  <span class="i-status">{row.status}</span>
+                </span>
+                <span class="i-link">
+                  {row.case ? <a href={row.case}>Case →</a> : row.href && <a href={row.href}>{row.link} ↗</a>}
+                </span>
+                <div class="i-more" id={`more-${slug(row.title)}`} data-row-more hidden>
+                  <div>
+                    <p>{row.more}</p>
+                    {row.case && row.href && (
+                      <p class="i-proof">
+                        <a href={row.href}>{row.link} ↗</a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {film && (
+                  <div class="i-film" aria-hidden="true">
+                    <video muted playsinline disablepictureinpicture preload="none" width="800" height="1000" data-base={film.base} />
+                  </div>
+                )}
+              </li>
+              );
+            })
+          }
+        </ol>
+        <a class="i-all" href="/work/">
+          <span>All projects, including earlier brand and editorial work</span>
+          <span class="i-all-arrow" aria-hidden="true">→</span>
+        </a>
+      </section>
+
+      <section class="i-list" aria-labelledby="i-log-h">
+        <h2 id="i-log-h" class="i-list-h">Shipped</h2>
+        <ol class="i-rows i-log">
+          {
+            log
+              .filter((entry) => entry.home)
+              .sort((a, b) => b.sort.localeCompare(a.sort))
+              .map((entry) => (
+                <li>
+                  <span class="i-years">{entry.date}</span>
+                  <span class="i-entry">{entry.text}</span>
+                  <span class="i-kind">{entry.kind}</span>
+                  <span class="i-link">{entry.href && <a href={entry.href}>{entry.linkLabel} ↗</a>}</span>
+                </li>
+              ))
+          }
+        </ol>
+      </section>
+
+      <section class="i-list" aria-labelledby="i-awards-h">
+        <h2 id="i-awards-h" class="i-list-h">Awards</h2>
+        <ol class="i-rows i-awards">
+          {
+            awards.map((award) => (
+              <li>
+                <span class="i-years">{award.year}</span>
+                <span class="i-award">{award.title}</span>
+                <span class="i-line">{award.for}</span>
+                <span class="i-link">{award.href && <a href={award.href}>Source ↗</a>}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+    </div>
+
+    <WorkPanel films={films} />
+  </div>
+
+  <script>
+    // Without the frame on the right (tablets and phones) each project carries its film in the row. The row
+    // that is most on screen plays it, from the start each time it comes into view; the others hold their last
+    // frame, quieter. Rows do not open while scrolling, so nothing moves under the finger.
+    const narrow = window.matchMedia('(max-width: 1100px)');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const dark = window.matchMedia('(prefers-color-scheme: dark)');
+    const rows = [...document.querySelectorAll<HTMLElement>('.i-rows li.has-film')];
+    const videoOf = (row: HTMLElement) => row.querySelector('video')!;
+    const base = (video: HTMLVideoElement) => `${video.dataset.base}-${dark.matches ? 'dark' : 'light'}`;
+    let playing: HTMLElement | null = null;
+
+    // The last frame comes in as the row nears the screen; the film itself only when it is chosen.
+    const near = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          const video = videoOf(entry.target as HTMLElement);
+          if (entry.isIntersecting && narrow.matches && !video.poster) video.poster = `${base(video)}.jpg`;
+        }),
+      { rootMargin: '600px 0px' },
+    );
+    rows.forEach((row) => near.observe(row));
+
+    const choose = (row: HTMLElement | null) => {
+      if (row === playing) return;
+      if (playing) {
+        playing.classList.remove('is-playing');
+        videoOf(playing).pause();
+      }
+      playing = row;
+      if (!row) return;
+      row.classList.add('is-playing');
+      if (reduce.matches) return;
+      const video = videoOf(row);
+      if (!video.src) video.src = `${base(video)}.mp4`;
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    };
+
+    // Most on screen: the row with the largest visible height, as long as at least half of it is visible.
+    const pick = () => {
+      if (!narrow.matches) return choose(null);
+      let best: HTMLElement | null = null;
+      let most = 0;
+      for (const row of rows) {
+        const { top, bottom, height } = row.getBoundingClientRect();
+        const seen = Math.min(bottom, window.innerHeight) - Math.max(top, 0);
+        if (seen > most && seen >= height * 0.5) {
+          most = seen;
+          best = row;
+        }
+      }
+      choose(best);
+    };
+    let queued = false;
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        pick();
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    narrow.addEventListener('change', onScroll);
+    dark.addEventListener('change', () => {
+      rows.forEach((row) => {
+        const video = videoOf(row);
+        if (video.poster) video.poster = `${base(video)}.jpg`;
+        if (video.src) video.src = `${base(video)}.mp4`;
+      });
+      const row = playing;
+      playing = null;
+      choose(row);
+    });
+    pick();
+  </script>
+
+  <footer class="i-footer" slot="footer">
+    <p>Ten years in design, three of them at a research institute. Now co-founder of Levelwork.</p>
+    <p class="i-legal">
+      <a href="/colophon/">Colophon</a>
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+</Base>
+
+<style>
+  :global(body) {
+    --signal: #e5361b;
+    font-family: var(--f-sans);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(body) {
+      --signal: #ff6a4d;
+    }
+  }
+
+  .i-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .i-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .i-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .i-links a,
+  .i-legal a,
+  .i-link a,
+  .i-now a {
+    text-decoration: none;
+  }
+
+  .i-links a:hover,
+  .i-legal a:hover,
+  .i-link a:hover,
+  .i-now a:hover {
+    text-decoration: underline;
+  }
+
+  .i-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 29%, 480px);
+    gap: 0 clamp(24px, 3vw, 48px);
+    padding: clamp(40px, 6vw, 96px) var(--m) 0;
+  }
+
+  .i-statement {
+    margin: 0 0 clamp(40px, 5vw, 80px);
+    max-width: 17ch;
+    font-size: clamp(40px, 5.6vw, 100px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .i-me {
+    display: none;
+    margin: 0;
+  }
+
+  .i-now {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 0 16px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .i-now-head h2,
+  .i-list-h {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .i-now-head {
+    padding: 16px 0;
+  }
+
+  .i-now-head p {
+    margin: 2px 0 0;
+    font-size: 14px;
+  }
+
+  .i-now ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .i-now li {
+    max-width: 56ch;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: clamp(18px, 1.4vw, 21px);
+    line-height: 1.4;
+  }
+
+  .i-now li:last-child {
+    border-bottom: 0;
+  }
+
+  .i-now li a {
+    white-space: nowrap;
+    font-size: 0.8em;
+  }
+
+  .i-list {
+    margin-top: clamp(48px, 6vw, 96px);
+  }
+
+  .i-list-h {
+    padding-bottom: 12px;
+  }
+
+  .i-cols,
+  .i-rows li {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 0.8fr) minmax(0, 1.25fr) 112px 100px 108px;
+    gap: 0 16px;
+    align-items: baseline;
+  }
+
+  .i-cols {
+    margin: 0;
+    padding: 0 0 8px;
+    font-size: 13px;
+  }
+
+  .i-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .i-rows li {
+    padding: 16px 0 15px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .i-years {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .i-title {
+    margin: 0;
+    font-size: clamp(20px, 1.7vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  /* The title opens the row; it looks like the title, not like a control. As a block it lends the row
+     the baseline of its first line, so year and line stay level with a title that wraps. */
+  .i-title button {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .i-rows li[data-row] {
+    cursor: pointer;
+  }
+
+  .i-line {
+    font-size: 16px;
+    color: var(--mute);
+  }
+
+  .i-client,
+  .i-status,
+  .i-link {
+    font-size: 14px;
+  }
+
+  /* Client and status are two columns here and share one line on small screens. */
+  .i-meta {
+    display: contents;
+  }
+
+  /* Own work reads first; client work stays quiet. */
+  .i-client {
+    color: var(--mute);
+  }
+
+  .i-client.is-own {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .i-status {
+    white-space: nowrap;
+    color: var(--mute);
+  }
+
+  .i-link {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* One more line about Robert's part, under title and line. Closed it takes no room at all. */
+  .i-more {
+    grid-column: 2 / 6;
+    display: grid;
+    grid-template-rows: 0fr;
+  }
+
+  .i-more > div {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .i-more p {
+    max-width: 62ch;
+    margin: 0;
+    padding-top: 12px;
+    font-size: 17px;
+    line-height: 1.45;
+  }
+
+  /* The chosen row: a little more room, a larger title, its line in ink and the extra line open. */
+  .i-rows li.is-open {
+    padding: 24px 0 26px;
+  }
+
+  .i-rows li.is-open .i-title {
+    font-size: clamp(24px, 2.1vw, 32px);
+  }
+
+  .i-rows li.is-open .i-line {
+    color: var(--ink);
+  }
+
+  .i-rows li.is-open .i-more {
+    grid-template-rows: 1fr;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .i-rows li[data-row] {
+      transition: padding 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    .i-rows li[data-row] .i-title {
+      transition: font-size 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    .i-more {
+      transition: grid-template-rows 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+  }
+
+  /* The way to everything else: a full-width button that inverts on hover. */
+  .i-all {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    margin-top: 24px;
+    padding: 18px 20px;
+    border: 1px solid var(--ink);
+    font-size: clamp(17px, 1.3vw, 20px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  .i-all:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .i-all,
+    .i-all-arrow {
+      transition:
+        background-color 0.16s,
+        color 0.16s,
+        transform 0.16s;
+    }
+    .i-all:hover .i-all-arrow {
+      transform: translateX(6px);
+    }
+  }
+
+  .i-more .i-proof {
+    padding-top: 6px;
+    font-size: 15px;
+  }
+
+  .i-proof a {
+    text-decoration: none;
+  }
+
+  .i-proof a:hover {
+    text-decoration: underline;
+  }
+
+  /* The ship log: date, what shipped across title and line, its kind where the client sits. */
+  .i-log .i-entry {
+    grid-column: 2 / 4;
+    font-size: clamp(17px, 1.3vw, 19px);
+    line-height: 1.3;
+  }
+
+  .i-log .i-kind {
+    grid-column: 4 / 6;
+    font-size: 14px;
+    color: var(--mute);
+  }
+
+  /* Awards use the same columns: the award across title and line, the project where the client sits. */
+  .i-awards .i-award {
+    grid-column: 2 / 4;
+    font-size: clamp(17px, 1.3vw, 19px);
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  .i-awards .i-line {
+    grid-column: 4 / 6;
+    font-size: 14px;
+  }
+
+  .i-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .i-footer p {
+    margin: 0;
+  }
+
+  .i-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  /* The film in the row: only where there is no frame on the right (below). */
+  .i-film {
+    display: none;
+  }
+
+  @media (max-width: 1100px) {
+    .i-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .i-layout > :global(.wp) {
+      display: none;
+    }
+    /* No frame on the right here, so Robert stands above the statement instead. */
+    .i-me {
+      display: block;
+      width: min(40%, 240px);
+      margin-bottom: 28px;
+    }
+    .i-me :global(img) {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: 50% 22%;
+    }
+    .i-cols {
+      display: none;
+    }
+    .i-rows li {
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      row-gap: 4px;
+    }
+    .i-title,
+    .i-line,
+    .i-more,
+    .i-awards .i-award,
+    .i-awards .i-line,
+    .i-log .i-entry,
+    .i-log .i-kind {
+      grid-column: 2;
+    }
+    .i-meta {
+      grid-column: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px 16px;
+    }
+    .i-link {
+      grid-column: 3;
+      grid-row: 1;
+    }
+    /* Without the frame a tap only opens the extra line, so the title says that it can. */
+    .i-title button::after {
+      content: ' +';
+      content: ' +' / '';
+      color: var(--mute);
+      font-weight: 400;
+    }
+    .i-rows li.is-open .i-title button::after {
+      content: ' −';
+      content: ' −' / '';
+    }
+    /* The film stands at the right of its row, in the 4:5 of the frame it replaces; the text keeps the rest. The
+       row is at least as tall as the film, which is a share of the row's width (the list spans the screen). */
+    .i-rows li.has-film {
+      --film: 0.28;
+      position: relative;
+      padding-right: calc(var(--film) * 100% + 16px);
+      min-height: calc((100vw - 2 * var(--m)) * var(--film) * 1.25 + 31px);
+    }
+    .i-rows li.has-film .i-link {
+      grid-column: 2;
+      grid-row: auto;
+      text-align: left;
+    }
+    .i-film {
+      display: block;
+      position: absolute;
+      top: 16px;
+      right: 0;
+      width: calc(var(--film) * 100%);
+      aspect-ratio: 4 / 5;
+      background: var(--soft);
+      opacity: 0.45;
+      transition: opacity 0.3s;
+    }
+    .i-rows li.is-playing .i-film {
+      opacity: 1;
+    }
+    .i-film video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .i-header {
+      grid-template-columns: 1fr auto;
+    }
+    .i-place {
+      display: none;
+    }
+    .i-links {
+      grid-column: 1 / -1;
+    }
+    .i-now {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .i-now-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding-bottom: 0;
+    }
+    .i-rows li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .i-years {
+      grid-column: 1 / -1;
+    }
+    .i-title,
+    .i-line,
+    .i-meta,
+    .i-more,
+    .i-awards .i-award,
+    .i-awards .i-line,
+    .i-log .i-entry,
+    .i-log .i-kind {
+      grid-column: 1;
+    }
+    .i-link {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .i-more {
+      grid-column: 1 / -1;
+    }
+    .i-rows li.has-film {
+      --film: 0.4;
+    }
+    .i-rows li.has-film .i-link {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .i-all {
+      padding: 16px;
+    }
+  }
+</style>

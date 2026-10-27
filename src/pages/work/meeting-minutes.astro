@@ -1,0 +1,119 @@
+---
+// Case: Ambacta, AI meeting minutes for the Landratsamt Konstanz (the name since 26 Oct 2026, Robert, 27 Oct). Robert's
+// account of 26 Oct 2026, the project wiki (~/Desktop/Job/GYV/nautilus/lrakn-docs: contract 27 Jul 2026, gyv as
+// contractor, Michael Gajda project lead), Robert's commits in ~/nautilus-web (from 28 Sep 2026; the editor is a
+// beta outside the contracted scope; Robert, 27 Oct 2026: the focus moved from the verbatim record to the minutes)
+// and the first-run report of 15 Oct 2026 (berichte/2026-10-15_kreistag-2026-05-18_erster-durchlauf). Robert approved
+// naming the district office (26 Oct 2026). The screens of the real session (councillors' names, the district's arms)
+// came off on 27 Oct 2026 (Robert); anonymous ones from a fictional session are to replace them.
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+---
+
+<CaseLayout
+  title="Ambacta"
+  years="2026–"
+  summary="A council meeting ends with a transcript. The district office needs signed minutes. I designed and built the editor in between."
+  meta={[
+    ['Role', 'UX research on how the minutes are written, design and build of the online minutes editor'],
+    ['Team', 'gyv Consulting GmbH: Michael Gajda leads the project and built the transcription platform; me since August 2026'],
+    ['Client', 'Landratsamt Konstanz, district council and its committees'],
+    ['Status', 'Pilot; the minutes editor is in beta'],
+  ]}
+  film="ai-meeting-minutes"
+  stage="minutes"
+  next={{ href: '/work/flowculate/', title: 'Flowculate' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">A transcript records what was said. The minutes record what was decided.</p>
+    <p>
+      On 18 May 2026 the district council of Konstanz met for three and a half hours. Afterwards the district
+      office wrote the official minutes, as after every meeting: every resolution with its vote, the statements
+      that belong on record, the facts of the meeting, who was present, who left the room and when, and who has to
+      sign. The transcription the office had commissioned delivers the words. The minutes were still written in
+      Word, by listening again and checking every resolution against a separate resolution record.
+    </p>
+    <p>
+      I care about this kind of problem because it is the one Levelwork works on: turning a conversation into a record
+      that people can check and sign off.
+    </p>
+  </section>
+
+  <section>
+    <h2>What I did</h2>
+    <p class="c-lead">I followed the minutes from the end of the meeting to the signature, then built the editor for it.</p>
+    <p>
+      With the office I went through how they really work after a meeting, step by step, until the signed minutes. From
+      that I designed and built the online editor that turns the verbatim record, the corrected transcript, into the
+      minutes. We had been commissioned for the verbatim record. Working with the office, we saw that the minutes matter
+      far more, so we moved the focus there, and I designed the minutes editor. I built it with Claude Code.
+    </p>
+    <p>
+      For every contribution the office decides how it goes into the minutes: edit it, keep it verbatim, put it into
+      indirect speech, replace it with a standard text, or leave it out. The resolution record and the office's template
+      are uploaded, and the editor takes over the resolutions with their votes, attendance, start and end and the
+      signatures, word for word. The office corrects inside the tool instead of in Word and exports to Word or PDF.
+    </p>
+  </section>
+
+  <section>
+    <h2>How we tested it</h2>
+    <p class="c-lead">One real meeting, all real documents, and an export nobody touched.</p>
+    <p>
+      On 15 October I ran the public council meeting of 18 May 2026 through the editor with everything the office uses:
+      the record of the 2 h 39 min recording, the resolution record and the office's template. I left the export
+      unedited and compared it with what the office needs.
+    </p>
+    <p>
+      The resolutions came through complete and word for word, with votes and numbering, and so did the header, the
+      agenda, attendance and signatures. But speech landed under the wrong agenda item whenever the chair did not
+      announce “agenda item 14” in so many words, and the recording ended in the middle of item 19 without the export
+      saying so. Since then the editor assigns speech to agenda items from the meeting documents, and a check view shows
+      every item that has no speech.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="minutes-agenda" ratio="1200 / 460" narrow="600 / 680" />
+      <figcaption>
+        In the first run, speech landed under the wrong item whenever the chair did not announce it, and the export did
+        not say where the recording ended. Now the items come from the meeting documents, and every item without speech
+        is flagged.
+      </figcaption>
+    </figure>
+    <dl class="c-numbers">
+      <div><dt>37</dt><dd>resolutions with their votes, taken over word for word</dd></div>
+      <div><dt>9</dt><dd>agenda items without speech in the first run, now flagged</dd></div>
+      <div><dt>17,000</dt><dd>words, roughly, in the record of one meeting</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">Choices instead of typing, documents instead of retyping, and the page always in view.</p>
+    <p>
+      <strong>A choice per contribution.</strong> A free text editor would have been quicker to build. But the office
+      does not rewrite the meeting; for each contribution it decides what the minutes need. Five choices make that
+      decision fast and leave a trace of it.
+    </p>
+    <p>
+      <strong>Read the documents, say how sure we are.</strong> The resolution record arrives as Word or PDF. The editor
+      reads both, shows what it found, and warns when a PDF had to be reconstructed from the page layout.
+    </p>
+    <p>
+      <strong>The minutes stay in view.</strong> Editing and preview scroll together, so the office always sees the
+      page that will be signed, not a form that becomes a page later.
+    </p>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <ol class="c-timeline">
+      <li><time>27 Jul 2026</time><span>Contract between the district and gyv for transcription of council meetings.</span></li>
+      <li><time>Aug 2026</time><span>I join Michael Gajda on the project.</span></li>
+      <li><time>28 Sep</time><span>First beta of the minutes editor.</span></li>
+      <li><time>30 Sep</time><span>Review with the district office.</span></li>
+      <li><time>15 Oct</time><span>First full run with all real documents; agenda items from the meeting documents.</span></li>
+      <li><time>16 Oct</time><span>The office's points from 30 September live, export to Word and PDF, phone layout.</span></li>
+    </ol>
+  </section>
+</CaseLayout>

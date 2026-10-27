@@ -1,0 +1,173 @@
+---
+// Case: Tealucent, design system for goconut's workplace management software, designed for user generated design
+// (agreed wording, 20 Oct 2026). Facts from befund/cases/tealucent.md: goconut sales deck of June 2022 ("Transparenz &
+// Überblick"), Sketch file of Dec 2022 (mobile app, formerly Kapago), Robert's boards (palette, token architecture,
+// components). Robert, 27 Oct 2026: lead UX at goconut for the web app, design system by him alone, base UX of the
+// mobile app by ugd, still in use at goconut. Left out: the ten test participants, the share of desktop and mobile use. Only boards without photos of people.
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import Shot from '../../components/case/Shot.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import name from '../../assets/cases/tealucent/name.jpg';
+import palette from '../../assets/cases/tealucent/palette.jpg';
+import dates from '../../assets/cases/tealucent/board-04-2.jpg';
+import tokens from '../../assets/cases/tealucent/tokens.jpg';
+import components from '../../assets/cases/tealucent/components.jpg';
+import bookings from '../../assets/cases/tealucent/board-03.jpg';
+
+const half = '(max-width: 900px) 100vw, 45vw';
+---
+
+<CaseLayout
+  title="Tealucent"
+  years="2022–24"
+  summary="Workplace software that promises transparency, given a look that is literally transparent: one colour, translucent layers."
+  meta={[
+    ['Role', 'Lead UX for the web app; design system, by me alone'],
+    ['Client', 'goconut workplace management, Konstanz; base UX of the mobile app by user generated design'],
+    ['Period', '2022 – 2024'],
+    ['Status', 'In use at goconut today'],
+  ]}
+  links={[{ href: 'https://goconut.com', label: 'goconut.com' }]}
+  film="tealucent"
+  stage="tealucent"
+  next={{ href: '/work/conactive/', title: 'Conactive' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">A booking app had to become the place where a company sees how its office is really used.</p>
+    <p>
+      goconut lets people book a desk in the office, at home or in a coworking space, book rooms, set their status and
+      track their time. To companies it promises transparency and overview: who is where, how much work happens remotely,
+      how the space is used. In 2022 it was still a mobile app. It had to grow into a web hub that a small developer team
+      could build and keep consistent.
+    </p>
+  </section>
+
+  <section>
+    <h2>What I did</h2>
+    <p class="c-lead">A visual language and a token structure the developers could implement directly.</p>
+    <p>
+      The base UX of the mobile app came from user generated design. When goconut turned the app into a web app, I was
+      lead UX at goconut and created its design system on my own. I named it Tealucent, after teal and translucent: the
+      colour system, the components, the modes and the tokens that connect the design to the code.
+    </p>
+    <figure class="c-wide">
+      <Shot
+        src={name}
+        source="Tealucent design system"
+        label="Name"
+        alt="Two overlapping circles: teal, a solid gradient, and translucent, almost invisible; where they overlap, tealucent design"
+        widths={[800, 1600]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Teal and translucent: the brand colour and the idea of seeing through.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">One colour in ten steps, layers you can see through, tokens in three tiers.</p>
+    <p>
+      <strong>One colour, not a palette.</strong> goconut had two brand colours, teal and orange. I built the whole
+      interface from the teal in ten steps, from 100 % to white, and kept orange for the one thing that has to stand out.
+      Fewer colours meant fewer decisions for the developers and a calmer screen for the people using it.
+    </p>
+    <p>
+      <strong>Transparency you can see.</strong> Panels are translucent and lie over the floor plan and the calendar, so
+      what is happening in the office stays visible underneath. The promise of the product became the principle of the
+      design.
+    </p>
+    <p>
+      <strong>Tokens in three tiers.</strong> A value becomes a global token, an alias token switches between light, dark,
+      side panel and translucent modes, and component tokens use the aliases. A new mode changes the aliases, not every
+      component.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="tealucent-tokens" ratio="1200 / 520" narrow="600 / 910" />
+      <figcaption>One alias, four modes: the dropdown and the input take their colour from action_background_ in light, dark, side and trans, and their own tokens stay the same.</figcaption>
+    </figure>
+    <div class="c-split">
+      <figure>
+        <Shot
+          src={dates}
+          source="Tealucent design system"
+          label="Date bar, dark"
+          alt="A date bar from Monday 10 to Sunday 16 on dark teal, each state labelled with its colour token, from gg_75 to gg_00"
+          widths={[800, 1600]}
+          sizes="(max-width: 900px) 100vw, 60vw"
+        />
+        <figcaption>Every state of a date bar is a step of the same teal.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={palette}
+          source="Tealucent design system"
+          label="Colours"
+          alt="The palette: brand orange and brand teal, and the app colours from 100 % teal through 85, 75, 50, 40, 20, 15, 10 and 5 % to white, each with its token and hex value"
+          widths={[600, 1200]}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>Two brand colours, ten app colours from one teal.</figcaption>
+      </figure>
+    </div>
+    <figure class="c-wide">
+      <Shot
+        src={tokens}
+        source="Tealucent design system"
+        label="Tokens and modes"
+        alt="Token architecture: values become global tokens such as teal_20 and teal_85, an alias token action_background with the modes light, dark, side and trans, and component tokens for dropdown and input; below, the four modes darkmode, lightmode, translucent and action module in one layout"
+        widths={[800, 1600]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Value, global token, alias with four modes, component token.</figcaption>
+    </figure>
+    <div class="c-pair">
+      <figure>
+        <Shot
+          src={components}
+          source="Tealucent design system"
+          label="Components"
+          alt="Component board: tabs, date bar, calendar with week numbers, dropdown, time picker, a list of people with placeholder names and a set of icons"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>Components, from tabs and calendar to the people list.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={bookings}
+          source="Tealucent design system"
+          label="Booking types"
+          alt="Booking types as gradient bars: remote work, equipment, creative and holiday, with times, orange for the creative booking"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>Booking types: remote work, equipment, creative, holiday.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <p class="c-lead">A system small enough to keep consistent, and still in use.</p>
+    <p>
+      Tealucent gave goconut one visual language across mobile and web: ten shades of one colour, an orange signal, four
+      modes, IBM Plex Sans and Mono, and tokens that tie the design to the code. goconut still uses it today.
+    </p>
+    <dl class="c-numbers">
+      <div><dt>1</dt><dd>colour, in ten steps from teal to white</dd></div>
+      <div><dt>4</dt><dd>modes: light, dark, translucent, action</dd></div>
+      <div><dt>3</dt><dd>tiers of tokens: global, alias, component</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <ol class="c-timeline">
+      <li><time>2022</time><span>goconut is a mobile app; the brief is a web hub for companies.</span></li>
+      <li><time>2023</time><span>Tealucent: one colour, translucent layers, tokens.</span></li>
+      <li><time>2024</time><span>Further work as lead UX for the web app.</span></li>
+      <li><time>Today</time><span>goconut still runs on Tealucent.</span></li>
+    </ol>
+  </section>
+</CaseLayout>

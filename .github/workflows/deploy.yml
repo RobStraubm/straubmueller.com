@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      # npm ci rejects the lock file because the optional WebAssembly build of the Astro compiler lists
+      # @emnapi packages it does not record; npm install fills them in and keeps the locked versions.
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+
+      # Only the chosen version goes live; the drafts under /varianten and their films stay local.
+      - name: Keep drafts off the live site
+        run: rm -rf dist/varianten dist/motion/f dist/motion/kinetic dist/motion/bauhaus dist/motion/dots dist/motion/cards-light dist/motion/flowculate-light.* dist/motion/flowculate-dark.*
+
+      - name: Upload to webgo
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          rsync -rlz --delete --checksum -e "ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes" dist/ "$TARGET"

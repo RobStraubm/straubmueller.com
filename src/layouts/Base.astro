@@ -1,0 +1,53 @@
+---
+import '@fontsource-variable/noto-serif-display/wdth.css';
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource/fragment-mono/400.css';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Render the shared header and footer. Draft variants bring their own. */
+  chrome?: boolean;
+}
+const { title, description, chrome = true } = Astro.props;
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Robert Straubmüller',
+  url: 'https://straubmueller.com',
+  email: 'mailto:robert@straubmueller.com',
+  jobTitle: 'Co-founder',
+  worksFor: { '@type': 'Organization', name: 'Levelwork', url: 'https://levelwork.ai' },
+  knowsAbout: ['UX research', 'Interface design', 'Design systems', 'AI engineering'],
+  address: { '@type': 'PostalAddress', addressLocality: 'Konstanz', addressCountry: 'DE' },
+  sameAs: ['https://github.com/RobStraubm', 'https://www.linkedin.com/in/robert-straubmueller'],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    {chrome && <SiteHeader />}
+    <slot name="header" />
+    <main id="main">
+      <slot />
+    </main>
+    {chrome && <SiteFooter />}
+    <slot name="footer" />
+  </body>
+</html>

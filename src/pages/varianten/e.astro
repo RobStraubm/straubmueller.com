@@ -1,0 +1,587 @@
+---
+// Draft variant E: D without the archive and without photo traces. Flowculate plays a short film in the
+// site's own drawing style (made with Remotion, see /motion); the awards sit under the work, and every
+// project, old ones included, is on /varianten/e/work/.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+import FlipPanel from '../../components/FlipPanel.astro';
+import { awards } from '../../data/cv';
+import portrait from '../../assets/variants/portrait.jpg';
+
+interface Row {
+  years: string;
+  title: string;
+  line: string;
+  /** Who the work was for. 'Own' marks self-initiated work. */
+  client: string;
+  status?: string;
+  live?: boolean;
+  href?: string;
+  link?: string;
+  /** Key of a film in the frame on the right. */
+  flip?: string;
+}
+
+const now = [
+  {
+    text: 'Building Levelwork full time with Michael Gajda. Constat shows how work is really distributed in an organisation, one structured conversation per role.',
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+  },
+  { text: 'Working on AI meeting minutes, now in pilot at a district administration (freelance, for gyv).' },
+  { text: 'Building Notenprogramm, which turns sheet-music PDFs into editable MusicXML.' },
+];
+
+const work: Row[] = [
+  {
+    years: '2026–',
+    title: 'Levelwork',
+    line: 'Co-founder. Building Constat with Michael Gajda.',
+    client: 'Own',
+    status: 'Startup',
+    live: true,
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+  },
+  {
+    years: '2026',
+    title: 'AI meeting minutes',
+    line: 'Product design and build for a district administration.',
+    client: 'gyv',
+    status: 'Pilot',
+    live: true,
+  },
+  {
+    years: '2026',
+    title: 'Saunter',
+    line: 'Walk while you work: a walking-pad companion for the Mac, built with Claude Code.',
+    client: 'Own',
+    status: 'Open source',
+    live: true,
+    href: 'https://github.com/RobStraubm/saunter',
+    link: 'GitHub',
+  },
+  {
+    years: '2026',
+    title: 'SayFit',
+    line: 'Voice food logger, team of four. Co-built the pipeline, tests and web UI.',
+    client: 'Own',
+    status: 'Team project',
+    href: 'https://github.com/RobStraubm/sayfit',
+    link: 'GitHub',
+  },
+  {
+    years: '2022–25',
+    title: 'Flowculate',
+    line: 'From a math-only research tool to a public web app.',
+    client: 'HTWG Konstanz',
+    status: 'Live',
+    live: true,
+    href: 'https://flowculate.eu',
+    link: 'flowculate.eu',
+    flip: 'flowculate',
+  },
+  {
+    years: '2024',
+    title: 'Sustainable IoT',
+    line: 'A design sprint that changed the lab’s direction.',
+    client: 'HTWG Konstanz',
+    status: 'Research',
+  },
+  {
+    years: '2022–24',
+    title: 'Tealucent',
+    line: 'Design system for goconut’s small developer team.',
+    client: 'user generated design',
+    status: 'User-tested',
+  },
+  {
+    years: '2022',
+    title: 'Conactive',
+    line: 'Master’s thesis on interacting with connected systems.',
+    client: 'Own',
+    status: '1st prize',
+    href: 'https://www.htwg-konstanz.de/bachelor/kommunikationsdesign/abschlussarbeiten/konstanzer-designpreis/straubueller-robert',
+    link: 'HTWG',
+  },
+  {
+    years: '2021',
+    title: 'Stayin’ Alive',
+    line: 'Exhibition on living with epidemics, built by about 80 students. Led the UX team.',
+    client: 'HTWG Konstanz',
+    status: 'Red Dot',
+    href: 'https://www.red-dot.org/project/stayin-alive-60726',
+    link: 'red-dot.org',
+  },
+];
+
+const films = [
+  {
+    key: 'flowculate',
+    title: 'Flowculate',
+    film: {
+      light: '/motion/flowculate-light.mp4',
+      dark: '/motion/flowculate-dark.mp4',
+      posterLight: '/motion/flowculate-light.jpg',
+      posterDark: '/motion/flowculate-dark.jpg',
+      acts: [
+        { at: 0, label: 'Numbers' },
+        { at: 34 / 30, label: 'Plan' },
+        { at: 100 / 30, label: 'Web app' },
+      ],
+    },
+  },
+];
+---
+
+<Base
+  title="Robert Straubmüller · Version E"
+  description="Robert Straubmüller researches, designs and builds software for people who are not experts. Co-founder of Levelwork, Konstanz."
+  chrome={false}
+>
+  <header class="e-header" slot="header">
+    <a class="e-name" href="/varianten/e/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="e-place">Konstanz</span>
+    <span class="e-links">
+      <a href="/varianten/e/work/">Projects</a>
+      <a href="/varianten/e/about/">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <div class="e-layout">
+    <div class="e-flow">
+      <figure class="e-me">
+        <Image
+          src={portrait}
+          alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+          widths={[240, 480]}
+          sizes="240px"
+          loading="lazy"
+        />
+      </figure>
+
+      <h1 class="e-statement">I research, design and build software for people who are not experts.</h1>
+
+      <section class="e-now" aria-labelledby="e-now-h">
+        <div class="e-now-head">
+          <h2 id="e-now-h">Now</h2>
+          <p class="mute">Oct 2026</p>
+        </div>
+        <ul>
+          {
+            now.map((item) => (
+              <li>
+                {item.text}
+                {item.href && (
+                  <>
+                    {' '}
+                    <a href={item.href}>{item.link} ↗</a>
+                  </>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="e-list" aria-labelledby="e-work-h">
+        <h2 id="e-work-h" class="e-list-h">Selected work</h2>
+        <p class="e-cols mute" aria-hidden="true">
+          <span>Year</span><span>Project</span><span></span><span>Client</span><span>Status</span>
+        </p>
+        <ol class="e-rows">
+          {
+            work.map((row) => (
+              <li data-flip={row.flip}>
+                <span class="e-years">{row.years}</span>
+                <span class="e-title">{row.title}</span>
+                <span class="e-line">{row.line}</span>
+                <span class="e-meta">
+                  <span class:list={['e-client', { 'is-own': row.client === 'Own' }]}>
+                    <span class="visually-hidden">Client: </span>
+                    {row.client}
+                  </span>
+                  <span class:list={['e-status', { 'is-live': row.live }]}>{row.status}</span>
+                </span>
+                <span class="e-link">{row.href && <a href={row.href}>{row.link} ↗</a>}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="e-more">
+          <a href="/varianten/e/work/">All projects, including earlier brand and editorial work →</a>
+        </p>
+      </section>
+
+      <section class="e-list" aria-labelledby="e-awards-h">
+        <h2 id="e-awards-h" class="e-list-h">Awards</h2>
+        <ol class="e-rows e-awards">
+          {
+            awards.map((award) => (
+              <li>
+                <span class="e-years">{award.year}</span>
+                <span class="e-award">{award.title}</span>
+                <span class="e-line">{award.for}</span>
+                <span class="e-link">{award.href && <a href={award.href}>Source ↗</a>}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+    </div>
+
+    <FlipPanel items={films} />
+  </div>
+
+  <footer class="e-footer" slot="footer">
+    <p>Ten years in design, three of them at a research institute. Now co-founder of Levelwork.</p>
+    <p class="e-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  :global(body) {
+    --signal: #e5361b;
+    font-family: var(--f-sans);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(body) {
+      --signal: #ff6a4d;
+    }
+  }
+
+  .e-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .e-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .e-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .e-links a,
+  .e-legal a,
+  .e-link a,
+  .e-now a,
+  .e-more a {
+    text-decoration: none;
+  }
+
+  .e-links a:hover,
+  .e-legal a:hover,
+  .e-link a:hover,
+  .e-now a:hover,
+  .e-more a:hover {
+    text-decoration: underline;
+  }
+
+  .e-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 29%, 480px);
+    gap: 0 clamp(24px, 3vw, 48px);
+    padding: clamp(40px, 6vw, 96px) var(--m) 0;
+  }
+
+  .e-statement {
+    margin: 0 0 clamp(40px, 5vw, 80px);
+    max-width: 17ch;
+    font-size: clamp(40px, 5.6vw, 100px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .e-me {
+    display: none;
+    margin: 0;
+  }
+
+  .e-now {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 0 16px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .e-now-head h2,
+  .e-list-h {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .e-now-head {
+    padding: 16px 0;
+  }
+
+  .e-now-head p {
+    margin: 2px 0 0;
+    font-size: 14px;
+  }
+
+  .e-now ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .e-now li {
+    max-width: 56ch;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: clamp(18px, 1.4vw, 21px);
+    line-height: 1.4;
+  }
+
+  .e-now li:last-child {
+    border-bottom: 0;
+  }
+
+  .e-now li a {
+    white-space: nowrap;
+    font-size: 0.8em;
+  }
+
+  .e-list {
+    margin-top: clamp(48px, 6vw, 96px);
+  }
+
+  .e-list-h {
+    padding-bottom: 12px;
+  }
+
+  .e-cols,
+  .e-rows li {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 0.8fr) minmax(0, 1.25fr) 112px 100px 108px;
+    gap: 4px 16px;
+    align-items: baseline;
+  }
+
+  .e-cols {
+    margin: 0;
+    padding: 0 0 8px;
+    font-size: 13px;
+  }
+
+  .e-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .e-rows li {
+    padding: 16px 0 15px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .e-years {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .e-title {
+    font-size: clamp(20px, 1.7vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .e-line {
+    font-size: 16px;
+    color: var(--mute);
+  }
+
+  .e-client,
+  .e-status,
+  .e-link {
+    font-size: 14px;
+  }
+
+  /* Client and status are two columns here and share one line on small screens. */
+  .e-meta {
+    display: contents;
+  }
+
+  /* Own work reads first; client work stays quiet. */
+  .e-client {
+    color: var(--mute);
+  }
+
+  .e-client.is-own {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .e-status {
+    white-space: nowrap;
+    color: var(--mute);
+  }
+
+  .e-status.is-live::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    background: var(--signal);
+  }
+
+  .e-link {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  @media (hover: hover) {
+    .e-rows li[data-flip]:hover .e-title {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+  }
+
+  .e-more {
+    margin: 0;
+    padding: 16px 0 0;
+    font-size: 16px;
+  }
+
+  /* Awards use the same columns: the award across title and line, the project where the client sits. */
+  .e-awards .e-award {
+    grid-column: 2 / 4;
+    font-size: clamp(17px, 1.3vw, 19px);
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  .e-awards .e-line {
+    grid-column: 4 / 6;
+    font-size: 14px;
+  }
+
+  .e-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .e-footer p {
+    margin: 0;
+  }
+
+  .e-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 1100px) {
+    .e-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .e-layout > :global(.flip) {
+      display: none;
+    }
+    /* No frame on the right here, so Robert stands above the statement instead. */
+    .e-me {
+      display: block;
+      width: min(40%, 240px);
+      margin-bottom: 28px;
+    }
+    .e-me :global(img) {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: 50% 22%;
+    }
+    .e-cols {
+      display: none;
+    }
+    .e-rows li {
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+    }
+    .e-title,
+    .e-line,
+    .e-awards .e-award,
+    .e-awards .e-line {
+      grid-column: 2;
+    }
+    .e-meta {
+      grid-column: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px 16px;
+    }
+    .e-link {
+      grid-column: 3;
+      grid-row: 1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .e-header {
+      grid-template-columns: 1fr auto;
+    }
+    .e-place {
+      display: none;
+    }
+    .e-links {
+      grid-column: 1 / -1;
+    }
+    .e-now {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .e-now-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding-bottom: 0;
+    }
+    .e-rows li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .e-years {
+      grid-column: 1 / -1;
+    }
+    .e-title,
+    .e-line,
+    .e-meta,
+    .e-awards .e-award,
+    .e-awards .e-line {
+      grid-column: 1;
+    }
+    .e-link {
+      grid-column: 2;
+      grid-row: 2;
+    }
+  }
+</style>

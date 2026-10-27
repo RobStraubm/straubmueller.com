@@ -1,0 +1,297 @@
+---
+// Draft variant B, About: the same calm list as the homepage, now with a face.
+import { Image } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import VariantSwitch from '../../../components/VariantSwitch.astro';
+import { aboutText, strengths, experience, education, awards, languages } from '../../../data/cv';
+import portrait from '../../../assets/variants/portrait.jpg';
+
+const sections = [
+  { id: 'experience', title: 'Experience', items: experience },
+  { id: 'education', title: 'Education', items: education },
+];
+---
+
+<Base
+  title="About · Robert Straubmüller · Version B"
+  description="Robert Straubmüller: ten years in design, from the family restaurant to UX research and AI engineering. Now co-founder of Levelwork."
+  chrome={false}
+>
+  <header class="b-header" slot="header">
+    <a class="b-name" href="/varianten/b/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="b-place">Konstanz</span>
+    <span class="b-links">
+      <a href="/varianten/b/about/" aria-current="page">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <h1 class="b-statement">Ten years in design. Now co-founder of Levelwork.</h1>
+
+  <section class="b-bio" aria-label="Background">
+    <figure class="b-portrait">
+      <Image
+        src={portrait}
+        alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+        widths={[400, 700, 1000]}
+        sizes="(max-width: 760px) 60vw, 26vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </figure>
+    <div>
+      <p class="b-bio-text">{aboutText}</p>
+      <p class="b-strengths"><span class="mute">What Robert brings:</span> {strengths.join(', ')}.</p>
+    </div>
+  </section>
+
+  {
+    sections.map((section) => (
+      <section class="b-cv" aria-labelledby={`b-${section.id}`}>
+        <h2 id={`b-${section.id}`}>{section.title}</h2>
+        <ol>
+          {section.items.map((item) => (
+            <li>
+              <span class="b-years">{item.years}</span>
+              <span class="b-title">{item.href ? <a href={item.href}>{item.title}</a> : item.title}</span>
+              <span class="b-org">{item.org}</span>
+              <span class="b-note">{item.note}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+
+  <section class="b-cv" aria-labelledby="b-awards">
+    <h2 id="b-awards">Awards</h2>
+    <ol>
+      {
+        awards.map((award) => (
+          <li>
+            <span class="b-years">{award.year}</span>
+            <span class="b-title">{award.title}</span>
+            <span class="b-org">{award.for}</span>
+            <span class="b-note">{award.href && <a href={award.href}>Source ↗</a>}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="b-cv" aria-labelledby="b-languages">
+    <h2 id="b-languages">Languages</h2>
+    <p class="b-langs">{languages.join(' · ')}</p>
+  </section>
+
+  <footer class="b-footer" slot="footer">
+    <p>Full CV as a PDF on request: <a href="mailto:robert@straubmueller.com">robert@straubmueller.com</a></p>
+    <p class="b-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  :global(body) {
+    font-family: var(--f-sans);
+  }
+
+  .b-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .b-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .b-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .b-links a,
+  .b-legal a,
+  .b-cv a {
+    text-decoration: none;
+  }
+
+  .b-links a:hover,
+  .b-links a[aria-current='page'],
+  .b-legal a:hover,
+  .b-cv a:hover {
+    text-decoration: underline;
+  }
+
+  .b-statement {
+    margin: 0;
+    padding: clamp(48px, 7vw, 120px) var(--m) clamp(40px, 6vw, 96px);
+    max-width: 18ch;
+    font-size: clamp(40px, 6.2vw, 112px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .b-bio {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: clamp(24px, 3vw, 48px);
+    align-items: end;
+    padding: 0 var(--m);
+  }
+
+  .b-portrait {
+    margin: 0;
+  }
+
+  .b-portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 22%;
+  }
+
+  .b-bio-text {
+    max-width: 50ch;
+    margin: 0;
+    font-size: clamp(20px, 1.7vw, 26px);
+    line-height: 1.38;
+    letter-spacing: -0.01em;
+  }
+
+  .b-strengths {
+    max-width: 60ch;
+    margin: 24px 0 0;
+    font-size: 16px;
+  }
+
+  .b-cv {
+    margin-top: clamp(56px, 7vw, 112px);
+    padding: 0 var(--m);
+  }
+
+  .b-cv h2 {
+    margin: 0;
+    padding-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .b-cv ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .b-cv li {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 4px 16px;
+    align-items: baseline;
+    padding: 16px 0 15px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .b-years {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .b-title {
+    font-size: clamp(18px, 1.5vw, 22px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .b-org {
+    font-size: 16px;
+  }
+
+  .b-note {
+    font-size: 15px;
+    color: var(--mute);
+  }
+
+  .b-langs {
+    margin: 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--ink);
+    font-size: 17px;
+  }
+
+  .b-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .b-footer p {
+    margin: 0;
+  }
+
+  .b-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .b-cv li {
+      grid-template-columns: 76px minmax(0, 1fr);
+    }
+    .b-org,
+    .b-note {
+      grid-column: 2;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .b-bio {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .b-portrait {
+      max-width: 60%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .b-header {
+      grid-template-columns: 1fr auto;
+    }
+    .b-place {
+      display: none;
+    }
+    .b-links {
+      grid-column: 1 / -1;
+    }
+    .b-cv li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .b-org,
+    .b-note {
+      grid-column: 1;
+    }
+  }
+</style>

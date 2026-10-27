@@ -1,0 +1,412 @@
+---
+// Opening of a case page in version J: no frame and no film beside the title. The project's film becomes a
+// stage across the whole width, with the title and the summary as real text in the same box; the drawing
+// leaves room for them and, per project, builds on them (Saunter: the title stands on the walking pad;
+// Flowculate: the title becomes the app's logo). The stage pins while its acts run on the scroll
+// (stage.tsx). Text sizes are in container units, so text and drawing keep their registration at any width.
+interface Props {
+  /** Key of a scene in stage.tsx. */
+  scene: 'saunter' | 'flowculate' | 'constat' | 'minutes' | 'notenprogramm' | 'sayfit' | 'tealucent' | 'conactive' | 'stayin' | 'iot';
+  title: string;
+  years: string;
+  summary: string;
+  acts: string[];
+}
+const { scene, title, years, summary, acts } = Astro.props;
+---
+
+<section class="st" data-stage={scene} aria-labelledby="case-title">
+  <div class="st-pin">
+    <div class="st-box">
+      <div class="st-canvas" data-stage-canvas></div>
+      <p class="st-kicker">Case · {years}</p>
+      <h1 class="st-title" id="case-title">{title}</h1>
+      <p class="st-summary">{summary}</p>
+      <div class="st-steps">
+        <p class="st-steps-head">
+          <span data-stage-label>{acts[0]}</span>
+          <span class="st-hint mute" aria-hidden="true">Scroll ↓</span>
+        </p>
+        <div class="st-steps-bar">
+          {
+            acts.map((act, i) => (
+              <button type="button" class="st-step" data-stage-step data-label={act} aria-label={`Step ${i + 1}: ${act}`}>
+                <span class="st-fill" />
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountStage } from './stage';
+
+  document.querySelectorAll<HTMLElement>('[data-stage]').forEach(mountStage);
+</script>
+
+<style>
+  /* The scroll length the acts run over; the box stays pinned meanwhile. */
+  .st {
+    position: relative;
+    height: 320svh;
+    margin: 0 calc(-1 * var(--m));
+  }
+
+  .st-pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: var(--m);
+    overflow: hidden;
+  }
+
+  /* 1600 × 900 units: 1 unit = 0.0625cqw. */
+  .st-box {
+    position: relative;
+    width: min(100%, calc((100svh - 2 * var(--m)) * 16 / 9));
+    aspect-ratio: 16 / 9;
+    container-type: inline-size;
+  }
+
+  .st-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .st-canvas :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .st-canvas :global(svg text) {
+    white-space: pre;
+  }
+
+  .st-kicker,
+  .st-title,
+  .st-summary,
+  .st-steps {
+    position: absolute;
+    left: 0;
+    margin: 0;
+  }
+
+  .st-kicker {
+    top: 1.5cqw;
+    font-family: var(--f-mono);
+    font-size: max(10px, 1.25cqw);
+    line-height: 1;
+  }
+
+  .st-title {
+    font-weight: 600;
+    line-height: 0.8;
+    letter-spacing: -0.055em;
+    white-space: nowrap;
+  }
+
+  .st-summary {
+    font-size: 2.75cqw;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .st-steps {
+    bottom: 0;
+    width: 40cqw;
+    font-size: max(13px, 1.05cqw);
+  }
+
+  .st-steps-head {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 0.5cqw;
+  }
+
+  .st-hint {
+    transition: opacity 0.4s;
+  }
+
+  .st[data-scrolled] .st-hint {
+    opacity: 0;
+  }
+
+  /* A small wide stage, a phone held sideways: the act's name would run into the drawing; the bar stays. */
+  @container (max-width: 760px) {
+    .st-steps-head {
+      display: none;
+    }
+  }
+
+  .st-steps-bar {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 6px;
+  }
+
+  /* A tall hit area around a thin line, so the step is easy to click. */
+  .st-step {
+    position: relative;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .st-step::before,
+  .st-fill {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 8px;
+    height: 2px;
+    background: var(--hair);
+  }
+
+  .st-fill {
+    background: var(--ink);
+    transform: scaleX(var(--fill, 0));
+    transform-origin: left;
+  }
+
+  .st-step[aria-current] .st-fill {
+    background: var(--signal);
+  }
+
+  /* Saunter: the summary top left, the title standing on the walking pad. */
+  [data-stage='saunter'] .st-summary {
+    top: 7cqw;
+    width: 38.75cqw;
+  }
+
+  [data-stage='saunter'] .st-title {
+    bottom: calc(123 * 0.0625cqw);
+    left: -0.5cqw;
+    font-size: 15cqw;
+  }
+
+  /* Flowculate: the title top left, where the app's logo will be; the summary under its rule. */
+  [data-stage='flowculate'] .st-kicker {
+    display: none;
+  }
+
+  [data-stage='flowculate'] .st-title {
+    top: 1.2cqw;
+    left: -0.4cqw;
+    font-size: 11cqw;
+  }
+
+  [data-stage='flowculate'] .st-summary {
+    top: 15cqw;
+    width: 46cqw;
+    font-size: 2.5cqw;
+  }
+
+  /* Levelwork: the title stands on the rule that becomes the 09:00 line of the week; the summary under it. */
+  [data-stage='constat'] .st-title {
+    top: 4.2cqw;
+    left: -0.4cqw;
+    font-size: 11cqw;
+  }
+
+  [data-stage='constat'] .st-summary {
+    top: 15cqw;
+    width: 46cqw;
+    font-size: 2.5cqw;
+  }
+
+  /* Colla parte (scene key notenprogramm): the title heads the choir director's PDF, which hangs under it; the summary on the right,
+     above the transcription. */
+  [data-stage='notenprogramm'] .st-title {
+    top: 3.6cqw;
+    left: -0.4cqw;
+    font-size: 10.5cqw;
+  }
+
+  [data-stage='notenprogramm'] .st-summary {
+    top: 13cqw;
+    left: 53.75cqw;
+    width: 46.25cqw;
+    font-size: 2.4cqw;
+  }
+
+  /* Ambacta (meeting minutes): the title top left, beside REC and the running time; the summary under it. */
+  [data-stage='minutes'] .st-title {
+    top: 3.4cqw;
+    left: -0.4cqw;
+    font-size: 11cqw;
+  }
+
+  [data-stage='minutes'] .st-summary {
+    top: 15cqw;
+    width: 44cqw;
+    font-size: 2.5cqw;
+  }
+
+  /* SayFit: the title top left, the voice runs out of it across the top; the summary under it, the result below. */
+  [data-stage='sayfit'] .st-title {
+    top: 3.4cqw;
+    left: -0.4cqw;
+    font-size: 11cqw;
+  }
+
+  [data-stage='sayfit'] .st-summary {
+    top: 15cqw;
+    width: 38cqw;
+    font-size: 2.5cqw;
+  }
+
+  /* Tealucent: the title top left, its name spelled out under it (teal, translucent, overlapping at the "l");
+     the summary under the name, the month on the right. The scene measured the letters at this size. */
+  [data-stage='tealucent'] .st-title {
+    top: 3.4cqw;
+    left: -0.4cqw;
+    font-size: 11cqw;
+  }
+
+  [data-stage='tealucent'] .st-summary {
+    top: 18.125cqw;
+    width: 40cqw;
+    font-size: 2.5cqw;
+  }
+
+  /* Conactive: the summary top left, the question it asks; the title stands on the front edge of the desk the
+     objects arrive on. */
+  [data-stage='conactive'] .st-summary {
+    top: 5.5cqw;
+    width: 44cqw;
+    font-size: 2.5cqw;
+  }
+
+  [data-stage='conactive'] .st-title {
+    bottom: calc(104 * 0.0625cqw);
+    left: -0.5cqw;
+    font-size: 10cqw;
+  }
+
+  /* Stayin’ Alive: the title in one line across the top left, smaller than the others because it is two words
+     (it ends near x 740 of 1600). The summary under it, in four lines that stop short of the stations (x 790),
+     whose top edge lines up with its first line; the column below the summary holds the crowd, then the awards. */
+  [data-stage='stayin'] .st-title {
+    top: 3.4cqw;
+    left: -0.4cqw;
+    font-size: 9cqw;
+  }
+
+  [data-stage='stayin'] .st-summary {
+    top: 13.4cqw;
+    width: 44cqw;
+    font-size: 2.4cqw;
+  }
+
+  /* Sustainable IoT: the title in one line top left; in the first act the network's backbone runs on from its
+     end, as if the title named the wiring. The summary under it on the left, the model on the right. The title
+     may wrap on narrow screens, or "Sustainable IoT" runs off a phone. */
+  [data-stage='iot'] .st-title {
+    top: 3.4cqw;
+    left: -0.4cqw;
+    font-size: 9cqw;
+    white-space: normal;
+  }
+
+  [data-stage='iot'] .st-summary {
+    top: 13.4cqw;
+    width: 40cqw;
+    font-size: 2.5cqw;
+  }
+
+  /* Portrait screens: title and summary in the flow, the 4:5 poster film below them. A phone held sideways
+     keeps the wide stage, smaller. */
+  @media not ((min-width: 560px) and (min-aspect-ratio: 1/1)) {
+    .st {
+      height: 260svh;
+    }
+    .st-pin {
+      display: block;
+      padding: 20px var(--m) 16px;
+    }
+    .st-box {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: auto;
+      display: flex;
+      flex-direction: column;
+      container-type: normal;
+    }
+    .st-canvas {
+      position: relative;
+      inset: auto;
+      order: 3;
+      flex: 1;
+      min-height: 0;
+      margin: 16px 0 12px;
+    }
+    .st-canvas :global(> div) {
+      position: absolute !important;
+    }
+    .st-kicker,
+    .st-title,
+    .st-summary,
+    .st-steps {
+      position: static;
+      width: auto !important;
+    }
+    .st-kicker {
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .st-title {
+      order: 1;
+      font-size: clamp(56px, 17vw, 120px) !important;
+      white-space: normal;
+    }
+    .st-kicker {
+      order: 0;
+    }
+    .st-summary {
+      order: 2;
+      margin-top: 14px;
+      font-size: clamp(18px, 4.6vw, 26px) !important;
+    }
+    .st-steps {
+      order: 4;
+      font-size: 14px;
+    }
+    [data-stage='flowculate'] .st-kicker {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .st {
+      height: auto;
+    }
+    .st-pin {
+      position: static;
+      height: auto;
+      min-height: 100svh;
+    }
+    .st-hint {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) and (not ((min-width: 560px) and (min-aspect-ratio: 1/1))) {
+    .st-canvas {
+      flex: none;
+      aspect-ratio: 4 / 5;
+    }
+  }
+</style>

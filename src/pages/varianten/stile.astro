@@ -1,0 +1,180 @@
+---
+// Temporary comparison of the animation styles for Robert (German, internal). Remove before launch.
+// Same scripts in every column; the poster column shows version I's dark films, which exist for all nine.
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+import { slug } from '../../data/projects';
+import { selected } from '../../data/selected';
+
+const styles = [
+  { key: 'f', name: 'Poster', used: 'in F und I', note: 'Diagramme, die sich zeichnen, riesige Aktwörter, dunkel.' },
+  { key: 'kinetic', name: 'Kinetic', used: 'in H', note: 'Nur Typografie: Wörter steigen aus Masken, Zahlen zählen, Lauftext.' },
+  { key: 'bauhaus', name: 'Bauhaus', used: 'in G', note: 'Kreise, Quadrate, Dreiecke in Rot, Blau, Gelb auf Creme, mechanisch bewegt.' },
+  { key: 'dots', name: 'Dots', used: 'noch ohne Version', note: 'LED-Punktmatrix wie eine Anzeigetafel, Punkt für Punkt geschaltet.' },
+];
+
+const source = (style: string, title: string) =>
+  style === 'f' ? { film: `/motion/i/${slug(title)}-dark` } : { film: `/motion/${style}/${slug(title)}` };
+---
+
+<Base title="Animationsstile · Robert Straubmüller" description="Interner Vergleich der Animationsstile.">
+  <section class="st">
+    <h1>Animationsstile</h1>
+    <p class="lede">
+      Dieselben Projekte in vier Stilen. Die Filme laufen in Schleife, sobald sie im Bild sind. Den Poster-Stil gibt es
+      seit Version I für alle neun Projekte.
+    </p>
+
+    <div class="st-head" aria-hidden="true">
+      <span></span>
+      {
+        styles.map((style) => (
+          <span>
+            <strong>{style.name}</strong> · {style.used}
+            <br />
+            <span class="st-note">{style.note}</span>
+          </span>
+        ))
+      }
+    </div>
+
+    {
+      selected.map((row) => (
+        <section class="st-row" aria-label={row.title}>
+          <h2>{row.title}</h2>
+          {styles.map((style) => {
+            const s = source(style.key, row.title);
+            return (
+              <figure>
+                <video
+                  muted
+                  playsinline
+                  loop
+                  disablepictureinpicture
+                  preload="none"
+                  width="400"
+                  height="500"
+                  data-src={`${s.film}.mp4`}
+                  data-poster={`${s.film}.jpg`}
+                />
+                <figcaption>{style.name}</figcaption>
+              </figure>
+            );
+          })}
+        </section>
+      ))
+    }
+  </section>
+  <VariantSwitch />
+</Base>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const videos = [...document.querySelectorAll<HTMLVideoElement>('.st video')];
+  const watch = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((entry) => {
+        const video = entry.target as HTMLVideoElement;
+        if (!entry.isIntersecting) return video.pause();
+        if (!video.src) {
+          video.poster = video.dataset.poster ?? '';
+          video.src = video.dataset.src ?? '';
+        }
+        if (!reduce.matches) video.play().catch(() => {});
+      }),
+    { rootMargin: '200px 0px' },
+  );
+  videos.forEach((video) => watch.observe(video));
+</script>
+
+<style>
+  .st {
+    padding: clamp(32px, 5vw, 72px) var(--m) 96px;
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-family: var(--f-sans);
+    font-size: clamp(40px, 6vw, 96px);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+  }
+
+  .lede {
+    max-width: 62ch;
+    margin: 0 0 40px;
+    font-size: 18px;
+  }
+
+  .st-head,
+  .st-row {
+    display: grid;
+    grid-template-columns: 160px repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .st-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 12px 0;
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink);
+    font-size: 14px;
+  }
+
+  .st-note {
+    color: var(--mute);
+  }
+
+  .st-row {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .st-row h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  figure video,
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: var(--soft);
+  }
+
+  figcaption {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .st-head {
+      display: none;
+    }
+    .st-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .st-row h2 {
+      grid-column: 1 / -1;
+    }
+    figcaption {
+      display: block;
+      padding-top: 6px;
+      font-family: var(--f-mono);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+  }
+</style>

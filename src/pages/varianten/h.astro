@@ -1,0 +1,483 @@
+---
+// Draft variant H “Stage”: F's direction in the dark, after ESR Bespoke. A wide kinetic-type film opens
+// the page; then every selected project gets a stage of its own, one screen high, with its film.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+import FHeader from '../../components/f/FHeader.astro';
+import FFooter from '../../components/f/FFooter.astro';
+import { awards } from '../../data/cv';
+import { recent, brand, slug } from '../../data/projects';
+import { selected } from '../../data/selected';
+import portrait from '../../assets/variants/portrait.jpg';
+
+const all = [...recent, ...brand];
+const first = Math.floor(Math.min(...all.map((item) => item.start)));
+const count = (i: number) => `${String(i + 1).padStart(2, '0')} / ${String(selected.length).padStart(2, '0')}`;
+---
+
+<Base
+  title="Robert Straubmüller · Version H"
+  description="Robert Straubmüller researches, designs and builds software for people who are not experts. Co-founder of Levelwork, Konstanz."
+  chrome={false}
+>
+  <FHeader slot="header" base="/varianten/h/" />
+
+  <section class="h-hero" aria-labelledby="h-hero-h">
+    <h1 id="h-hero-h" class="visually-hidden">I research, design and build software for people who are not experts.</h1>
+    <video
+      class="h-intro"
+      muted
+      playsinline
+      disablepictureinpicture
+      preload="auto"
+      width="1600"
+      height="900"
+      poster="/motion/kinetic/intro.jpg"
+      aria-hidden="true"
+      data-intro
+    >
+      <source src="/motion/kinetic/intro.mp4" type="video/mp4" />
+    </video>
+    <div class="h-hero-foot">
+      <figure class="h-me">
+        <Image
+          src={portrait}
+          alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+          widths={[240, 480]}
+          sizes="160px"
+          loading="eager"
+        />
+        <figcaption>Robert Straubmüller<br />Co-founder of Levelwork<br />Konstanz</figcaption>
+      </figure>
+      <a class="h-down" href="#h-now">Now ↓</a>
+    </div>
+  </section>
+
+  <section id="h-now" class="h-now" aria-labelledby="h-now-h">
+    <h2 id="h-now-h" class="h-label">Now · Oct 2026</h2>
+    <div>
+      <p class="h-statement">
+        Since 2026 I have been building <a href="https://levelwork.ai">Levelwork</a> full time with Michael Gajda. Constat
+        shows how work is really distributed in an organisation, one structured conversation per role.
+      </p>
+      <ul class="h-also" aria-label="Also now">
+        <li>
+          <span class="h-also-title">AI meeting minutes</span>
+          <span>In pilot at a district administration, freelance for gyv.</span>
+        </li>
+        <li>
+          <span class="h-also-title">Notenprogramm</span>
+          <span>Turns sheet-music PDFs into editable MusicXML.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="h-work" aria-labelledby="h-work-h">
+    <h2 id="h-work-h" class="h-label h-work-h">Selected work</h2>
+    {
+      selected.map((row, i) => (
+        <article class="h-stage" aria-labelledby={`h-${slug(row.title)}`}>
+          <div class="h-text">
+            <p class="h-label">{count(i)}</p>
+            <h3 id={`h-${slug(row.title)}`} class="h-title">
+              {row.title}
+            </h3>
+            <p class="h-meta">
+              <span>{row.years}</span>
+              {row.client === 'Own' ? <span class="is-own">Own project</span> : <span>For {row.client}</span>}
+              {row.status && <span class:list={{ 'is-live': row.live }}>{row.status}</span>}
+              {row.href && <a href={row.href}>{row.link} ↗</a>}
+            </p>
+            <p class="h-line">{row.line}</p>
+          </div>
+          <div class="h-film">
+            <video
+              muted
+              playsinline
+              disablepictureinpicture
+              preload="none"
+              width="400"
+              height="500"
+              aria-hidden="true"
+              data-src={`/motion/kinetic/${slug(row.title)}.mp4`}
+              data-poster={`/motion/kinetic/${slug(row.title)}.jpg`}
+            />
+          </div>
+        </article>
+      ))
+    }
+  </section>
+
+  <section class="h-awards" aria-labelledby="h-awards-h">
+    <h2 id="h-awards-h" class="h-label">Awards</h2>
+    <ol>
+      {
+        awards.map((award) => (
+          <li>
+            <span class="h-award">{award.title}</span>
+            <span class="h-for">{award.for}</span>
+            <span class="h-year">{award.year}</span>
+            <span class="h-src">{award.href && <a href={award.href}>Source ↗</a>}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <a class="h-all" href="/varianten/h/work/">
+    <span>All projects</span>
+    <span class="h-all-n">{all.length} since {first} →</span>
+  </a>
+
+  <FFooter slot="footer" />
+
+  <VariantSwitch />
+</Base>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // The opening film plays once on arrival; without motion its poster, the last frame, stays.
+  const intro = document.querySelector<HTMLVideoElement>('[data-intro]');
+  if (intro && !reduce.matches) intro.play().catch(() => {});
+
+  // Stage films get their source when near, play from the start when half in view, pause when they leave.
+  const videos = [...document.querySelectorAll<HTMLVideoElement>('.h-film video')];
+  const prepare = (video: HTMLVideoElement) => {
+    if (video.src) return;
+    video.poster = video.dataset.poster ?? '';
+    video.src = video.dataset.src ?? '';
+    video.preload = 'auto';
+  };
+  const near = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        prepare(entry.target as HTMLVideoElement);
+        near.unobserve(entry.target);
+      }),
+    { rootMargin: '600px 0px' },
+  );
+  const seen = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((entry) => {
+        const video = entry.target as HTMLVideoElement;
+        if (!entry.isIntersecting) return video.pause();
+        if (reduce.matches) return;
+        prepare(video);
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      }),
+    { threshold: 0.5 },
+  );
+  videos.forEach((video) => {
+    near.observe(video);
+    seen.observe(video);
+  });
+</script>
+
+<style is:global>
+  /* H is dark in both colour schemes. */
+  :root {
+    --paper: #0e0f0e;
+    --ink: #e7e8e3;
+    --hair: #2b2e2b;
+    --mute: #9a9e97;
+    --soft: #1b1e1c;
+    --grain-opacity: 0.09;
+    color-scheme: dark;
+  }
+</style>
+
+<style>
+  :global(body) {
+    font-family: var(--f-sans);
+    --signal: #ff6a4d;
+  }
+
+  .h-label {
+    margin: 0;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .h-hero {
+    padding: 0 var(--m);
+  }
+
+  .h-intro {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-height: calc(100svh - 260px);
+    object-fit: cover;
+    background: var(--soft);
+  }
+
+  .h-hero-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    padding: 20px 0 0;
+  }
+
+  .h-me {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin: 0;
+  }
+
+  .h-me :global(img) {
+    width: clamp(88px, 9vw, 150px);
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 22%;
+  }
+
+  .h-me figcaption,
+  .h-down {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .h-down {
+    text-decoration: none;
+  }
+
+  .h-now,
+  .h-awards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    gap: 16px var(--m);
+    margin-top: clamp(80px, 10vw, 160px);
+    padding: 18px var(--m) 0;
+    border-top: 1px solid var(--hair);
+  }
+
+  .h-now > div {
+    padding-top: clamp(40px, 5vw, 96px);
+  }
+
+  .h-statement {
+    max-width: 30ch;
+    margin: 0;
+    font-size: clamp(26px, 3.3vw, 54px);
+    font-weight: 500;
+    line-height: 1.07;
+    letter-spacing: -0.03em;
+  }
+
+  .h-statement a {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.12em;
+  }
+
+  .h-also {
+    margin: clamp(32px, 4vw, 64px) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--hair);
+  }
+
+  .h-also li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 4px var(--m);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: 17px;
+  }
+
+  .h-also-title {
+    font-weight: 600;
+  }
+
+  /* One stage per project, a screen high: words on the left, the film on the right. */
+  .h-work {
+    margin-top: clamp(80px, 10vw, 160px);
+  }
+
+  .h-work-h {
+    padding: 0 var(--m) 18px;
+  }
+
+  .h-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(34vw, 62svh);
+    gap: clamp(24px, 5vw, 96px);
+    align-items: center;
+    min-height: 100svh;
+    padding: clamp(32px, 5vw, 80px) var(--m);
+    border-top: 1px solid var(--hair);
+  }
+
+  .h-title {
+    margin: 18px 0 0;
+    font-size: clamp(48px, 7.4vw, 136px);
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+  }
+
+  .h-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    margin: 22px 0 0;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .h-meta a {
+    text-decoration: none;
+  }
+
+  .h-meta a:hover {
+    text-decoration: underline;
+  }
+
+  .is-own {
+    padding: 0 6px;
+    border: 1px solid currentColor;
+  }
+
+  .is-live::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 7px;
+    background: var(--signal);
+  }
+
+  .h-line {
+    max-width: 40ch;
+    margin: 12px 0 0;
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--mute);
+  }
+
+  .h-film {
+    aspect-ratio: 4 / 5;
+    background: var(--soft);
+  }
+
+  .h-film video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .h-awards ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .h-awards li {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 56px 80px;
+    gap: 4px 16px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .h-award {
+    font-size: clamp(18px, 1.6vw, 24px);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+
+  .h-for,
+  .h-year {
+    font-size: 15px;
+    color: var(--mute);
+  }
+
+  .h-src {
+    text-align: right;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .h-src a {
+    text-decoration: none;
+  }
+
+  .h-all {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin: clamp(64px, 8vw, 140px) var(--m) 0;
+    padding: 20px 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    font-size: clamp(32px, 5vw, 84px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    text-decoration: none;
+    transition:
+      background-color 0.25s,
+      color 0.25s,
+      padding 0.25s;
+  }
+
+  .h-all-n {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  @media (hover: hover) {
+    .h-all:hover {
+      padding-inline: 16px;
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .h-now,
+    .h-awards {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .h-stage {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: auto;
+    }
+    .h-film {
+      order: -1;
+    }
+    .h-also li,
+    .h-awards li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .h-src {
+      text-align: left;
+    }
+  }
+</style>

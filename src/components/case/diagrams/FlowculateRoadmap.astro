@@ -1,0 +1,195 @@
+---
+// Flowculate's project roadmap, redrawn from Robert's roadmap board (old site, image 25) in the site's style:
+// one row per stream of work on a time axis from mid-2022 to autumn 2025. Dates are read off the board.
+const start = { y: 2022, m: 7 };
+const end = { y: 2025, m: 9 };
+const index = (y: number, m: number) => (y - start.y) * 12 + (m - start.m);
+const span = index(end.y, end.m);
+const at = (y: number, m: number) => `${(index(y, m) / span) * 100}%`;
+
+const rows = [
+  { title: 'Proof of concept and MVP', note: 'Earlier projects and tests', from: [2022, 7], to: [2022, 10], kind: 'before' },
+  { title: 'User needs research', note: 'Key UX challenges, requirements map', from: [2022, 10], to: [2023, 1] },
+  { title: 'Usability and performance evaluation', note: 'Competitor benchmark, product vision', from: [2022, 10], to: [2023, 8] },
+  { title: 'Development, version 1.0', from: [2023, 1], to: [2023, 8], kind: 'build' },
+  { title: 'User-testing workshop', from: [2023, 6], to: [2023, 6], kind: 'mark' },
+  { title: 'Development, version 1.5', from: [2023, 8], to: [2024, 8], kind: 'build' },
+  { title: 'Usability and performance evaluation', from: [2023, 8], to: [2024, 2] },
+  { title: 'UX design, version 2.0', note: 'Including new features', from: [2023, 8], to: [2024, 11] },
+  { title: 'UI design, version 2.0', note: 'Design system and style guide', from: [2024, 3], to: [2025, 1] },
+  { title: 'Development, version 2.0', note: 'Live at flowculate.eu', from: [2025, 1], to: [2025, 9], kind: 'build' },
+] as const;
+
+const ticks = [
+  { label: 'Oct 2022', y: 2022, m: 10 },
+  { label: 'Jan 2023', y: 2023, m: 1, minor: true },
+  { label: 'Aug 2023', y: 2023, m: 8 },
+  { label: 'Jan 2024', y: 2024, m: 1, minor: true },
+  { label: 'Jan 2025', y: 2025, m: 1 },
+];
+---
+
+<div class="rm" role="img" aria-label="Flowculate roadmap from 2022 to 2025: research and evaluation first, then development of versions 1.0, 1.5 and 2.0, with a user-testing workshop in June 2023 and version 2.0 live in 2025.">
+  <div class="rm-axis" aria-hidden="true">
+    {ticks.map((tick) => <span class:list={{ 'rm-minor': 'minor' in tick }} style={`left: ${at(tick.y, tick.m)}`}>{tick.label}</span>)}
+  </div>
+  <ol class="rm-rows" aria-hidden="true">
+    {
+      rows.map((row) => {
+        const left = at(row.from[0], row.from[1]);
+        const width = `${((index(row.to[0], row.to[1]) - index(row.from[0], row.from[1])) / span) * 100}%`;
+        return (
+          <li class:list={['rm-row', `is-${'kind' in row ? row.kind : 'research'}`]}>
+            <span class="rm-bar" style={`left: ${left}; width: ${width}`} />
+            <span
+              class="rm-label"
+              style={
+                index(row.from[0], row.from[1]) > span * 0.55
+                  ? `right: ${100 - (index(row.to[0], row.to[1]) / span) * 100}%; text-align: right; justify-content: flex-end`
+                  : `left: ${left}`
+              }
+            >
+              <strong>{row.title}</strong>
+              {'note' in row && <span>{row.note}</span>}
+            </span>
+          </li>
+        );
+      })
+    }
+  </ol>
+  <div class="rm-key" aria-hidden="true">
+    <span class="is-research">Research and design</span>
+    <span class="is-build">Development by the team</span>
+    <span class="is-mark">Workshop</span>
+  </div>
+</div>
+
+<style>
+  .rm {
+    position: relative;
+    padding-top: 28px;
+    font-size: 13px;
+  }
+
+  .rm-axis {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .rm-axis span {
+    position: absolute;
+    top: 0;
+    bottom: 34px;
+    padding-left: 6px;
+    border-left: 1px solid var(--hair);
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+    white-space: nowrap;
+  }
+
+  .rm-rows {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rm-row {
+    position: relative;
+    height: 52px;
+  }
+
+  .rm-bar {
+    position: absolute;
+    top: 6px;
+    height: 10px;
+    min-width: 10px;
+    background: var(--ink);
+  }
+
+  .is-research .rm-bar {
+    background: none;
+    border: 1px solid var(--ink);
+  }
+
+  .is-before .rm-bar {
+    background: repeating-linear-gradient(45deg, var(--ink) 0 1px, transparent 1px 5px);
+    border: 1px solid var(--ink);
+  }
+
+  .is-mark .rm-bar {
+    width: 10px !important;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--signal);
+    transform: translateX(-5px);
+  }
+
+  .rm-label {
+    position: absolute;
+    top: 21px;
+    display: flex;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .rm-label span {
+    color: var(--mute);
+  }
+
+  .rm-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin: 12px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--hair);
+    color: var(--mute);
+  }
+
+  .rm-key span::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 8px;
+    margin-right: 8px;
+    vertical-align: 1px;
+    border: 1px solid var(--ink);
+  }
+
+  .rm-key .is-build::before {
+    background: var(--ink);
+  }
+
+  .rm-key .is-mark::before {
+    width: 8px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--signal);
+  }
+
+  /* Narrow screens: each stream as a line with its dates, the bars scaled with the axis. */
+  @media (max-width: 760px) {
+    .rm-label {
+      left: 0 !important;
+      right: auto !important;
+      text-align: left !important;
+      white-space: normal;
+      flex-direction: column;
+      gap: 0;
+    }
+    .rm-row {
+      height: 64px;
+    }
+    .rm-axis span {
+      font-size: 10px;
+    }
+    /* Too close together on a phone: keep the line, drop the label. */
+    .rm-axis .rm-minor {
+      color: transparent;
+    }
+  }
+</style>

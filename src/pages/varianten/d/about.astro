@@ -1,0 +1,347 @@
+---
+// Draft variant D, About: the CV as an index. Rows with work traces flip the frame on the right, like the homepage.
+import { Image } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import VariantSwitch from '../../../components/VariantSwitch.astro';
+import FlipPanel from '../../../components/FlipPanel.astro';
+import { aboutText, strengths, experience, education, awards, languages } from '../../../data/cv';
+import portrait from '../../../assets/variants/portrait.jpg';
+
+const sections = [
+  { id: 'experience', title: 'Experience', items: experience },
+  { id: 'education', title: 'Education', items: education },
+];
+
+const titles: Record<string, string> = {
+  levelwork: 'Levelwork',
+  flowculate: 'Flowculate',
+  tealucent: 'Tealucent',
+  fafrauen: 'FRISCH AUF Frauen',
+  sayfit: 'SayFit',
+  conactive: 'Conactive',
+  stayin: 'Stayin’ Alive',
+};
+const panelItems = Object.entries(titles).map(([key, title]) => ({ key, title }));
+---
+
+<Base
+  title="About · Robert Straubmüller · Version D"
+  description="Robert Straubmüller: ten years in design, from the family restaurant to UX research and AI engineering. Now co-founder of Levelwork."
+  chrome={false}
+>
+  <header class="d-header" slot="header">
+    <a class="d-name" href="/varianten/d/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="d-place">Konstanz</span>
+    <span class="d-links">
+      <a href="/varianten/d/about/" aria-current="page">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <div class="d-layout">
+    <div class="d-flow">
+      <figure class="d-me">
+        <Image
+          src={portrait}
+          alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+          widths={[240, 480]}
+          sizes="240px"
+          loading="lazy"
+        />
+      </figure>
+
+      <h1 class="d-statement">Ten years in design. Now co-founder of Levelwork.</h1>
+
+      <section class="d-bio" aria-label="Background">
+        <p class="d-bio-text">{aboutText}</p>
+        <ul class="d-strengths" aria-label="What Robert brings">
+          {strengths.map((s) => <li>{s}</li>)}
+        </ul>
+      </section>
+
+      {
+        sections.map((section) => (
+          <section class="d-cv" aria-labelledby={`d-${section.id}`}>
+            <h2 id={`d-${section.id}`}>{section.title}</h2>
+            <ol>
+              {section.items.map((item) => (
+                <li data-flip={item.evidence}>
+                  <span class="d-years">{item.years}</span>
+                  <span class="d-role">
+                    {item.href ? <a href={item.href}>{item.title}</a> : item.title}
+                    <span class="d-org">{item.org}</span>
+                  </span>
+                  <span class="d-note">{item.note}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+
+      <section class="d-cv" aria-labelledby="d-awards">
+        <h2 id="d-awards">Awards</h2>
+        <ol>
+          {
+            awards.map((award) => (
+              <li data-flip={award.evidence}>
+                <span class="d-years">{award.year}</span>
+                <span class="d-role">
+                  {award.href ? <a href={award.href}>{award.title}&nbsp;↗</a> : award.title}
+                  <span class="d-org">{award.for}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section class="d-cv" aria-labelledby="d-languages">
+        <h2 id="d-languages">Languages</h2>
+        <p class="d-langs">{languages.join(' · ')}</p>
+      </section>
+    </div>
+
+    <FlipPanel items={panelItems} />
+  </div>
+
+  <footer class="d-footer" slot="footer">
+    <p>Full CV as a PDF on request: <a href="mailto:robert@straubmueller.com">robert@straubmueller.com</a></p>
+    <p class="d-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  :global(body) {
+    font-family: var(--f-sans);
+  }
+
+  .d-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .d-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .d-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .d-links a,
+  .d-legal a,
+  .d-role a {
+    text-decoration: none;
+  }
+
+  .d-links a:hover,
+  .d-links a[aria-current='page'],
+  .d-legal a:hover,
+  .d-role a:hover {
+    text-decoration: underline;
+  }
+
+  .d-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 29%, 480px);
+    gap: 0 clamp(24px, 3vw, 48px);
+    padding: clamp(40px, 6vw, 96px) var(--m) 0;
+  }
+
+  .d-statement {
+    margin: 0 0 clamp(40px, 5vw, 80px);
+    max-width: 16ch;
+    font-size: clamp(40px, 5.6vw, 100px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .d-me {
+    display: none;
+    margin: 0;
+  }
+
+  .d-bio {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 0 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .d-bio-text {
+    grid-column: 2;
+    max-width: 52ch;
+    margin: 0;
+    font-size: clamp(19px, 1.5vw, 23px);
+    line-height: 1.4;
+  }
+
+  .d-strengths {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .d-strengths li {
+    padding: 4px 10px;
+    border: 1px solid var(--ink);
+    font-size: 14px;
+  }
+
+  .d-cv {
+    margin-top: clamp(48px, 6vw, 88px);
+  }
+
+  .d-cv h2 {
+    margin: 0;
+    padding-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .d-cv ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .d-cv li {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 4px 16px;
+    align-items: baseline;
+    padding: 14px 0 13px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .d-years {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .d-role {
+    font-size: clamp(18px, 1.4vw, 21px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  .d-org {
+    display: block;
+    margin-top: 2px;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--mute);
+  }
+
+  .d-note {
+    font-size: 15px;
+    color: var(--mute);
+  }
+
+  @media (hover: hover) {
+    .d-cv li[data-flip]:hover .d-role {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+  }
+
+  .d-langs {
+    margin: 0;
+    padding: 14px 0;
+    border-top: 1px solid var(--ink);
+    font-size: 17px;
+  }
+
+  .d-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .d-footer p {
+    margin: 0;
+  }
+
+  .d-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 1100px) {
+    .d-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .d-layout > :global(.flip) {
+      display: none;
+    }
+    .d-me {
+      display: block;
+      width: min(40%, 240px);
+      margin-bottom: 28px;
+    }
+    .d-me :global(img) {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: 50% 22%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .d-header {
+      grid-template-columns: 1fr auto;
+    }
+    .d-place {
+      display: none;
+    }
+    .d-links {
+      grid-column: 1 / -1;
+    }
+    .d-bio {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .d-bio-text,
+    .d-strengths {
+      grid-column: 1;
+    }
+    .d-cv li {
+      grid-template-columns: 64px minmax(0, 1fr);
+    }
+    .d-note {
+      grid-column: 2;
+    }
+  }
+</style>

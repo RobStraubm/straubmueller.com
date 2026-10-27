@@ -1,0 +1,184 @@
+---
+// The CV on one printable page, from the same data as the About page. A PDF of it is rendered locally into
+// public/robert-straubmueller-cv.pdf (two A4 pages) and linked from About; the page itself works as HTML too.
+import Base from '../layouts/Base.astro';
+import { aboutText, experience, education, awards, languages } from '../data/cv';
+
+const sections = [
+  { title: 'Experience', items: experience },
+  { title: 'Education', items: education },
+];
+const updated = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+---
+
+<Base title="CV · Robert Straubmüller" description="CV of Robert Straubmüller, co-founder of Levelwork, Konstanz." chrome={false}>
+  <article class="cv">
+    <header class="cv-head">
+      <h1>Robert Straubmüller</h1>
+      <p>Co-founder, Levelwork · UX research, design and AI engineering · Konstanz, Germany</p>
+      <p class="cv-contact">
+        <a href="mailto:robert@straubmueller.com">robert@straubmueller.com</a>
+        <a href="https://straubmueller.com">straubmueller.com</a>
+        <a href="https://www.linkedin.com/in/robert-straubmueller">linkedin.com/in/robert-straubmueller</a>
+        <a href="https://github.com/RobStraubm">github.com/RobStraubm</a>
+      </p>
+    </header>
+
+    <p class="cv-about">{aboutText}</p>
+
+    {
+      sections.map((section) => (
+        <section class="cv-section">
+          <h2>{section.title}</h2>
+          <ol>
+            {section.items.map((item) => (
+              <li>
+                <span class="cv-years">{item.years}</span>
+                <span class="cv-role">
+                  <strong>{item.title}</strong>, {item.org}
+                  {item.note && <span class="cv-note">{item.note}</span>}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+
+    <section class="cv-section">
+      <h2>Awards</h2>
+      <ol>
+        {
+          awards.map((award) => (
+            <li>
+              <span class="cv-years">{award.year}</span>
+              <span class="cv-role">
+                <strong>{award.title}</strong>, {award.for}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="cv-section">
+      <h2>Languages</h2>
+      <p>{languages.join(' · ')}</p>
+    </section>
+
+    <p class="cv-foot">Case studies and all projects: straubmueller.com · Updated {updated}</p>
+  </article>
+</Base>
+
+<style>
+  :global(body) {
+    font-family: var(--f-sans);
+  }
+
+  .cv {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px var(--m) 64px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .cv a {
+    text-decoration: none;
+  }
+
+  .cv-head h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .cv-head p {
+    margin: 8px 0 0;
+    font-size: 15px;
+  }
+
+  .cv-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 18px;
+    color: var(--mute);
+  }
+
+  .cv-about {
+    margin: 24px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--ink);
+    font-size: 14.5px;
+  }
+
+  .cv-section {
+    margin-top: 22px;
+    break-inside: auto;
+  }
+
+  .cv-section h2 {
+    margin: 0 0 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .cv-section ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cv-section li {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--hair);
+    break-inside: avoid;
+  }
+
+  .cv-section p {
+    margin: 0;
+  }
+
+  .cv-years {
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cv-note {
+    display: block;
+    color: var(--mute);
+  }
+
+  .cv-foot {
+    margin-top: 24px;
+    color: var(--mute);
+    font-size: 12.5px;
+  }
+
+  @media print {
+    :global(body::after) {
+      display: none;
+    }
+    :global(.skip) {
+      display: none;
+    }
+    .cv {
+      padding: 0;
+      max-width: none;
+    }
+  }
+
+  @page {
+    size: A4;
+    margin: 16mm 16mm 18mm;
+  }
+</style>

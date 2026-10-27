@@ -1,0 +1,385 @@
+---
+// The model view of the IoT footprint tool, redrawn in 2026 as a finished screen from Robert's wireframe of 18 Jun
+// 2024 (~/Desktop/Job/IOT/OUTPUT/modeling - model basis.pdf): rooms with their hours of use, the people in the
+// household, the IoT services, and how much the system talks to the cloud. Values as in the wireframe.
+// Sized in container units: the screen keeps its proportions at any width.
+const rooms = [
+  { name: 'Room 1', hours: '16–22' },
+  { name: 'Room 2', hours: '19–23' },
+  { name: 'Room 3', hours: '20–22' },
+  { name: 'Bathroom', hours: '20–22' },
+];
+const people = [
+  { name: 'User 1', profile: 'Active', home: '11 h', devices: ['Phone', 'Laptop'] },
+  { name: 'User 2', profile: 'Active', home: '16 h', devices: ['Phone'] },
+  { name: 'User 3', profile: 'Passive', home: '16 h', devices: [] },
+];
+const levels = ['High', 'Normal', 'Low'];
+---
+
+<div class="iot-wrap"><div class="iot" role="img" aria-label="Finished screen of the model view, redrawn from the June 2024 wireframe: four rooms with their hours of use, three people with their profile, time at home and devices, a network of internet, router, gateway, four thermostats and two sensors, and a switch for how much the system talks to the cloud server, set to normal.">
+  <div class="iot-top" aria-hidden="true">
+    <span class="iot-app">IoT footprint</span>
+    <span class="iot-tabs"><b>Model</b><i>Results</i></span>
+    <span class="iot-case">Average household · 3 people · 4 rooms</span>
+  </div>
+
+  <div class="iot-body" aria-hidden="true">
+    <div class="iot-col">
+      <div class="iot-card">
+        <h4>Environment</h4>
+        <ul class="iot-rows">
+          {
+            rooms.map((room) => (
+              <li>
+                <span>{room.name}</span>
+                <span class="iot-mono">{room.hours}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="iot-link"><span>acts in</span><span>influences</span></div>
+
+      <div class="iot-card">
+        <h4>People</h4>
+        <div class="iot-people">
+          {
+            people.map((person) => (
+              <div class="iot-person">
+                <span class="iot-dot" />
+                <b>{person.name}</b>
+                <span class:list={['iot-tag', { 'is-passive': person.profile === 'Passive' }]}>{person.profile}</span>
+                <span class="iot-mono iot-soft">{person.home} at home</span>
+                <span class="iot-mono iot-soft">{person.devices.length ? person.devices.join(' · ') : 'no device'}</span>
+              </div>
+            ))
+          }
+        </div>
+        <p class="iot-note iot-mono">Working hours 09:00–18:00</p>
+      </div>
+    </div>
+
+    <div class="iot-card iot-net">
+      <h4>IoT services</h4>
+      <svg viewBox="0 0 600 420" class="iot-graph">
+        <g class="iot-edges">
+          <line x1="70" y1="90" x2="190" y2="90" />
+          <line x1="190" y1="90" x2="300" y2="200" />
+          <line x1="300" y1="200" x2="150" y2="340" />
+          <line x1="300" y1="200" x2="250" y2="350" />
+          <line x1="300" y1="200" x2="350" y2="350" />
+          <line x1="300" y1="200" x2="450" y2="340" />
+          <line x1="300" y1="200" x2="500" y2="140" />
+          <line x1="300" y1="200" x2="520" y2="230" />
+        </g>
+        <g class="iot-nodes">
+          <circle cx="70" cy="90" r="22" /><text x="70" y="135">Internet</text><text x="70" y="152" class="iot-svg-soft">FTTH</text>
+          <rect x="166" y="70" width="48" height="40" rx="6" /><text x="190" y="135">Router</text>
+          <circle cx="300" cy="200" r="30" class="iot-hub" /><text x="300" y="252">Gateway</text>
+          <rect x="128" y="320" width="44" height="40" rx="6" /><text x="150" y="385">Thermo 1</text>
+          <rect x="228" y="330" width="44" height="40" rx="6" /><text x="250" y="395">Thermo 2</text>
+          <rect x="328" y="330" width="44" height="40" rx="6" /><text x="350" y="395">Thermo 3</text>
+          <rect x="428" y="320" width="44" height="40" rx="6" /><text x="450" y="385">Thermo 4</text>
+          <rect x="478" y="120" width="44" height="40" rx="6" class="iot-sensor" /><text x="500" y="182">Sensor 1</text>
+          <rect x="498" y="210" width="44" height="40" rx="6" class="iot-sensor" /><text x="520" y="272">Sensor 2</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="iot-card iot-cloud">
+      <h4>Cloud server interaction</h4>
+      <div class="iot-seg">
+        {levels.map((level) => <span class:list={{ 'is-on': level === 'Normal' }}>{level}</span>)}
+      </div>
+      <p class="iot-note">How often the household reaches for its data. Every request travels through the network.</p>
+      <div class="iot-toggle"><span class="iot-switch" />Green energy</div>
+    </div>
+  </div>
+</div></div>
+
+<style>
+  .iot-wrap {
+    container-type: inline-size;
+  }
+
+  .iot {
+    --u: calc(100cqw / 1200);
+    --bg: #eef1ef;
+    --card: #ffffff;
+    --ink: #1c2321;
+    --soft: #6c7773;
+    --line: #d5dcd8;
+    --accent: #1f6f5b;
+    --accent-soft: #d9ebe4;
+    color: var(--ink);
+    background: var(--bg);
+    font-family: var(--f-sans);
+  }
+
+  .iot > * {
+    font-size: calc(15 * var(--u));
+  }
+
+  .iot-top {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: calc(14 * var(--u)) calc(24 * var(--u));
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .iot-app {
+    font-weight: 600;
+  }
+
+  .iot-tabs {
+    display: inline-flex;
+    gap: calc(4 * var(--u));
+    padding: calc(4 * var(--u));
+    background: var(--bg);
+    border-radius: calc(8 * var(--u));
+  }
+
+  .iot-tabs b,
+  .iot-tabs i {
+    padding: calc(6 * var(--u)) calc(18 * var(--u));
+    border-radius: calc(6 * var(--u));
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .iot-tabs b {
+    background: var(--card);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  }
+
+  .iot-tabs i {
+    color: var(--soft);
+  }
+
+  .iot-case {
+    justify-self: end;
+    color: var(--soft);
+  }
+
+  .iot-body {
+    display: grid;
+    grid-template-columns: 360fr 520fr 220fr;
+    gap: calc(18 * var(--u));
+    padding: calc(22 * var(--u)) calc(24 * var(--u)) calc(26 * var(--u));
+    align-items: stretch;
+  }
+
+  .iot-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iot .iot-card {
+    margin: 0;
+    padding: calc(16 * var(--u)) calc(18 * var(--u));
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: calc(10 * var(--u));
+  }
+
+  .iot .iot-card h4 {
+    margin: 0 0 calc(12 * var(--u));
+    font-size: calc(12 * var(--u));
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+
+  .iot .iot-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .iot .iot-rows li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: calc(12 * var(--u));
+    margin: 0;
+    padding: calc(8 * var(--u)) 0;
+    border-top: 1px solid var(--line);
+    font-size: calc(15 * var(--u));
+    line-height: 1.3;
+  }
+
+  .iot-rows li > :last-child {
+    text-align: right;
+  }
+
+  .iot-mono {
+    font-family: var(--f-mono);
+    font-size: 0.9em;
+  }
+
+  .iot-soft {
+    color: var(--soft);
+  }
+
+  .iot-link {
+    display: flex;
+    justify-content: center;
+    gap: calc(28 * var(--u));
+    margin: calc(10 * var(--u)) 0;
+    font-family: var(--f-mono);
+    font-size: calc(12 * var(--u));
+    color: var(--accent);
+  }
+
+  .iot-link span::before {
+    content: '↕ ';
+  }
+
+  .iot-people {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: calc(8 * var(--u));
+  }
+
+  .iot-person {
+    display: flex;
+    flex-direction: column;
+    gap: calc(5 * var(--u));
+    padding: calc(10 * var(--u));
+    background: var(--bg);
+    border-radius: calc(8 * var(--u));
+    font-size: calc(14 * var(--u));
+    line-height: 1.25;
+  }
+
+  .iot-dot {
+    width: calc(26 * var(--u));
+    height: calc(26 * var(--u));
+    border-radius: 50%;
+    background: var(--line);
+  }
+
+  .iot-tag {
+    align-self: start;
+    padding: calc(2 * var(--u)) calc(8 * var(--u));
+    border-radius: calc(20 * var(--u));
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: calc(12 * var(--u));
+  }
+
+  .iot-tag.is-passive {
+    background: var(--line);
+    color: var(--soft);
+  }
+
+  .iot .iot-note {
+    margin: calc(10 * var(--u)) 0 0;
+    font-size: calc(13 * var(--u));
+    line-height: 1.4;
+    color: var(--soft);
+  }
+
+  .iot-net {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iot-graph {
+    flex: 1;
+    width: 100%;
+    height: auto;
+  }
+
+  .iot-edges line {
+    stroke: var(--line);
+    stroke-width: 2;
+  }
+
+  .iot-nodes circle,
+  .iot-nodes rect {
+    fill: var(--card);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+
+  .iot-nodes .iot-hub {
+    fill: var(--accent);
+    stroke: var(--accent);
+  }
+
+  .iot-nodes .iot-sensor {
+    stroke: var(--soft);
+    stroke-dasharray: 3 3;
+  }
+
+  .iot-nodes text {
+    font-family: var(--f-sans);
+    font-size: 15px;
+    text-anchor: middle;
+    fill: var(--ink);
+  }
+
+  .iot-nodes .iot-svg-soft {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    fill: var(--soft);
+  }
+
+  .iot-cloud {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iot-seg {
+    display: flex;
+    flex-direction: column;
+    gap: calc(6 * var(--u));
+  }
+
+  .iot-seg span {
+    padding: calc(9 * var(--u)) calc(12 * var(--u));
+    border: 1px solid var(--line);
+    border-radius: calc(8 * var(--u));
+    font-size: calc(14 * var(--u));
+  }
+
+  .iot-seg .is-on {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .iot-toggle {
+    display: flex;
+    align-items: center;
+    gap: calc(8 * var(--u));
+    margin-top: auto;
+    padding-top: calc(14 * var(--u));
+    font-size: calc(14 * var(--u));
+  }
+
+  .iot-switch {
+    position: relative;
+    width: calc(34 * var(--u));
+    height: calc(20 * var(--u));
+    border-radius: calc(10 * var(--u));
+    background: var(--accent);
+  }
+
+  .iot-switch::after {
+    content: '';
+    position: absolute;
+    top: calc(3 * var(--u));
+    right: calc(3 * var(--u));
+    width: calc(14 * var(--u));
+    height: calc(14 * var(--u));
+    border-radius: 50%;
+    background: #fff;
+  }
+</style>

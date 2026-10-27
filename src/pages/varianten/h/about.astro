@@ -1,0 +1,20 @@
+---
+// Draft variant H, About: the shared About page of F, G and H, in the dark.
+import About from '../../../components/f/About.astro';
+---
+
+<About base="/varianten/h/" version="H" />
+
+<style is:global>
+  /* H is dark in both colour schemes. */
+  :root {
+    --paper: #0e0f0e;
+    --ink: #e7e8e3;
+    --hair: #2b2e2b;
+    --mute: #9a9e97;
+    --soft: #1b1e1c;
+    --dim: #6d716b;
+    --grain-opacity: 0.09;
+    color-scheme: dark;
+  }
+</style>

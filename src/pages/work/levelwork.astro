@@ -1,0 +1,180 @@
+---
+// Case: Levelwork and its first product, Constat. Facts come from the Levelwork repositories (company/team.md,
+// what-we-sell.md, method.md, traction.md, imagery/README.md) and levelwork.ai; the dates are those documents'.
+// Images: pages of the Constat brochure and sections of the Constat page (levelwork repo, website/constat/), rendered
+// locally. The brand's picture series is left out until it is clear how it was made.
+// The team story and the dated milestones are approved by Michael Gajda (Robert, 26 Oct 2026).
+import Shot from '../../components/case/Shot.astro';
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import week from '../../assets/cases/levelwork/constat-week.jpg';
+import finding from '../../assets/cases/levelwork/constat-finding.jpg';
+import evidence from '../../assets/cases/levelwork/constat-evidence.jpg';
+import siteWeek from '../../assets/cases/levelwork/site-week.jpg';
+import siteMethod from '../../assets/cases/levelwork/site-method.jpg';
+import siteFinding from '../../assets/cases/levelwork/site-finding.jpg';
+---
+
+<CaseLayout
+  title="Levelwork"
+  years="2026–"
+  summary="Two founders in Konstanz making visible how work is really distributed in an organisation, one role at a time."
+  meta={[
+    ['Role', 'Co-founder, human experience design'],
+    ['Team', 'Michael Gajda (product and sales) and me'],
+    ['Period', 'Building together since 2026'],
+    ['Product', 'Constat, available today. Loop, in development'],
+    ['Status', 'Constat is delivered by a founder; the self-serve software is not earning yet'],
+  ]}
+  links={[{ href: 'https://levelwork.ai', label: 'levelwork.ai' }]}
+  film="levelwork"
+  stage="constat"
+  next={{ href: '/work/meeting-minutes/', title: 'Ambacta' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">Every role exists twice: once on paper and once in the week.</p>
+    <p>
+      The job description says one thing, the calendar four weeks later says another. Extra tasks pile up, coordination
+      eats the core work, and everyone feels it. Nobody can prove it, so nobody can fix it.
+    </p>
+    <figure class="c-wide">
+      <Shot
+        src={siteWeek}
+        source="levelwork.ai/constat"
+        label="01 The gap"
+        alt="A working week drawn as a calendar, Monday to Friday, with the blocks the role profile plans: team syncs, focus time, feature work"
+        widths={[800, 1080]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>The week as the role profile plans it. On the Constat page it fills up with what really happens.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Constat, how it works</h2>
+    <p class="c-lead">One interview, one comparison, findings with a source.</p>
+    <p>
+      The role as designed comes from the manager. The role as lived comes from one structured conversation with the
+      person who holds it, about their real working week. Nobody rates themselves and the employee fills in nothing.
+    </p>
+    <p>
+      Both are broken down the same way, into tasks, competencies and accountability. Every difference carries its
+      source, a passage of the conversation or a line of the role profile. No source, no finding.
+    </p>
+    <figure class="c-wide">
+      <Shot
+        src={siteMethod}
+        source="levelwork.ai/constat"
+        label="03 How it works"
+        alt="Three steps on a dark page: Capture, Compare, Evidence, under the headline One interview. One comparison. Evidenced findings."
+        widths={[800, 1080]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>The method in three steps, from the Constat page.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>The proof</h2>
+    <p class="c-lead">Our public reference case: one pilot role, not an average.</p>
+    <dl class="c-numbers">
+      <div><dt>26</dt><dd>evidenced findings from one role</dd></div>
+      <div><dt>15</dt><dd>of them classified as critical</dd></div>
+      <div><dt>12 : 5</dt><dd>task areas lived against task areas planned</dd></div>
+    </dl>
+    <figure class="c-wide">
+      <Shot
+        src={siteFinding}
+        source="levelwork.ai/constat"
+        label="05 The proof"
+        alt="A quote from the interview next to a finding card: F-07, critical, source interview passage 14:22, observation, evidenced, deviation from role profile"
+        widths={[800, 1080]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>One finding with its source, as it appears on the Constat page.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What I do</h2>
+    <p class="c-lead">The method only works if people are willing to talk honestly about their week.</p>
+    <p>
+      I work on human experience design: making Levelwork something people want to use, and not only something they
+      have to. That means how a finding is laid out, so that it is understood before anyone has to explain it, how the
+      conversation feels to the person in it, and the look of the company.
+    </p>
+    <p>I am trained in AI engineering, which helps me read what the analysis pipeline can and cannot say.</p>
+    <div class="c-trio">
+      <figure>
+        <Shot
+          src={week}
+          source="Constat brochure"
+          label="01 The gap"
+          alt="Brochure page: the week everyone assumes, as neat calendar blocks, and below it the week that happens instead, full of extra tasks"
+          widths={[560, 1128]}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>The gap, as the brochure tells it.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={evidence}
+          source="Constat brochure"
+          label="02 What Constat does"
+          alt="Brochure page: From assumption to evidence, the expected role as outlined bars next to the actual week as filled bars"
+          widths={[560, 1128]}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>Expected next to actual, the core of every report.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={finding}
+          source="Constat brochure"
+          label="Findings"
+          alt="Brochure page: deviations on the left become numbered findings on the right, with the line: It’s a finding."
+          widths={[400, 800]}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>A deviation is not a verdict. It’s a finding.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>How we work together</h2>
+    <p class="c-lead">One of us knows the problem, the other is responsible for the people inside it.</p>
+    <p>
+      Michael knows the problem from the buyer’s side: fifteen years of building and staffing digital teams, and the
+      assessment method he developed in client work. He builds the product, largely himself with AI coding agents, and
+      sells it. I make sure people want to use what he builds.
+    </p>
+  </section>
+
+  <section>
+    <h2>How fast we learn</h2>
+    <p class="c-lead">From a pitch to a changed interview guide in five days.</p>
+    <ol class="c-timeline">
+      <li><time>18–20 Sep 2026</time><span>Michael pitches Levelwork at TechVillage Moldova. An investor describes founders who wear ten hats and hand nothing over.</span></li>
+      <li><time>Same day</time><span>A founder version of the interview is built and put online.</span></li>
+      <li><time>22 Sep</time><span>The first outside run captures nothing: the person describes their week in channels, the interview waits for roles.</span></li>
+      <li><time>Next day</time><span>The guide changes: ask once what a channel is for, never ask twice. A replay finds four roles after three answers.</span></li>
+      <li><time>12 Oct</time><span>We decide the founder version stays a demo, not a third product.</span></li>
+    </ol>
+    <p>The lesson holds for Constat too: people describe their week in channels, and the interview has to do the translation into roles.</p>
+    <figure class="c-wide">
+      <ScrubFigure kind="levelwork-roles" ratio="1000 / 500" narrow="600 / 860" />
+      <figcaption>The first run waited for roles and captured nothing. With the changed guide, a replay finds four roles after three answers.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What’s next</h2>
+    <p class="c-lead">A finding nobody acts on is a report.</p>
+    <p>
+      Loop, our second product, is the cycle after Constat: role, requirement, measure, evaluation, follow-up, and then
+      again. It is in development.
+    </p>
+  </section>
+</CaseLayout>

@@ -1,0 +1,24 @@
+---
+// Draft variant H, all projects: the selected work plays its kinetic films, everything else its title card.
+import AllProjects from '../../../components/f/AllProjects.astro';
+import { slug } from '../../../data/projects';
+import { selected } from '../../../data/selected';
+
+const films = Object.fromEntries(selected.map((row) => [row.title, `/motion/kinetic/${slug(row.title)}`]));
+---
+
+<AllProjects base="/varianten/h/" version="H" films={films} cards="/motion/f" />
+
+<style is:global>
+  /* H is dark in both colour schemes. */
+  :root {
+    --paper: #0e0f0e;
+    --ink: #e7e8e3;
+    --hair: #2b2e2b;
+    --mute: #9a9e97;
+    --soft: #1b1e1c;
+    --dim: #6d716b;
+    --grain-opacity: 0.09;
+    color-scheme: dark;
+  }
+</style>

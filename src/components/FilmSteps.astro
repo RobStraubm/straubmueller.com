@@ -1,0 +1,96 @@
+---
+// The caption under a film: its title, the name of the act that is playing, and one segment per act that
+// fills while the act plays. A click on a segment plays that act again (src/scripts/filmSteps.ts).
+import type { Film } from '../data/films';
+
+interface Props {
+  film: Film;
+  /** Leave the title out where the page already names the project. */
+  title?: boolean;
+}
+const { film, title = true } = Astro.props;
+---
+
+<div class="steps" data-steps>
+  <p class="steps-head">
+    {title && <span>{film.title}</span>}
+    <span class="mute" data-step-label>{film.acts[0].label}</span>
+  </p>
+  <div class="steps-bar">
+    {
+      film.acts.map((act, i) => (
+        <button type="button" class="steps-step" data-step aria-label={`Play step ${i + 1}: ${act.label}`}>
+          <span class="steps-fill" data-fill />
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .steps {
+    padding-top: 10px;
+    font-size: 14px;
+  }
+
+  .steps-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 0 8px;
+  }
+
+  .steps-bar {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 6px;
+  }
+
+  /* A tall hit area around a thin line, so the step is easy to click. */
+  .steps-step {
+    position: relative;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .steps-step::before,
+  .steps-fill {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 8px;
+    height: 2px;
+  }
+
+  .steps-step::before {
+    background: var(--hair);
+  }
+
+  .steps-fill {
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .steps-step:hover::before {
+    background: var(--mute);
+  }
+
+  .steps-step:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  /* Without motion the film shows its last frame, so every step reads as seen. */
+  @media (prefers-reduced-motion: reduce) {
+    .steps-fill {
+      transform: none !important;
+    }
+  }
+</style>

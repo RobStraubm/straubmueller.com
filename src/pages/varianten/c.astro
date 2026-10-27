@@ -1,0 +1,389 @@
+---
+// Draft variant C, "Ship log": who I am, what I do now, and a dated record of what I shipped.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+import { log } from '../../data/log';
+import portrait from '../../assets/variants/portrait.jpg';
+import flowculate2024 from '../../assets/variants/flowculate-2024.jpg';
+import pocNotes from '../../assets/notes/flowculate-poc-notes.jpg';
+import storyboard from '../../assets/notes/iot-storyboard.jpg';
+import sketchbook from '../../assets/notes/conactive-sketchbook.jpg';
+import howMightWe from '../../assets/notes/iot-how-might-we.jpg';
+
+const traces = {
+  flowculate: { src: flowculate2024, alt: 'Flowculate simulation: crowd density as a heat map in a floor plan' },
+  poc: { src: pocNotes, alt: 'Proof-of-concept workflow with handwritten marker notes' },
+  storyboard: { src: storyboard, alt: 'Whiteboard storyboard from the design sprint' },
+  sketchbook: { src: sketchbook, alt: 'Sketchbook spread with pencil sketches' },
+  iot: { src: howMightWe, alt: 'Wall of “How might we” notes' },
+};
+
+const now = [
+  {
+    text: 'Building Levelwork with Michael Gajda. Constat shows how work is really distributed in an organisation, one structured conversation per role.',
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+  },
+  { text: 'Working on AI meeting minutes, now in pilot at a district administration (freelance, for gyv).' },
+  { text: 'Building Notenprogramm, which turns sheet-music PDFs into editable MusicXML.' },
+];
+
+const years = [...new Set(log.map((entry) => entry.sort.slice(0, 4)))];
+const updated = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(
+  new Date(),
+);
+---
+
+<Base
+  title="Robert Straubmüller · Version C"
+  description="A research-trained designer who now builds and ships software. Co-founder of Levelwork, Konstanz."
+  chrome={false}
+>
+  <header class="c-header" slot="header">
+    <a href="/varianten/c/">Robert Straubmüller</a>
+    <span class="c-header-end">
+      <span class="mute">Updated {updated}</span>
+      <a class="c-about" href="/varianten/c/about/">About</a>
+    </span>
+  </header>
+
+  <section class="c-intro" aria-labelledby="c-statement">
+    <div class="c-portrait">
+      <Image
+        src={portrait}
+        alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+        widths={[400, 700, 1000]}
+        sizes="(max-width: 760px) 60vw, 28vw"
+        loading="eager"
+      />
+    </div>
+    <div class="c-who">
+      <h1 id="c-statement">A research-trained designer who now builds and ships software.</h1>
+      <p>Co-founder of <a href="https://levelwork.ai">Levelwork</a>, Konstanz.</p>
+      <p class="c-links">
+        <a href="mailto:robert@straubmueller.com">Email</a>
+        <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+        <a href="https://github.com/RobStraubm">GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="c-now" aria-labelledby="c-now-h">
+    <h2 id="c-now-h">Now</h2>
+    <ul>
+      {
+        now.map((item) => (
+          <li>
+            {item.text}
+            {item.href && (
+              <>
+                {' '}
+                <a href={item.href}>{item.link} ↗</a>
+              </>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="c-log" aria-labelledby="c-log-h">
+    <h2 id="c-log-h">Log</h2>
+    {
+      years.map((year) => (
+        <div class="c-year">
+          <p class="c-year-n" aria-hidden="true">
+            {year}
+          </p>
+          <ol aria-label={`Shipped in ${year}`}>
+            {log
+              .filter((entry) => entry.sort.startsWith(year))
+              .map((entry) => (
+                <li>
+                  <span class="c-date">{entry.date}</span>
+                  <span class="c-text">
+                    {entry.text}
+                    {entry.href && (
+                      <>
+                        {' '}
+                        <a href={entry.href}>{entry.linkLabel} ↗</a>
+                      </>
+                    )}
+                  </span>
+                  <span class="c-kind">{entry.kind}</span>
+                  {entry.trace && (
+                    <span class="c-trace">
+                      <Image
+                        src={traces[entry.trace].src}
+                        alt={traces[entry.trace].alt}
+                        widths={[480, 800, 1100]}
+                        sizes="(max-width: 760px) 90vw, 40vw"
+                        loading="lazy"
+                      />
+                    </span>
+                  )}
+                </li>
+              ))}
+          </ol>
+        </div>
+      ))
+    }
+  </section>
+
+  <footer class="c-footer" slot="footer">
+    <p>Before: brand and editorial design since 2017, a B.A. from HfG Schwäbisch Gmünd and an M.A. from HTWG Konstanz.</p>
+    <p class="c-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  .c-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px var(--m);
+    font-size: 15px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .c-header a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .c-header-end {
+    display: flex;
+    gap: 20px;
+  }
+
+  .c-header .c-about {
+    font-weight: 400;
+  }
+
+  .c-header .c-about:hover {
+    text-decoration: underline;
+  }
+
+  .c-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
+    gap: clamp(24px, 4vw, 72px);
+    align-items: end;
+    padding: clamp(32px, 5vw, 80px) var(--m);
+  }
+
+  .c-portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 20%;
+  }
+
+  .c-who h1 {
+    margin: 0 0 24px;
+    font-family: var(--f-display);
+    font-size: clamp(40px, 5.6vw, 104px);
+    font-weight: 300;
+    font-stretch: 75%;
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .c-who p {
+    margin: 0 0 10px;
+    font-size: clamp(18px, 1.4vw, 21px);
+  }
+
+  .c-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .c-links a,
+  .c-legal a {
+    text-decoration: none;
+  }
+
+  .c-links a:hover,
+  .c-legal a:hover {
+    text-decoration: underline;
+  }
+
+  .c-now,
+  .c-log {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
+    gap: 0 clamp(24px, 4vw, 72px);
+    padding: 0 var(--m);
+  }
+
+  .c-now h2,
+  .c-log h2 {
+    margin: 0;
+    padding: 18px 0;
+    font-size: 15px;
+    font-weight: 600;
+    border-top: 1px solid var(--ink);
+  }
+
+  .c-now ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .c-now li {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: clamp(18px, 1.5vw, 22px);
+    line-height: 1.4;
+    max-width: 52ch;
+  }
+
+  .c-log {
+    margin-top: clamp(48px, 6vw, 96px);
+  }
+
+  .c-log h2 {
+    grid-column: 1 / -1;
+  }
+
+  /* Each year is a real section: the numeral marks it, the entries sit to the right. */
+  .c-year {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .c-year-n {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    margin: 0;
+    padding: 10px 0 24px;
+    font-family: var(--f-display);
+    font-size: clamp(64px, 9vw, 160px);
+    font-weight: 200;
+    font-stretch: 62.5%;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+  }
+
+  .c-year ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .c-year li {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 104px;
+    gap: 6px 16px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .c-year li:last-child {
+    border-bottom: 0;
+  }
+
+  .c-date {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-text {
+    font-size: clamp(18px, 1.5vw, 22px);
+    line-height: 1.35;
+  }
+
+  .c-text a {
+    white-space: nowrap;
+    font-size: 0.8em;
+    text-decoration: none;
+  }
+
+  .c-kind {
+    font-size: 14px;
+    color: var(--mute);
+    text-align: right;
+  }
+
+  .c-trace {
+    grid-column: 2 / 3;
+    max-width: 520px;
+    padding-top: 10px;
+  }
+
+  .c-trace :global(img) {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background: var(--soft);
+  }
+
+  .c-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(48px, 6vw, 96px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .c-footer p {
+    margin: 0;
+    max-width: 70ch;
+  }
+
+  .c-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 760px) {
+    .c-intro,
+    .c-now,
+    .c-log {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .c-portrait {
+      max-width: 60%;
+    }
+    .c-year {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .c-year-n {
+      position: static;
+      padding-bottom: 8px;
+    }
+    .c-year li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .c-date {
+      grid-column: 1;
+    }
+    .c-kind {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .c-text,
+    .c-trace {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

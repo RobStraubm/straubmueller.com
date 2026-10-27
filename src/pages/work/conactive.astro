@@ -1,0 +1,188 @@
+---
+// Case: Conactive, Robert's master's thesis "Interaction with Connected Systems" (HTWG Konstanz / University of
+// Konstanz, submitted 5 Jul 2022), 1st prize of the Konstanzer Designpreis, summer semester 2022. Facts from
+// befund/cases/conactive.md (thesis, exposé of 17 May 2022, HTWG award page, PAGE article draft). Speculative design:
+// physical models, no user tests (the thesis names tests as the next step). Interviewees are not named.
+import { Image } from 'astro:assets';
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import cup from '../../assets/cases/conactive/foto_concup-auf-gelb.jpg';
+import sketchbook from '../../assets/cases/conactive/skizzenbuch_doppelseite-2-tetris-zeitring.jpg';
+import model from '../../assets/cases/conactive/diagramm_input-output-abw-ibm-dbi.jpg';
+import channels from '../../assets/cases/conactive/grafik_interviewergebnis-kanaele-vorher-nachher.jpg';
+import blocks from '../../assets/cases/conactive/weisslinie_connote-conblock.jpg';
+import cupDrawing from '../../assets/cases/conactive/weisslinie_concup.jpg';
+import story from '../../assets/cases/conactive/foto_buch-doppelseite-userstory-emotionskurve.jpg';
+
+const widths = [600, 1000, 1600];
+const half = '(max-width: 900px) 100vw, 45vw';
+---
+
+<CaseLayout
+  title="Conactive"
+  years="2022"
+  summary="What if technology moved into the workplace, instead of the workplace into the computer? A speculative office for 2045, without screens."
+  meta={[
+    ['Role', 'Master’s thesis: research, scenario, concept and design of the objects'],
+    ['Supervisors', 'Prof. Jo Wickert, HTWG Konstanz; Prof. Dr. Harald Reiterer, University of Konstanz'],
+    ['Period', 'Submitted 5 Jul 2022'],
+    ['Award', '1st prize, Konstanzer Designpreis, summer semester 2022'],
+  ]}
+  links={[
+    {
+      href: 'https://www.htwg-konstanz.de/bachelor/kommunikationsdesign/abschlussarbeiten/konstanzer-designpreis/straubueller-robert',
+      label: 'Award page, HTWG',
+    },
+  ]}
+  film="conactive"
+  stage="conactive"
+  next={{ href: '/work/stayin-alive/', title: 'Stayin’ Alive' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">Office work has not changed much. The number of channels it runs through has.</p>
+    <p>
+      I asked five experts how work in an office changed with digitalisation. The information people exchange is
+      largely the same as before. What changed are the channels: notice board, letter, phone and memo became invitation,
+      chat, email, comment and voice message, and almost all of them now arrive on one screen.
+    </p>
+    <p>
+      The thesis asked how a connected system could take a physical form, and whether working with it and its data
+      would become richer that way. How work is spread across people and channels is still the question I work on at
+      Levelwork.
+    </p>
+    <figure class="c-wide">
+      <Image
+        src={channels}
+        alt="Sketch of the interview result: before digitalisation a person with notice board, letter, phone, note and memo; after, a person in front of a screen with invitation, chat, email, phone, note, appointment, comment and voice message"
+        widths={widths}
+        sizes="(max-width: 900px) 100vw, 75vw"
+        loading="lazy"
+      />
+      <figcaption>What the interviews showed: the same information, many more channels, one screen.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What I did</h2>
+    <p class="c-lead">Literature, interviews, a scenario for 2045, then objects you can hold.</p>
+    <p>
+      After the literature and the five expert interviews I wrote a scenario for the office of 2045 and used speculative
+      design to explore it: user stories with emotion curves, sketches, and models of the objects that I laser-cut and built by hand. In this
+      office an AI takes over the organisation, and each kind of communication gets its own object. There is no app and
+      no website.
+    </p>
+    <ul>
+      <li><strong>conblocks</strong> plan the day in your hand: the AI hands out a block for each appointment.</li>
+      <li><strong>connote</strong> is the notebook that carries the blocks, with space for notes.</li>
+      <li><strong>concup</strong> is a cup that tells colleagues in other places that you are open for a chat.</li>
+      <li><strong>condesk</strong> is a booth for working together across a distance.</li>
+    </ul>
+    <div class="c-pair">
+      <figure>
+        <Image
+          src={sketchbook}
+          alt="Sketchbook spread in pencil: a project plan as Tetris, the forerunner of the conblocks, notes on critical design and design fiction, and a coloured ring of a working day"
+          widths={widths}
+          sizes={half}
+          loading="lazy"
+        />
+        <figcaption>The sketchbook: a project plan as Tetris, the first idea for the blocks.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={story}
+          alt="Printed thesis open at a user story with the user's thoughts and an emotion curve, on a yellow background"
+          widths={widths}
+          sizes={half}
+          loading="lazy"
+        />
+        <figcaption>A user story with its emotion curve, in the printed thesis.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">Add to the screen, don’t replace it.</p>
+    <p>
+      <strong>Data based interaction.</strong> Today input and output meet on a screen. The model I proposed puts a
+      tangible representation next to the screen for the things that matter in the room, and keeps the screen for the
+      rest. Conactive does not ban screens; it gives the most frequent kinds of contact a body.
+    </p>
+    <p>
+      <strong>One object per kind of contact.</strong> Planning the day, an informal chat and working together across a
+      distance need different signals. A cup in your hand says “talk to me” more clearly than a status in a chat window.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="conactive-channels" ratio="1200 / 640" narrow="600 / 900" />
+      <figcaption>
+        Five channels became eight on one screen. Conactive gives appointments, notes and the “open for a chat” signal an
+        object of their own and leaves the rest on the screen.
+      </figcaption>
+    </figure>
+    <figure class="c-wide">
+      <Image
+        src={model}
+        alt="Hand-drawn model: today a cycle from input through digital information to visual output on a screen; proposed a person working with both a tangible and an intangible representation of digital information; below, activity based working, information based media, data based interaction"
+        widths={widths}
+        sizes="(max-width: 900px) 100vw, 75vw"
+        loading="lazy"
+      />
+      <figcaption>The model: from input and output on one screen to tangible and intangible representations.</figcaption>
+    </figure>
+    <div class="c-pair">
+      <figure>
+        <Image
+          src={blocks}
+          alt="White line drawing on black of connote and conblock: a tray with a notes area and blocks whose depth stands for the length of a meeting, labelled room and time"
+          widths={widths}
+          sizes={half}
+          loading="lazy"
+        />
+        <figcaption>connote and conblock: the depth of a block is the length of the meeting.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={cupDrawing}
+          alt="White line drawing on black of the concup: a light ring as a visual signal, a speaker, and the handle to accept or decline a call"
+          widths={widths}
+          sizes={half}
+          loading="lazy"
+        />
+        <figcaption>concup: a light ring, a speaker, and the handle to accept or decline.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <p class="c-lead">A thesis, models of three objects, a film, and first prize.</p>
+    <p>
+      Conactive is speculative design: hand-built models and drawings, not working products. The thesis names the next step itself,
+      testing the objects with people through rapid prototypes and Wizard-of-Oz studies. An external jury awarded it
+      first prize of the Konstanzer Designpreis in the summer semester of 2022.
+    </p>
+    <figure class="c-wide">
+      <Image
+        src={cup}
+        alt="The concup model on a yellow background: a black cup with a wooden rim and handle and the word concup"
+        widths={widths}
+        sizes="(max-width: 900px) 100vw, 75vw"
+        loading="lazy"
+      />
+      <figcaption>The concup model.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <ol class="c-timeline">
+      <li><time>Oct 2020</time><span>Master’s programme at HTWG Konstanz and the University of Konstanz.</span></li>
+      <li><time>17 May 2022</time><span>Exposé: research question and method.</span></li>
+      <li><time>5 Jul 2022</time><span>Thesis submitted.</span></li>
+      <li><time>9–13 Jul 2022</time><span>Models photographed, 70-second film.</span></li>
+      <li><time>Summer 2022</time><span>1st prize, Konstanzer Designpreis.</span></li>
+    </ol>
+  </section>
+</CaseLayout>

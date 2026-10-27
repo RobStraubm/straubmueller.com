@@ -1,0 +1,251 @@
+---
+// Case: Colla parte, called Notenprogramm until 27 Oct 2026. Facts from befund/notenprogramm/fakten.md (Notenprogramm
+// session, 26.10.2026).
+// Only public-domain pieces are shown (Victoria, Mundy, Parry, Schumann, Bach): the start screens are cropped so
+// that no Whitacre or Poulenc cover appears; the Poulenc check is mentioned in text only.
+import { Image } from 'astro:assets';
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import checkSchumann from '../../assets/cases/notenprogramm/check-schumann.jpg';
+import toolParry from '../../assets/cases/notenprogramm/tool-parry.jpg';
+import exportDialog from '../../assets/cases/notenprogramm/export.jpg';
+import marks from '../../assets/cases/notenprogramm/marks.jpg';
+import mappe from '../../assets/cases/notenprogramm/mappe.jpg';
+import beforeUi from '../../assets/cases/notenprogramm/before-first-ui.jpg';
+import pianoScore from '../../assets/cases/notenprogramm/direction-piano-score.jpg';
+import macNative from '../../assets/cases/notenprogramm/direction-mac.jpg';
+import layoutFolder from '../../assets/cases/notenprogramm/layout-1.jpg';
+import layoutMargin from '../../assets/cases/notenprogramm/layout-2.jpg';
+import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
+---
+
+<CaseLayout
+  title="Colla parte"
+  years="2026"
+  summary="A Mac app that turns the choir director’s PDF into checked sheet music and a practice MP3 for my own voice."
+  meta={[
+    ['Role', 'Problem, requirements, design, testing with real pieces'],
+    ['Built with', 'Claude Code as AI pair programmer'],
+    ['Period', '9 days, 18–26 Oct 2026'],
+    ['Client', 'Own'],
+    ['Status', 'Own tool, not public'],
+  ]}
+  film="notenprogramm"
+  stage="notenprogramm"
+  next={{ href: '/work/sayfit/', title: 'SayFit' }}
+>
+  <section>
+    <h2>The itch</h2>
+    <p class="c-lead">I learn my choir part by ear while I work, and I made those practice tracks by hand.</p>
+    <p>
+      I sing tenor in a choir. The music arrives as a PDF from the choir director, and I learn my part by listening to
+      practice tracks: my voice up front, the others behind it.
+    </p>
+    <p>
+      Software that reads sheet music exists, but it makes mistakes, and the tools around it are complicated. To trust
+      the result I would have had to check every bar against the original myself.
+    </p>
+    <figure class="c-wide">
+      <Image
+        src={checkSchumann}
+        alt="Correction screen for bar 26, Tenor I, of Schumann’s “An die Sterne”: on the left the printed original with the bar and note in brackets and the page as a thumbnail, on the right the transcription with the tenor highlighted in yellow, the note in brackets, the note tool beside it and the question whether the bracketed note is right."
+        widths={[800, 1600]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Checking one uncertain note in Schumann’s “An die Sterne”: the printed original left, the transcription right. German UI.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p class="c-lead">Two readers check each other, and I only answer for my own voice.</p>
+    <p>
+      I drop the PDF into the folder. Audiveris, which is rule-based, and homr, a neural network, transcribe it
+      independently. I pick my voice, and the app asks only about the notes of that voice where the two are unsure or
+      disagree: the same passage from the PDF enlarged next to the transcription, the note in question bracketed in
+      both. I answer “yes, that’s right” or correct the note where it stands.
+    </p>
+    <p>
+      The export is MusicXML for MuseScore and a practice MP3 in about five seconds: my voice on harmonica, the others
+      on flute, clarinet and horn, all equally loud. I asked for that on purpose: no louder own voice. That is where
+      the name comes from: colla parte, in music, means an instrument plays along with the voice.
+    </p>
+    <div class="c-pair">
+      <figure>
+        <Image
+          src={toolParry}
+          alt="Correction screen for Parry’s “Crossing the Bar”: a small dark toolbar under the selected note offers higher, lower, accidentals and note values, and the panel below says nothing is open in the tenor any more."
+          widths={[800, 1600]}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>The tool opens at the note you click. Parry’s “Crossing the Bar”, every question answered. German UI.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={exportDialog}
+          alt="Export dialog for a Bach chorale: a practice MP3 for the tenor at tempo 80, the opening of the original, flute, clarinet and horn for the other voices, harmonica for mine, and MusicXML."
+          widths={[800, 1600]}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>The export: one instrument per voice, harmonica for mine. German UI.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Check, don’t retype</h2>
+    <p class="c-lead">Most voices need one to three answers, not a check of every bar.</p>
+    <p>
+      In Schumann’s “An die Sterne”, 83 bars for eight voices, most voices had one to three open questions. One had 22,
+      because a whole line had been read an octave off. To see whether I could trust that, I checked all 57 bars of four
+      voices of Poulenc’s “Salve Regina” by hand: no error in pitch, duration or accidentals slipped through unnoticed,
+      and every real error had been asked as a question.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="noten-questions" ratio="1200 / 580" narrow="600 / 900" />
+      <figcaption>Schumann’s “An die Sterne”, 83 bars for eight voices: most voices had one to three open questions, one had 22, because a whole line had been read an octave off.</figcaption>
+    </figure>
+    <dl class="c-numbers">
+      <div>
+        <dt>9 days</dt>
+        <dd>from a script to a Mac app with a redesign</dd>
+      </div>
+      <div>
+        <dt>109</dt>
+        <dd>automated tests, about 12,400 lines</dd>
+      </div>
+      <div>
+        <dt>7 pieces</dt>
+        <dd>tested, from the Renaissance to today</dd>
+      </div>
+      <div>
+        <dt>6 / 6</dt>
+        <dd>pieces with every bar found on the PDF page</dd>
+      </div>
+    </dl>
+    <p>
+      The pieces range from Victoria’s double-choir “Ave Maria” (eight voices, 92 bars) and a Mundy piece with organ to
+      Parry, Schumann, Poulenc, Whitacre’s “Sleep” with divided voices and a Bach chorale. Reading takes about a minute
+      per page.
+    </p>
+    <ol class="c-timeline">
+      <li><time>18 Oct 2026</time><span>A script reads the first PDF.</span></li>
+      <li><time>20 Oct 2026</time><span>A real Mac app with its own window.</span></li>
+      <li><time>26 Oct 2026</time><span>The redesign as a choir folder.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>From “looks like AI” to a choir folder</h2>
+    <p class="c-lead">The first interface looked like every AI-built app, so I had three directions drawn up.</p>
+    <p>
+      An audit named the patterns: blue pill buttons, identical cards with soft shadows, a dashed “+ New” tile, status
+      dots. The three directions were a piano score, a choir folder with pencil, and plain Mac-native. I chose the choir
+      folder: a black frame with white sheets inside. Pencil grey means “still to check”, highlighter yellow only “my
+      voice”, red pencil only real errors, and there is no blue at all. The type is Edwin, in the style of Century
+      Schoolbook, with music symbols from Bravura.
+    </p>
+    <figure>
+      <Image
+        src={beforeUi}
+        alt="The first version: score thumbnails as cards with status dots, a blue rounded button “PDF öffnen” and a pill-shaped play button."
+        widths={[430]}
+        sizes="(max-width: 640px) 100vw, 430px"
+      />
+      <figcaption>Before: blue pills, cards and status dots. German UI.</figcaption>
+    </figure>
+    <div class="c-pair">
+      <figure>
+        <Image
+          src={pianoScore}
+          alt="Direction one: a white page titled “Chorpartituren” with dark blue covers for each piece, set like a printed score."
+          widths={[440, 880]}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>Direction one, not taken: a piano score.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={macNative}
+          alt="Direction three: a Mac-native window with a sidebar of filters and the scores as a grid of thumbnails."
+          widths={[460, 920]}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>Direction three, not taken: Mac-native.</figcaption>
+      </figure>
+    </div>
+    <figure class="c-wide">
+      <Image
+        src={mappe}
+        alt="The finished start page “Meine Mappe”: a black folder with five white score pages by Victoria, Mundy, Parry, Schumann and Bach, programme numbers circled in pencil, tenor tags in yellow, and a player for the Bach practice MP3."
+        widths={[800, 1600]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Direction two, chosen and built: the choir folder, with the practice MP3 playing. German UI.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Details that took rounds</h2>
+    <p class="c-lead">The mark, the screen and the zoom each went through choices before they stuck.</p>
+    <p>
+      I turned down a pencil circle around an uncertain note and tested three marks instead: grey like a pencil sketch,
+      brackets like urtext editions, and a question mark. Brackets won. For the correction screen there were three
+      layouts; the open folder won, and the tool appears right at the note instead of as a wall of buttons.
+    </p>
+    <figure class="c-wide">
+      <Image
+        src={marks}
+        alt="Three ways to mark an uncertain note on a highlighted line: drawn in grey pencil, in square brackets, or with a small question mark above it."
+        widths={[800, 1600]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Three marks for an uncertain note. Brackets won, the way urtext editions mark doubtful notes. German UI.</figcaption>
+    </figure>
+    <figure class="c-wide">
+      <Image
+        src={layoutFolder}
+        alt="Layout one: the printed page on the left, the transcription on the right with the question underneath, like an open folder."
+        widths={[800, 1200]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Layout one, chosen: the open folder, original left, transcription and question right. German UI.</figcaption>
+    </figure>
+    <div class="c-pair">
+      <figure>
+        <Image
+          src={layoutMargin}
+          alt="Layout two: the original above the transcription, with the question as a note in the right margin."
+          widths={[600, 1200]}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>Proofreading with a margin note.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={layoutBar}
+          alt="Layout three: one bar of the original and of the transcription, both very large, with the question above."
+          widths={[600, 1200]}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>One bar, large. Bach chorale, German UI.</figcaption>
+      </figure>
+    </div>
+    <p>
+      After the first real use I changed two things: the whole PDF page was too small to compare, so the same passage now
+      sits enlarged next to the transcription, and the mark sometimes sat beside the note, so it now snaps to the printed
+      note head.
+    </p>
+  </section>
+
+  <section>
+    <h2>Built with Claude Code</h2>
+    <p class="c-lead">My part was the problem, the decisions and the testing; Claude Code wrote the code with me.</p>
+    <p>
+      I brought the problem, the requirements, the tests with real pieces, every design decision and the feedback rounds.
+      The code was written with Claude Code as an AI pair programmer: Python with a local server in its own Mac window
+      (pywebview), Audiveris and homr for reading, music21 and verovio for engraving, PyMuPDF for the PDF and MuseScore 4
+      for the MP3. The interface is plain HTML, CSS and JavaScript. Everything runs on the Mac; nothing goes to a cloud.
+    </p>
+  </section>
+</CaseLayout>

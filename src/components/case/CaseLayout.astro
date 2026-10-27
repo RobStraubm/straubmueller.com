@@ -1,0 +1,565 @@
+---
+// One case study page on a 12-column grid across the full width (patterns from Koto, Order, Metalab, Work & Co):
+// a giant title, the summary as a statement next to the project's film, the facts as one hairline row, then the
+// sections. Each slot <section> gets a numbered label in a left rail; inside it use:
+//   <p class="c-lead">  one large statement sentence
+//   <p>                 body text in the text column
+//   <figure class="c-wide">   an image across the content width, caption in the left rail
+//   <div class="c-pair">      two figures side by side (50/50)
+//   <div class="c-split">     a wide and a narrow figure (2/3 + 1/3)
+//   <div class="c-trio">      three steps of a process side by side
+//   <dl class="c-numbers">    the few figures that carry the result
+//   <ol class="c-timeline">   dated steps in one row: <li><time>…</time><span>…</span></li>
+import Base from '../../layouts/Base.astro';
+import { films } from '../../data/films';
+import FilmSteps from '../FilmSteps.astro';
+import CaseStage from '../stage/CaseStage.astro';
+
+interface Props {
+  title: string;
+  years: string;
+  /** One sentence: what changed because of the work. */
+  summary: string;
+  /** Rows of the fact table, e.g. ['Role', 'UX research, UI, brand']. */
+  meta: [string, string][];
+  /** Proof anyone can open: live product, repository, award page. */
+  links?: { href: string; label: string }[];
+  /** Key of a film in src/data/films.ts. */
+  film?: string;
+  next?: { href: string; title: string };
+  description?: string;
+  /** Version J: open with the film as a stage across the width instead of title and film side by side. */
+  stage?: 'saunter' | 'flowculate' | 'constat' | 'minutes' | 'notenprogramm' | 'sayfit' | 'tealucent' | 'conactive' | 'stayin' | 'iot';
+}
+const { title, years, summary, meta, links = [], film, next, description, stage } = Astro.props;
+const reel = films.find((item) => item.key === film);
+---
+
+<Base title={`${title} · Robert Straubmüller`} description={description ?? summary} chrome={false}>
+  <header class="c-header" slot="header">
+    <a class="c-name" href="/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="c-place">Konstanz</span>
+    <span class="c-links">
+      <a href="/work/">Projects</a>
+      <a href="/about/">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <article class="c-case">
+    {
+      stage && reel && (
+        <CaseStage scene={stage} title={title} years={years} summary={summary} acts={reel.acts.map((act) => act.label)} />
+      )
+    }
+    {!stage && (
+    <div class="c-top">
+      <div class="c-intro">
+        <p class="c-kicker mute">Case · {years}</p>
+        <h1 class="c-title">{title}</h1>
+        <p class="c-summary">{summary}</p>
+      </div>
+      {
+        reel && (
+          <figure class="c-film">
+            <div class="c-film-frame">
+              <video
+                aria-hidden="true"
+                muted
+                playsinline
+                disablepictureinpicture
+                preload="none"
+                width="800"
+                height="1000"
+                data-base={reel.base}
+                data-acts={JSON.stringify(reel.acts)}
+              />
+            </div>
+            <figcaption>
+              <FilmSteps film={reel} title={false} />
+            </figcaption>
+          </figure>
+        )
+      }
+    </div>
+    )}
+
+    <dl class="c-meta">
+      {
+        meta.map(([term, value]) => (
+          <div>
+            <dt>{term}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))
+      }
+      {
+        links.length > 0 && (
+          <div>
+            <dt>Proof</dt>
+            <dd>
+              {links.map((link) => (
+                <a href={link.href}>{link.label} ↗</a>
+              ))}
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+
+    <div class="c-body">
+      <slot />
+    </div>
+
+    <nav class="c-next" aria-label="More work">
+      {next && <a class="c-next-case" href={next.href}><span class="mute">Next case</span> {next.title} →</a>}
+      <a href="/work/">All projects</a>
+    </nav>
+  </article>
+
+  <footer class="c-footer" slot="footer">
+    <p><a href="/">← Back to the homepage</a></p>
+    <p class="c-legal">
+      <a href="/colophon/">Colophon</a>
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+    </p>
+  </footer>
+</Base>
+
+<script>
+  import { bindSteps, type ActMark } from '../../scripts/filmSteps';
+
+  // The film plays once when it comes into view and stays on its last frame, the result; the steps under it
+  // replay an act. With reduced motion it only shows that last frame until a step is clicked.
+  const video = document.querySelector<HTMLVideoElement>('.c-film video');
+  const steps = document.querySelector<HTMLElement>('.c-film [data-steps]');
+  if (video) {
+    if (steps) bindSteps(video, steps, JSON.parse(video.dataset.acts ?? '[]') as ActMark[]);
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const dark = window.matchMedia('(prefers-color-scheme: dark)');
+    const base = () => `${video.dataset.base}-${dark.matches ? 'dark' : 'light'}`;
+    const load = () => {
+      video.poster = reduce.matches ? `${base()}.jpg` : '';
+      video.src = `${base()}.mp4`;
+    };
+    let played = false;
+    new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting || played) return;
+        played = true;
+        load();
+        if (!reduce.matches) video.play().catch(() => {});
+      },
+      { threshold: 0.4 },
+    ).observe(video);
+    dark.addEventListener('change', () => {
+      if (!played) return;
+      load();
+      if (!reduce.matches) video.play().catch(() => {});
+    });
+  }
+</script>
+
+<style>
+  :global(body) {
+    --signal: #e5361b;
+    font-family: var(--f-sans);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(body) {
+      --signal: #ff6a4d;
+    }
+  }
+
+  .c-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .c-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .c-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .c-links a,
+  .c-footer a,
+  .c-next a,
+  .c-meta a {
+    text-decoration: none;
+  }
+
+  .c-links a:hover,
+  .c-footer a:hover,
+  .c-next a:hover,
+  .c-meta a:hover {
+    text-decoration: underline;
+  }
+
+  .c-case {
+    --cols: repeat(12, minmax(0, 1fr));
+    --gap: clamp(16px, 2vw, 32px);
+    padding: clamp(40px, 6vw, 96px) var(--m) 0;
+    counter-reset: section;
+  }
+
+  .c-kicker {
+    margin: 0 0 12px;
+    font-size: 14px;
+  }
+
+  .c-title {
+    margin: 0;
+    font-size: clamp(52px, 8vw, 150px);
+    font-weight: 600;
+    line-height: 0.88;
+    letter-spacing: -0.055em;
+  }
+
+  /* Title and statement left, film right, both from the top. */
+  .c-top {
+    display: grid;
+    grid-template-columns: var(--cols);
+    gap: 0 var(--gap);
+    align-items: start;
+  }
+
+  .c-intro {
+    grid-column: 1 / 9;
+  }
+
+  .c-summary {
+    max-width: 22ch;
+    margin: clamp(28px, 3.5vw, 56px) 0 0;
+    font-size: clamp(26px, 3vw, 48px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .c-film {
+    grid-column: 9 / 13;
+    margin: 0;
+  }
+
+  .c-film-frame {
+    aspect-ratio: 4 / 5;
+    background: var(--soft);
+  }
+
+  .c-film video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The facts in one hairline-ruled row: what a reviewer checks first. */
+  .c-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0 var(--gap);
+    margin: clamp(40px, 5vw, 72px) 0 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .c-meta div {
+    padding: 14px 0 16px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .c-meta dt {
+    margin-bottom: 6px;
+    color: var(--mute);
+    font-size: 13px;
+  }
+
+  .c-meta dd {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .c-body {
+    margin-top: clamp(64px, 8vw, 128px);
+  }
+
+  /* A section: numbered label in the rail (sticky), text in its own column, media across the grid. */
+  .c-body :global(section) {
+    counter-increment: section;
+    display: grid;
+    grid-template-columns: var(--cols);
+    gap: 0 var(--gap);
+    align-items: start;
+    padding: 20px 0 clamp(48px, 6vw, 96px);
+    border-top: 1px solid var(--ink);
+  }
+
+  .c-body :global(section > *) {
+    grid-column: 4 / 10;
+  }
+
+  .c-body :global(section > h2) {
+    grid-column: 1 / 4;
+    grid-row: 1 / span 20;
+    position: sticky;
+    top: 24px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .c-body :global(section > h2::before) {
+    content: counter(section, decimal-leading-zero);
+    display: block;
+    margin-bottom: 4px;
+    color: var(--signal);
+    font-family: var(--f-mono);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .c-body :global(.c-lead) {
+    grid-column: 4 / 13;
+    max-width: 28ch;
+    margin: 0 0 24px;
+    font-size: clamp(26px, 2.6vw, 40px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .c-body :global(p),
+  .c-body :global(li) {
+    margin: 0 0 14px;
+    font-size: clamp(17px, 1.25vw, 19px);
+    line-height: 1.55;
+  }
+
+  .c-body :global(section > p:not(.c-lead)),
+  .c-body :global(section > ul) {
+    max-width: 62ch;
+  }
+
+  .c-body :global(ul) {
+    margin: 0 0 14px;
+    padding-left: 1.1em;
+  }
+
+  .c-body :global(figure) {
+    margin: 0;
+  }
+
+  .c-body :global(figure img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--soft);
+  }
+
+  .c-body :global(figcaption) {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+
+  /* Media leave the text column and use the grid. */
+  .c-body :global(.c-wide),
+  .c-body :global(.c-pair),
+  .c-body :global(.c-split),
+  .c-body :global(.c-trio),
+  .c-body :global(.c-numbers),
+  .c-body :global(.c-timeline) {
+    grid-column: 1 / 13;
+    margin: clamp(24px, 3vw, 48px) 0;
+  }
+
+  /* Wide image in columns 4–12, its caption in the rail at the bottom. */
+  .c-body :global(.c-wide) {
+    display: grid;
+    grid-template-columns: var(--cols);
+    gap: 0 var(--gap);
+    align-items: end;
+  }
+
+  .c-body :global(.c-wide > :not(figcaption)) {
+    grid-column: 4 / 13;
+    grid-row: 1;
+  }
+
+  .c-body :global(.c-wide > figcaption) {
+    grid-column: 1 / 4;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  .c-body :global(.c-pair),
+  .c-body :global(.c-split),
+  .c-body :global(.c-trio) {
+    display: grid;
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  .c-body :global(.c-pair) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .c-body :global(.c-split) {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .c-body :global(.c-trio) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* The few figures that carry the result, in one row between hairlines. */
+  .c-body :global(.c-numbers) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0 var(--gap);
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .c-body :global(.c-numbers div) {
+    padding: 20px 0;
+  }
+
+  .c-body :global(.c-numbers dt) {
+    font-size: clamp(44px, 5vw, 80px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-body :global(.c-numbers dd) {
+    margin: 10px 0 0;
+    max-width: 28ch;
+    font-size: 15px;
+    color: var(--mute);
+  }
+
+  /* Dated steps in one row. */
+  .c-body :global(.c-timeline) {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--gap);
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--hair);
+  }
+
+  .c-body :global(.c-timeline li) {
+    margin: 0;
+    padding-top: 14px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .c-body :global(.c-timeline time) {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--signal);
+  }
+
+  .c-next {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 0;
+    border-top: 1px solid var(--ink);
+    font-size: clamp(18px, 1.6vw, 24px);
+    font-weight: 600;
+  }
+
+  .c-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(48px, 6vw, 96px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .c-footer p {
+    margin: 0;
+  }
+
+  .c-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .c-intro,
+    .c-film {
+      grid-column: 1 / -1;
+    }
+    .c-film {
+      width: min(100%, 420px);
+      margin-top: 32px;
+    }
+    .c-body :global(section > *),
+    .c-body :global(section > h2),
+    .c-body :global(.c-lead),
+    .c-body :global(.c-wide > :not(figcaption)),
+    .c-body :global(.c-wide > figcaption) {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+    .c-body :global(section > h2) {
+      position: static;
+      margin-bottom: 16px;
+    }
+    .c-body :global(.c-wide > figcaption) {
+      margin-top: 8px;
+    }
+    .c-body :global(.c-split),
+    .c-body :global(.c-trio) {
+      grid-template-columns: 1fr;
+    }
+    .c-body :global(.c-timeline) {
+      grid-auto-flow: row;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .c-header {
+      grid-template-columns: 1fr auto;
+    }
+    .c-place {
+      display: none;
+    }
+    .c-links {
+      grid-column: 1 / -1;
+    }
+    .c-body :global(.c-pair) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

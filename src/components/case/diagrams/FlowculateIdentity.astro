@@ -1,0 +1,48 @@
+---
+// Flowculate's UX identity, redrawn from Robert's board (old site, image 32): six qualities around one aim.
+const words = ['mathematical', 'accurate', 'continuous', 'dynamic', 'innovative', 'technological'];
+const r = 98;
+const d = 206;
+---
+
+<svg class="id" viewBox="0 0 640 640" role="img" aria-label="UX identity: mathematical, accurate, continuous, dynamic, innovative and technological, around one aim: a seamless and intuitive experience for precise flow simulations.">
+  {
+    words.map((word, i) => {
+      const a = (-90 + i * 60) * (Math.PI / 180);
+      const x = 320 + Math.cos(a) * d;
+      const y = 320 + Math.sin(a) * d;
+      return (
+        <g>
+          <circle cx={x} cy={y} r={r} fill="none" stroke="currentColor" stroke-width="1.5" />
+          <text x={x} y={y + 7} text-anchor="middle" font-size="21">
+            {word}
+          </text>
+        </g>
+      );
+    })
+  }
+  <text x="320" y="292" text-anchor="middle" font-size="18" class="id-aim">
+    <tspan x="320">A seamless and</tspan>
+    <tspan x="320" dy="22">intuitive experience</tspan>
+    <tspan x="320" dy="22">for precise flow</tspan>
+    <tspan x="320" dy="22">simulations</tspan>
+  </text>
+</svg>
+
+<style>
+  .id {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: var(--ink);
+    font-family: var(--f-sans);
+  }
+
+  .id text {
+    fill: var(--ink);
+  }
+
+  .id .id-aim {
+    fill: var(--signal);
+  }
+</style>

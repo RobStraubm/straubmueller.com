@@ -1,0 +1,519 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+import { work, werkstatt } from '../../data/work';
+import howMightWe from '../../assets/notes/iot-how-might-we.jpg';
+import pocNotes from '../../assets/notes/flowculate-poc-notes.jpg';
+import storyboard from '../../assets/notes/iot-storyboard.jpg';
+import sketchbook from '../../assets/notes/conactive-sketchbook.jpg';
+
+const notes = [
+  {
+    src: howMightWe,
+    alt: 'Pink paper notes taped to a white wall, each starting with “How might we”',
+    where: 'IoT Sustainability Lab · 2024',
+  },
+  {
+    src: pocNotes,
+    alt: 'Diagram of the proof-of-concept workflow with handwritten notes in green and purple marker',
+    where: 'Flowculate · 2022',
+  },
+  {
+    src: storyboard,
+    alt: 'Whiteboard with a hand-drawn storyboard in ten frames',
+    where: 'IoT Sustainability Lab · 2024',
+  },
+  {
+    src: sketchbook,
+    alt: 'Sketchbook spread with pencil sketches of office objects and handwritten notes',
+    where: 'Conactive · 2022',
+  },
+];
+---
+
+<Base
+  title="Robert Straubmüller · Co-founder, Levelwork"
+  description="Robert Straubmüller makes complex technology usable for people who are not experts. Co-founder of Levelwork; UX research, interface design and AI engineering, Konstanz."
+>
+  <section class="hero" aria-labelledby="statement">
+    <h1 id="statement" class="statement">
+      <span class="s">I make</span>{' '}<span class="g">complex technology</span>{' '}<span class="s">usable for</span>{' '}<span
+        class="g">people</span
+      >{' '}<span class="s">who are not experts.</span>
+    </h1>
+    <p class="line">
+      Co-founder of <a href="https://levelwork.ai">Levelwork</a>. Before that, three years of UX research and UI design at
+      HTWG Konstanz.
+    </p>
+  </section>
+
+  <section id="work" aria-labelledby="work-h">
+    <div class="sec-h">
+      <p class="n" aria-hidden="true">1</p>
+      <h2 id="work-h">Work</h2>
+    </div>
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="work-h">
+      <table class="work">
+        <caption class="visually-hidden">Selected work with years, role and proof</caption>
+        <colgroup>
+          <col class="c-years" />
+          <col class="c-title" />
+          <col class="c-role" />
+          <col class="c-proof" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col" class="visually-hidden">Years</th>
+            <th scope="col" class="visually-hidden">Project</th>
+            <th scope="col" class="visually-hidden">Role</th>
+            <th scope="col" class="visually-hidden">Proof</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            work.map((item) => (
+              <tr>
+                <td class="years lbl">{item.years}</td>
+                <th scope="row" class="title">
+                  <span>{item.title}</span>
+                </th>
+                <td class="role">{item.short}</td>
+                <td class="proof-cell lbl">
+                  {item.proof.href && <a href={item.proof.href}>{item.proof.label} ↗</a>}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="notes" aria-labelledby="notes-h">
+    <div class="sec-h">
+      <p class="n" aria-hidden="true">2</p>
+      <h2 id="notes-h">Notes from the work</h2>
+    </div>
+    <ul class="notes">
+      {
+        notes.map((note) => (
+          <li>
+            <figure>
+              <div class="frame">
+                <Image
+                  src={note.src}
+                  alt={note.alt}
+                  widths={[480, 800, 1200]}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 25vw"
+                  loading="lazy"
+                />
+              </div>
+              <figcaption class="lbl mute">{note.where}</figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="werkstatt" aria-labelledby="werkstatt-h">
+    <div class="sec-h">
+      <p class="n" aria-hidden="true">3</p>
+      <h2 id="werkstatt-h">Werkstatt</h2>
+    </div>
+    <p class="ws-word" aria-hidden="true">Werkstatt</p>
+    <ul class="ws-list">
+      {
+        werkstatt.map((item) => (
+          <li>
+            <p class="ws-year lbl">{item.year}</p>
+            <h3>{item.title}</h3>
+            <p class="ws-text">{item.text}</p>
+            <p class="lbl">
+              {item.href ? <a href={item.href}>{item.linkLabel} ↗</a> : <span class="mute">{item.linkLabel}</span>}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="about" aria-labelledby="about-h">
+    <div class="sec-h">
+      <p class="n" aria-hidden="true">4</p>
+      <h2 id="about-h">About</h2>
+    </div>
+    <p class="about-text">I sit between the chairs: users and researchers, designers and developers.</p>
+  </section>
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  /* Hero: the statement carries the first screen, set on a visible 12-column grid. */
+  .hero {
+    padding: clamp(40px, 6vw, 104px) var(--m) clamp(28px, 3.4vw, 52px);
+    background-image: linear-gradient(90deg, var(--hair) 1px, transparent 1px);
+    background-size: calc((100% - 2 * var(--m)) / 12) 100%;
+    background-position: var(--m) 0;
+  }
+
+  .statement {
+    margin: 0;
+    font-family: var(--f-display);
+    font-size: clamp(44px, 7.4vw, 140px);
+    font-weight: 200;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    font-size-adjust: from-font;
+    text-wrap: balance;
+  }
+
+  .statement .s {
+    font-weight: 200;
+    font-stretch: 62.5%;
+  }
+
+  .statement .g {
+    font-family: var(--f-sans);
+    font-weight: 850;
+    letter-spacing: -0.035em;
+  }
+
+  @supports not (font-size-adjust: from-font) {
+    .statement .g {
+      font-size: 0.9em;
+    }
+  }
+
+  .line {
+    margin: clamp(24px, 3vw, 40px) 0 0;
+    max-width: 52ch;
+    font-size: clamp(18px, 1.4vw, 21px);
+    line-height: 1.4;
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      background-size: calc((100% - 2 * var(--m)) / 6) 100%;
+    }
+  }
+
+  /* Work table: a real table on wide screens, stacked rows on narrow ones. */
+  .table-wrap {
+    container-type: inline-size;
+    overflow-x: auto;
+  }
+
+  .work {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .c-years {
+    width: 112px;
+  }
+  .c-title {
+    width: 40%;
+  }
+  .c-proof {
+    width: 22%;
+  }
+
+  /* Rules sit on the rows, not the cells: per-cell borders leave notches where they meet. */
+  .work tbody tr {
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .work th,
+  .work td {
+    padding: 14px 14px;
+    text-align: left;
+    vertical-align: baseline;
+  }
+
+  .work tbody th:first-child,
+  .work tbody td:first-child {
+    padding-left: var(--m);
+  }
+
+  .work .years,
+  .work .proof-cell {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .work .role {
+    font-size: 16px;
+    color: var(--mute);
+  }
+
+  .work .title {
+    font-family: var(--f-display);
+    font-size: clamp(26px, 2.6vw, 40px);
+    font-weight: 300;
+    font-stretch: 62.5%;
+    line-height: 1.05;
+    white-space: nowrap;
+    transition:
+      font-stretch 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+      font-weight 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .work .proof-cell a {
+    text-decoration: none;
+  }
+
+  /* Hover opens the row: hard inversion, the title widens like a door. */
+  @media (hover: hover) {
+    .work tbody tr {
+      transition:
+        background-color 0.2s,
+        color 0.2s;
+    }
+    .work tbody tr:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .work tbody tr:hover .role {
+      color: inherit;
+      opacity: 0.72;
+    }
+    .work tbody tr:hover .title {
+      font-stretch: 87.5%;
+      font-weight: 450;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work .title,
+    .work tbody tr {
+      transition: none;
+    }
+  }
+
+  @container (width < 640px) {
+    .work,
+    .work tbody,
+    .work tr,
+    .work th,
+    .work td {
+      display: block;
+    }
+
+    .work thead,
+    .work colgroup {
+      display: none;
+    }
+
+    .work tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 2px 12px;
+      padding: 14px var(--m) 16px;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .work th,
+    .work td,
+    .work tbody th:first-child,
+    .work tbody td:first-child {
+      padding: 0;
+      border: 0;
+    }
+
+    .work .title {
+      order: -2;
+      white-space: normal;
+    }
+
+    .work .years {
+      order: -1;
+      align-self: center;
+    }
+
+    .work .role,
+    .work .proof-cell {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* Notes: real work traces, captions kept to one line. */
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .notes li {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .notes li:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .notes figure {
+    margin: 0;
+  }
+
+  .notes .frame {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--soft);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .notes img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .notes figcaption {
+    padding: 10px var(--m) 12px;
+  }
+
+  @media (max-width: 1100px) {
+    .notes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .notes li:nth-child(4n) {
+      border-right: 1px solid var(--ink);
+    }
+    .notes li:nth-child(2n) {
+      border-right: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .notes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .notes li,
+    .notes li:nth-child(4n) {
+      border-right: 0;
+    }
+  }
+
+  /* Werkstatt: the word gains weight as it scrolls into view, like something being built. */
+  .ws-word {
+    margin: 0;
+    padding: 0 var(--m);
+    height: 0.86em;
+    overflow: clip;
+    font-family: var(--f-display);
+    font-size: clamp(64px, 15vw, 280px);
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    font-weight: 700;
+    font-stretch: 100%;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      @keyframes build {
+        from {
+          font-weight: 100;
+          font-stretch: 62.5%;
+        }
+        to {
+          font-weight: 700;
+          font-stretch: 100%;
+        }
+      }
+
+      .ws-word {
+        animation: build linear both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 55%;
+      }
+    }
+  }
+
+  .ws-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Same columns as the work table, so both lists line up. */
+  .ws-list li {
+    display: grid;
+    grid-template-columns: 112px 40% minmax(0, 1fr) 22%;
+    align-items: baseline;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .ws-list li > * {
+    margin: 0;
+    padding: 14px;
+  }
+
+  .ws-list li > :first-child {
+    padding-left: var(--m);
+  }
+
+  .ws-year {
+    font-size: 12px;
+  }
+
+  .ws-list h3 {
+    font-family: var(--f-sans);
+    font-size: clamp(22px, 2vw, 30px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .ws-text {
+    color: var(--mute);
+  }
+
+  .ws-list a {
+    text-decoration: none;
+  }
+
+  @media (max-width: 860px) {
+    .ws-list li {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 2px 12px;
+      padding: 14px var(--m) 16px;
+    }
+    .ws-list li > *,
+    .ws-list li > :first-child {
+      padding: 0;
+    }
+    .ws-list h3 {
+      order: -2;
+    }
+    .ws-year {
+      order: -1;
+      align-self: center;
+    }
+    .ws-text,
+    .ws-list li > :last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* About: one sentence; the details live on the About page. */
+  .about-text {
+    margin: 0;
+    padding: clamp(24px, 3vw, 40px) var(--m) clamp(32px, 4vw, 56px);
+    font-family: var(--f-display);
+    font-size: clamp(28px, 3.4vw, 56px);
+    font-weight: 300;
+    font-stretch: 75%;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    max-width: 22ch;
+  }
+</style>

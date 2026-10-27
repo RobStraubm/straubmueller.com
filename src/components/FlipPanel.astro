@@ -1,0 +1,354 @@
+---
+// Versions D and E: a sticky frame that shows Robert by default and plays a project while its row
+// is hovered or focused: its work traces from frames.ts (D) or a short film (E).
+// Rows opt in with data-flip="<key>".
+import { Image } from 'astro:assets';
+import portrait from '../assets/variants/portrait.jpg';
+import { frames } from '../data/frames';
+
+interface Film {
+  /** Files in /public, one per colour scheme. */
+  light: string;
+  dark: string;
+  /** The last frame as a still, shown when motion is reduced. */
+  posterLight: string;
+  posterDark: string;
+  /** Second at which each act starts, for the caption. */
+  acts: { at: number; label: string }[];
+}
+
+interface Props {
+  /** Projects this page can show, in any order. A film replaces the work traces. */
+  items: { key: string; title: string; film?: Film }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="flip" aria-hidden="true" data-flip-panel>
+  <figure class="flip-shot is-on" data-key="">
+    <div class="flip-frames is-portrait">
+      <Image
+        src={portrait}
+        alt=""
+        widths={[400, 700, 1000]}
+        sizes="30vw"
+        loading="eager"
+        fetchpriority="high"
+        class="is-current"
+      />
+    </div>
+    <figcaption>
+      <span>Robert Straubmüller</span>
+      <span class="mute">Konstanz</span>
+    </figcaption>
+  </figure>
+  {
+    items.map(({ key, title, film }) =>
+      film ? (
+        <figure class="flip-shot" data-key={key} hidden>
+          <div class="flip-frames is-film">
+            <video
+              muted
+              playsinline
+              disablepictureinpicture
+              preload="none"
+              width="400"
+              height="500"
+              data-light={film.light}
+              data-dark={film.dark}
+              data-poster-light={film.posterLight}
+              data-poster-dark={film.posterDark}
+              data-acts={JSON.stringify(film.acts)}
+            />
+          </div>
+          <figcaption>
+            <span>{title}</span>
+            <span class="mute">
+              <span data-flip-label>{film.acts[0].label}</span>
+              <span data-flip-count>1/{film.acts.length}</span>
+            </span>
+            <span class="flip-bar" data-flip-bar />
+          </figcaption>
+        </figure>
+      ) : (
+        <figure class="flip-shot" data-key={key} hidden>
+          <div class="flip-frames">
+            {frames[key].map((frame, i) => (
+              <Image
+                src={frame.src}
+                alt=""
+                widths={[480, 800, 1200]}
+                sizes="30vw"
+                loading="lazy"
+                fetchpriority="low"
+                class:list={{ 'is-current': i === 0 }}
+                data-label={frame.label}
+              />
+            ))}
+          </div>
+          <figcaption>
+            <span>{title}</span>
+            <span class="mute">
+              <span data-flip-label>{frames[key][0].label}</span>
+              <span data-flip-count>
+                1/{frames[key].length}
+              </span>
+            </span>
+            <span class="flip-bar" data-flip-bar />
+          </figcaption>
+        </figure>
+      ),
+    )
+  }
+</div>
+
+<script>
+  const panel = document.querySelector<HTMLElement>('[data-flip-panel]');
+
+  if (panel) {
+    // The traces play once, from first sketch to shipped result, and the result stays.
+    const FRAME_MS = 420;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const shots = new Map(
+      [...panel.querySelectorAll<HTMLElement>('.flip-shot')].map((shot) => [shot.dataset.key ?? '', shot]),
+    );
+    const dark = window.matchMedia('(prefers-color-scheme: dark)');
+    const films = [...panel.querySelectorAll<HTMLVideoElement>('video')];
+    let current = '';
+    let timer = 0;
+    let leaveTimer = 0;
+    let frameRequest = 0;
+
+    // Films load only where the frame is on screen; on small screens it is hidden.
+    const loadFilms = () => {
+      if (!panel.getClientRects().length) return;
+      for (const video of films) {
+        if (video.src) continue;
+        const scheme = dark.matches ? 'dark' : 'light';
+        video.poster = (scheme === 'dark' ? video.dataset.posterDark : video.dataset.posterLight) ?? '';
+        video.src = video.dataset[scheme] ?? '';
+        video.preload = 'auto';
+      }
+    };
+
+    // Let the hidden frames load quietly once the page is idle, so the first hover is instant.
+    const reveal = () => {
+      shots.forEach((shot) => (shot.hidden = false));
+      loadFilms();
+    };
+    if ('requestIdleCallback' in window) window.requestIdleCallback(reveal);
+    else window.setTimeout(reveal, 1500);
+
+    const playFilm = (shot: HTMLElement, video: HTMLVideoElement) => {
+      const acts: { at: number; label: string }[] = JSON.parse(video.dataset.acts ?? '[]');
+      const label = shot.querySelector('[data-flip-label]');
+      const count = shot.querySelector('[data-flip-count]');
+      const bar = shot.querySelector<HTMLElement>('[data-flip-bar]');
+      loadFilms();
+
+      // Without motion the film stays on its poster, the last frame: the result.
+      if (reduce.matches) {
+        if (label) label.textContent = acts[acts.length - 1].label;
+        if (count) count.textContent = '';
+        return;
+      }
+
+      const sync = () => {
+        const t = video.currentTime;
+        const index = acts.reduce((found, act, i) => (t >= act.at ? i : found), 0);
+        if (label) label.textContent = acts[index].label;
+        if (count) count.textContent = `${index + 1}/${acts.length}`;
+        if (bar && video.duration) bar.style.transform = `scaleX(${video.ended ? 1 : t / video.duration})`;
+        if (!video.paused && !video.ended) frameRequest = window.requestAnimationFrame(sync);
+      };
+
+      video.onended = sync;
+      video.currentTime = 0;
+      video.play().then(sync, () => {});
+      sync();
+    };
+
+    const play = (shot: HTMLElement) => {
+      const video = shot.querySelector('video');
+      if (video) return playFilm(shot, video);
+      const images = [...shot.querySelectorAll<HTMLImageElement>('.flip-frames img')];
+      const label = shot.querySelector('[data-flip-label]');
+      const count = shot.querySelector('[data-flip-count]');
+      const bar = shot.querySelector<HTMLElement>('[data-flip-bar]');
+      let index = 0;
+
+      // Set every frame, not just the last one: a replay can start while another frame is still current.
+      const go = (next: number) => {
+        index = next;
+        images.forEach((image, i) => image.classList.toggle('is-current', i === index));
+        if (label) label.textContent = images[index].dataset.label ?? '';
+        if (count) count.textContent = `${index + 1}/${images.length}`;
+      };
+
+      go(0);
+      if (images.length < 2) return;
+      // Without motion all frames are shown together, so the caption names them all.
+      if (reduce.matches) {
+        if (label) label.textContent = images.map((image) => image.dataset.label).join(' · ');
+        if (count) count.textContent = '';
+        return;
+      }
+      bar?.getAnimations().forEach((animation) => animation.cancel());
+      bar?.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], {
+        duration: FRAME_MS * (images.length - 1),
+        fill: 'forwards',
+      });
+      timer = window.setInterval(() => {
+        go(index + 1);
+        if (index === images.length - 1) window.clearInterval(timer);
+      }, FRAME_MS);
+    };
+
+    const show = (key: string) => {
+      window.clearTimeout(leaveTimer);
+      if (!shots.has(key)) key = '';
+      if (key === current) return;
+      window.clearInterval(timer);
+      window.cancelAnimationFrame(frameRequest);
+      panel.classList.add('is-live');
+      shots.get(current)?.querySelector('video')?.pause();
+      shots.get(current)?.classList.remove('is-on');
+      current = key;
+      const shot = shots.get(key)!;
+      shot.hidden = false;
+      if (key) play(shot);
+      shot.classList.add('is-on');
+    };
+
+    document.querySelectorAll<HTMLElement>('[data-flip]').forEach((row) => {
+      const key = row.dataset.flip ?? '';
+      const leave = () => (leaveTimer = window.setTimeout(() => show(''), 350));
+      row.addEventListener('pointerenter', () => show(key));
+      row.addEventListener('focusin', () => show(key));
+      row.addEventListener('pointerleave', leave);
+      row.addEventListener('focusout', leave);
+    });
+  }
+</script>
+
+<style>
+  /* One frame for the person and the work: the portrait is the resting state. */
+  .flip {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    display: grid;
+  }
+
+  .flip-shot {
+    grid-area: 1 / 1;
+    margin: 0;
+    visibility: hidden;
+  }
+
+  .flip-shot.is-on {
+    visibility: visible;
+  }
+
+  .flip-frames {
+    display: grid;
+    aspect-ratio: 4 / 5;
+    padding: 6%;
+    background: var(--soft);
+    overflow: hidden;
+  }
+
+  .flip-frames.is-portrait,
+  .flip-frames.is-film {
+    padding: 0;
+  }
+
+  .flip-frames video {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Work traces sit on the paper like prints, whole and uncropped. */
+  .flip-frames :global(img) {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    visibility: hidden;
+  }
+
+  .flip-frames.is-portrait :global(img) {
+    object-fit: cover;
+    object-position: 50% 22%;
+  }
+
+  /* Visibility is set on the frame itself: a visible child would show through a hidden figure. */
+  .flip-shot.is-on .flip-frames :global(img.is-current) {
+    visibility: visible;
+  }
+
+  .flip-shot figcaption {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0 0;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-flip-count] {
+    margin-left: 10px;
+  }
+
+  /* Time left on the current frame. */
+  .flip-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /* A new project comes in like a print out of a slot: top to bottom, in hard steps.
+     Only after the first hover, so the portrait is simply there when the page opens. */
+  @media (prefers-reduced-motion: no-preference) {
+    .flip.is-live .flip-shot.is-on .flip-frames {
+      animation: flip-in 0.24s steps(6, end) both;
+    }
+  }
+
+  @keyframes flip-in {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  /* Without motion, all traces of a project are shown at once, like a contact sheet. */
+  @media (prefers-reduced-motion: reduce) {
+    .flip-frames:not(.is-portrait, .is-film) {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 6%;
+    }
+    .flip-frames:not(.is-portrait, .is-film) :global(img) {
+      flex: 1 1 0;
+      min-height: 0;
+    }
+    .flip-shot.is-on .flip-frames:not(.is-portrait, .is-film) :global(img) {
+      visibility: visible;
+    }
+    .flip-bar {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,16 @@
+---
+// Draft variant G, all projects: the selected work plays its Bauhaus films, everything else its title card.
+import AllProjects from '../../../components/f/AllProjects.astro';
+import { slug } from '../../../data/projects';
+import { selected } from '../../../data/selected';
+
+const films = Object.fromEntries(selected.map((row) => [row.title, `/motion/bauhaus/${slug(row.title)}`]));
+---
+
+<AllProjects base="/varianten/g/" version="G" films={films} cards="/motion/cards-light" />
+
+<style is:global>
+  :root {
+    --frame-ground: #f2eee3;
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+// Version J: a figure in the case text that picks the opening stage up again and runs as it scrolls past
+// (mountFigure in stage.tsx). The drawing is decoration for the text beside it, so it is hidden from screen
+// readers; the caption carries the point.
+interface Props {
+  /** Key of a figure in stage.tsx. */
+  kind:
+    | 'flowculate-pages'
+    | 'flowculate-name'
+    | 'saunter-lake'
+    | 'sayfit-prompts'
+    | 'levelwork-roles'
+    | 'noten-questions'
+    | 'minutes-agenda'
+    | 'tealucent-tokens'
+    | 'conactive-channels'
+    | 'stayin-floors'
+    | 'iot-model';
+  /** Width / height of the drawing. */
+  ratio: string;
+  /** Width / height of the narrow version, for figures that have one (narrower than 600 px, stage.tsx). */
+  narrow?: string;
+}
+const { kind, ratio, narrow = ratio } = Astro.props;
+---
+
+<div class="sf" data-scrub={kind} data-ratio={ratio} data-ratio-narrow={narrow} style={`aspect-ratio: ${ratio}`}></div>
+
+<script>
+  import { mountFigure } from './stage';
+
+  document.querySelectorAll<HTMLElement>('[data-scrub]').forEach(mountFigure);
+</script>
+
+<style>
+  .sf {
+    width: 100%;
+  }
+
+  .sf :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

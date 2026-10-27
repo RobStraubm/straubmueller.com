@@ -1,0 +1,287 @@
+---
+// All-projects page for versions F, G and H: one long list in grey; the project in the middle of the
+// screen turns black and the frame shows its film, a picture of the old work, or its title card.
+import type { ImageMetadata } from 'astro';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../VariantSwitch.astro';
+import FHeader from './FHeader.astro';
+import FFooter from './FFooter.astro';
+import FilmFrame from './FilmFrame.astro';
+import { recent, brand, slug } from '../../data/projects';
+import frischAuf from '../../assets/overview/frisch-auf.jpg';
+import hello from '../../assets/overview/hello.jpg';
+import jko from '../../assets/overview/jko.jpg';
+import pandacare from '../../assets/overview/pandacare.jpg';
+import windberg from '../../assets/overview/windberg.jpg';
+import momentum from '../../assets/overview/momentum.jpg';
+import rothaus from '../../assets/overview/rothaus.jpg';
+import photography from '../../assets/overview/photography.jpg';
+import spartacus from '../../assets/archive/spartacus-key.jpg';
+
+interface Props {
+  base: string;
+  version: string;
+  /** Project title → film path without extension (…/name.mp4 and …/name.jpg). */
+  films: Record<string, string>;
+  /** Folder in /public with a title card per project. */
+  cards: string;
+}
+const { base, version, films, cards } = Astro.props;
+const pictures: Record<string, ImageMetadata> = {
+  'FRISCH AUF Frauen': frischAuf,
+  Hello: hello,
+  'Junger Kammerchor': jko,
+  Pandacare: pandacare,
+  'Windberg Stiftelse': windberg,
+  momentum,
+  'Rothaus at CMT': rothaus,
+  Photography: photography,
+  'Spartacus Advisors': spartacus,
+};
+
+const groups = [
+  { id: 'recent', title: 'Products, research and UX', items: recent },
+  { id: 'brand', title: 'Brand, editorial and photography', items: brand },
+].map((group) => ({ ...group, items: [...group.items].sort((a, b) => b.start - a.start) }));
+
+const frameItems = groups
+  .flatMap((group) => group.items)
+  .map((item) => ({
+    key: slug(item.title),
+    film: films[item.title] ? { src: `${films[item.title]}.mp4`, poster: `${films[item.title]}.jpg` } : undefined,
+    still: films[item.title] ? undefined : (pictures[item.title] ?? `${cards}/card-${slug(item.title)}.jpg`),
+  }));
+
+const all = groups.flatMap((group) => group.items);
+const first = Math.floor(Math.min(...all.map((item) => item.start)));
+---
+
+<Base
+  title={`All projects · Robert Straubmüller · Version ${version}`}
+  description="Every project by Robert Straubmüller: products, research and UX, and brand, editorial and photography work."
+  chrome={false}
+>
+  <FHeader slot="header" current="work" base={base} />
+
+  <section class="fw-hero" aria-labelledby="fw-h">
+    <h1 id="fw-h" class="fw-words">
+      <span class="fw-word"><span>All</span></span>
+      <span class="fw-word" style="--delay: 0.08s"><span>projects</span></span>
+    </h1>
+    <p class="fw-sub">{all.length} projects since {first}, newest first</p>
+  </section>
+
+  <div class="fw-grid">
+    <div>
+      {
+        groups.map((group) => (
+          <section class="fw-group" aria-labelledby={`fw-${group.id}`}>
+            <div class="fw-group-head">
+              <h2 id={`fw-${group.id}`} class="fw-label">
+                {group.title}
+              </h2>
+              <p class="fw-label">{String(group.items.length).padStart(2, '0')}</p>
+            </div>
+            <ol class="fw-list">
+              {group.items.map((item) => (
+                <li data-film-key={slug(item.title)}>
+                  <h3 class="fw-title">{item.title}</h3>
+                  <p class="fw-meta">
+                    <span>{item.years}</span>
+                    {item.client === 'Own' ? <span class="is-own">Own project</span> : <span>For {item.client}</span>}
+                    <span>{item.field}</span>
+                    {item.href && <a href={item.href}>{item.link} ↗</a>}
+                  </p>
+                  <p class="fw-line">{item.line}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+    </div>
+    <FilmFrame items={frameItems} />
+  </div>
+
+  <FFooter slot="footer" />
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  :global(body) {
+    font-family: var(--f-sans);
+    --dim: #8a8e87;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(body) {
+      --dim: #6d716b;
+    }
+  }
+
+  .fw-label {
+    margin: 0;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .fw-hero {
+    padding: clamp(32px, 6vw, 96px) var(--m) clamp(48px, 6vw, 96px);
+  }
+
+  .fw-words {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    font-size: clamp(56px, 13vw, 230px);
+    font-weight: 500;
+    line-height: 0.82;
+    letter-spacing: -0.06em;
+    text-transform: uppercase;
+  }
+
+  .fw-word {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.05em;
+  }
+
+  .fw-word > span {
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .fw-word > span {
+      animation: fw-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--delay, 0s) both;
+    }
+  }
+
+  @keyframes fw-rise {
+    from {
+      translate: 0 105%;
+    }
+  }
+
+  .fw-sub {
+    margin: 18px 0 0;
+    text-align: right;
+    font-size: clamp(16px, 1.75vw, 30px);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+
+  .fw-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 30%);
+    gap: 0 clamp(24px, 4vw, 72px);
+    padding: 0 var(--m);
+  }
+
+  .fw-group + .fw-group {
+    margin-top: clamp(64px, 8vw, 128px);
+  }
+
+  .fw-group-head {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .fw-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Grey until the row reaches the middle of the screen or the pointer, then ink. */
+  .fw-list li {
+    padding: 18px 0 20px;
+    border-bottom: 1px solid var(--hair);
+    color: var(--dim);
+    transition: color 0.35s;
+  }
+
+  .fw-list li.is-active {
+    color: var(--ink);
+  }
+
+  .fw-title {
+    margin: 0;
+    font-size: clamp(28px, 3.4vw, 58px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  .fw-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin: 12px 0 0;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
+
+  .fw-list li.is-active .fw-meta {
+    color: var(--ink);
+  }
+
+  .fw-meta a {
+    text-decoration: none;
+  }
+
+  .fw-meta a:hover {
+    text-decoration: underline;
+  }
+
+  .is-own {
+    padding: 0 6px;
+    border: 1px solid currentColor;
+  }
+
+  .fw-line {
+    max-width: 52ch;
+    margin: 8px 0 0;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--mute);
+  }
+
+  .fw-list li.is-active .fw-line {
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fw-list li {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .fw-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .fw-grid > :global(.ffr) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .fw-words {
+      flex-direction: column;
+      font-size: 22vw;
+    }
+    .fw-sub {
+      text-align: left;
+    }
+  }
+</style>

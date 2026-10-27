@@ -1,0 +1,653 @@
+---
+// Draft variant D: the Now from C, the index from B with a client column, and an archive of older client work.
+// The frame on the right shows Robert until a project is hovered, then flips through its work traces.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+import FlipPanel from '../../components/FlipPanel.astro';
+import { frames } from '../../data/frames';
+import portrait from '../../assets/variants/portrait.jpg';
+
+interface Row {
+  years: string;
+  title: string;
+  line: string;
+  /** Who the work was for. 'Own' marks self-initiated work. */
+  client: string;
+  status?: string;
+  live?: boolean;
+  href?: string;
+  link?: string;
+  /** Key in frames.ts. */
+  flip?: string;
+}
+
+const now = [
+  {
+    text: 'Building Levelwork full time with Michael Gajda. Constat shows how work is really distributed in an organisation, one structured conversation per role.',
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+  },
+  { text: 'Working on AI meeting minutes, now in pilot at a district administration (freelance, for gyv).' },
+  { text: 'Building Notenprogramm, which turns sheet-music PDFs into editable MusicXML.' },
+];
+
+const work: Row[] = [
+  {
+    years: '2026–',
+    title: 'Levelwork',
+    line: 'Co-founder. Building Constat with Michael Gajda.',
+    client: 'Own',
+    status: 'Startup',
+    live: true,
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+    flip: 'levelwork',
+  },
+  {
+    years: '2026',
+    title: 'AI meeting minutes',
+    line: 'Product design and build for a district administration.',
+    client: 'gyv',
+    status: 'Pilot',
+    live: true,
+  },
+  {
+    years: '2026',
+    title: 'Saunter',
+    line: 'Walk while you work: a walking-pad companion for the Mac, built with Claude Code.',
+    client: 'Own',
+    status: 'Open source',
+    live: true,
+    href: 'https://github.com/RobStraubm/saunter',
+    link: 'GitHub',
+    flip: 'saunter',
+  },
+  {
+    years: '2026',
+    title: 'SayFit',
+    line: 'Voice food logger, team of four. Co-built the pipeline, tests and web UI.',
+    client: 'Own',
+    status: 'Team project',
+    href: 'https://github.com/RobStraubm/sayfit',
+    link: 'GitHub',
+    flip: 'sayfit',
+  },
+  {
+    years: '2022–25',
+    title: 'Flowculate',
+    line: 'From a math-only research tool to a public web app.',
+    client: 'HTWG Konstanz',
+    status: 'Live',
+    live: true,
+    href: 'https://flowculate.eu',
+    link: 'flowculate.eu',
+    flip: 'flowculate',
+  },
+  {
+    years: '2024',
+    title: 'Sustainable IoT',
+    line: 'A design sprint that changed the lab’s direction.',
+    client: 'HTWG Konstanz',
+    status: 'Research',
+    flip: 'iot',
+  },
+  {
+    years: '2022–24',
+    title: 'Tealucent',
+    line: 'Design system for goconut’s small developer team.',
+    client: 'user generated design',
+    status: 'User-tested',
+    flip: 'tealucent',
+  },
+  {
+    years: '2022',
+    title: 'Conactive',
+    line: 'Master’s thesis on interacting with connected systems.',
+    client: 'Own',
+    status: '1st prize',
+    href: 'https://www.htwg-konstanz.de/bachelor/kommunikationsdesign/abschlussarbeiten/konstanzer-designpreis/straubueller-robert',
+    link: 'HTWG',
+    flip: 'conactive',
+  },
+  {
+    years: '2021',
+    title: 'Stayin’ Alive',
+    line: 'Exhibition on living with epidemics, built by about 80 students. Led the UX team.',
+    client: 'HTWG Konstanz',
+    status: 'Red Dot',
+    href: 'https://www.red-dot.org/project/stayin-alive-60726',
+    link: 'red-dot.org',
+    flip: 'stayin',
+  },
+];
+
+const archive: Row[] = [
+  {
+    years: '2017–22',
+    title: 'FRISCH AUF Frauen',
+    line: 'Visual identity for the women’s handball team: player portraits, autograph cards, matchday magazine, posters.',
+    client: 'FRISCH AUF Göppingen',
+    flip: 'fafrauen',
+  },
+  {
+    years: '2020',
+    title: 'Spartacus Advisors',
+    line: 'Brand identity for a consultancy: name, logo, icons, website.',
+    client: 'Icarus Holding',
+    flip: 'spartacus',
+  },
+  {
+    years: '2019',
+    title: 'Pandacare',
+    line: 'Brochure for a natural soap maker in Berlin.',
+    client: 'Pandacare',
+    flip: 'pandacare',
+  },
+  {
+    years: '2017',
+    title: 'Junger Kammerchor',
+    line: 'Identity, concert posters and website for a young chamber choir.',
+    client: 'Junger Kammerchor Ostwürttemberg',
+    flip: 'jko',
+  },
+];
+
+const panelItems = [...work, ...archive]
+  .filter((row) => row.flip)
+  .map((row) => ({ key: row.flip!, title: row.title }));
+---
+
+<Base
+  title="Robert Straubmüller · Version D"
+  description="Robert Straubmüller researches, designs and builds software for people who are not experts. Co-founder of Levelwork, Konstanz."
+  chrome={false}
+>
+  <header class="d-header" slot="header">
+    <a class="d-name" href="/varianten/d/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="d-place">Konstanz</span>
+    <span class="d-links">
+      <a href="/varianten/d/about/">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <div class="d-layout">
+    <div class="d-flow">
+      <figure class="d-me">
+        <Image
+          src={portrait}
+          alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+          widths={[240, 480]}
+          sizes="240px"
+          loading="lazy"
+        />
+      </figure>
+
+      <h1 class="d-statement">I research, design and build software for people who are not experts.</h1>
+
+      <section class="d-now" aria-labelledby="d-now-h">
+        <div class="d-now-head">
+          <h2 id="d-now-h">Now</h2>
+          <p class="mute">Oct 2026</p>
+        </div>
+        <ul>
+          {
+            now.map((item) => (
+              <li>
+                {item.text}
+                {item.href && (
+                  <>
+                    {' '}
+                    <a href={item.href}>{item.link} ↗</a>
+                  </>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="d-list" aria-labelledby="d-work-h">
+        <h2 id="d-work-h" class="d-list-h">Work</h2>
+        <p class="d-cols mute" aria-hidden="true">
+          <span>Year</span><span>Project</span><span></span><span>Client</span><span>Status</span>
+        </p>
+        <ol class="d-rows">
+          {
+            work.map((row) => (
+              <li data-flip={row.flip}>
+                <span class="d-years">{row.years}</span>
+                <span class="d-title">{row.title}</span>
+                <span class="d-line">{row.line}</span>
+                <span class="d-meta">
+                  <span class:list={['d-client', { 'is-own': row.client === 'Own' }]}>
+                    <span class="visually-hidden">Client: </span>
+                    {row.client}
+                  </span>
+                  <span class:list={['d-status', { 'is-live': row.live }]}>{row.status}</span>
+                </span>
+                <span class="d-link">{row.href && <a href={row.href}>{row.link} ↗</a>}</span>
+                {row.flip && (
+                  <span class="d-thumb">
+                    <Image
+                      src={frames[row.flip].at(-1)!.src}
+                      alt={frames[row.flip].at(-1)!.alt}
+                      widths={[160, 320]}
+                      sizes="96px"
+                      loading="lazy"
+                    />
+                  </span>
+                )}
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section class="d-list d-archive" aria-labelledby="d-archive-h">
+        <div class="d-list-head">
+          <h2 id="d-archive-h" class="d-list-h">Archive</h2>
+          <p class="mute">Brand and editorial design for clients, 2017–2022</p>
+        </div>
+        <ol class="d-rows">
+          {
+            archive.map((row) => (
+              <li data-flip={row.flip}>
+                <span class="d-years">{row.years}</span>
+                <span class="d-title">{row.title}</span>
+                <span class="d-line">{row.line}</span>
+                {row.flip && (
+                  <span class="d-thumb">
+                    <Image
+                      src={frames[row.flip].at(-1)!.src}
+                      alt={frames[row.flip].at(-1)!.alt}
+                      widths={[160, 320]}
+                      sizes="96px"
+                      loading="lazy"
+                    />
+                  </span>
+                )}
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+    </div>
+
+    <FlipPanel items={panelItems} />
+  </div>
+
+  <footer class="d-footer" slot="footer">
+    <p>Ten years in design, three of them at a research institute. Now co-founder of Levelwork.</p>
+    <p class="d-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  :global(body) {
+    --signal: #e5361b;
+    font-family: var(--f-sans);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(body) {
+      --signal: #ff6a4d;
+    }
+  }
+
+  .d-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .d-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .d-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .d-links a,
+  .d-legal a,
+  .d-link a,
+  .d-now a {
+    text-decoration: none;
+  }
+
+  .d-links a:hover,
+  .d-legal a:hover,
+  .d-link a:hover,
+  .d-now a:hover {
+    text-decoration: underline;
+  }
+
+  /* Two columns for the whole page: the flow on the left, the frame on the right. */
+  .d-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 29%, 480px);
+    gap: 0 clamp(24px, 3vw, 48px);
+    padding: clamp(40px, 6vw, 96px) var(--m) 0;
+  }
+
+  .d-statement {
+    margin: 0 0 clamp(40px, 5vw, 80px);
+    max-width: 17ch;
+    font-family: var(--f-sans);
+    font-size: clamp(40px, 5.6vw, 100px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  /* Now: same left column as the years below, so the text lines up with the project titles. */
+  .d-now {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 0 16px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .d-now-head h2,
+  .d-list-h {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .d-now-head {
+    padding: 16px 0;
+  }
+
+  .d-now-head p {
+    margin: 2px 0 0;
+    font-size: 14px;
+  }
+
+  .d-me {
+    display: none;
+    margin: 0;
+  }
+
+  .d-now ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .d-now li {
+    max-width: 56ch;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: clamp(18px, 1.4vw, 21px);
+    line-height: 1.4;
+  }
+
+  .d-now li:last-child {
+    border-bottom: 0;
+  }
+
+  .d-now li a {
+    white-space: nowrap;
+    font-size: 0.8em;
+  }
+
+  .d-list {
+    margin-top: clamp(48px, 6vw, 96px);
+  }
+
+  .d-list-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 16px;
+  }
+
+  .d-list-head p {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .d-list-h {
+    padding-bottom: 12px;
+  }
+
+  .d-cols,
+  .d-rows li {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 0.8fr) minmax(0, 1.25fr) 112px 100px 108px;
+    gap: 4px 16px;
+    align-items: baseline;
+  }
+
+  .d-cols {
+    margin: 0;
+    padding: 0 0 8px;
+    font-size: 13px;
+  }
+
+  .d-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .d-rows li {
+    padding: 16px 0 15px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .d-years {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .d-title {
+    font-size: clamp(20px, 1.7vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .d-line {
+    font-size: 16px;
+    color: var(--mute);
+  }
+
+  .d-client,
+  .d-status,
+  .d-link {
+    font-size: 14px;
+  }
+
+  /* Client and status are two columns here and share one line on small screens. */
+  .d-meta {
+    display: contents;
+  }
+
+  /* Own work reads first; client work stays quiet. */
+  .d-client {
+    color: var(--mute);
+  }
+
+  .d-client.is-own {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .d-status {
+    white-space: nowrap;
+    color: var(--mute);
+  }
+
+  .d-status.is-live::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    background: var(--signal);
+  }
+
+  .d-link {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .d-thumb {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    .d-rows li[data-flip]:hover .d-title {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+  }
+
+  /* Archive rows are quieter: smaller titles, no status. */
+  .d-archive .d-title {
+    font-size: clamp(18px, 1.3vw, 20px);
+    font-weight: 500;
+  }
+
+  .d-archive .d-line {
+    grid-column: 3 / -1;
+  }
+
+  .d-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .d-footer p {
+    margin: 0;
+  }
+
+  .d-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 1100px) {
+    .d-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .d-layout > :global(.flip) {
+      display: none;
+    }
+    /* No frame on the right here, so Robert stands above the statement instead. */
+    .d-me {
+      display: block;
+      width: min(40%, 240px);
+      margin-bottom: 28px;
+    }
+    .d-me :global(img) {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: 50% 22%;
+    }
+    .d-cols {
+      display: none;
+    }
+    .d-rows li {
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+    }
+    .d-title,
+    .d-line,
+    .d-archive .d-line {
+      grid-column: 2;
+    }
+    .d-meta {
+      grid-column: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px 16px;
+    }
+    .d-link {
+      grid-column: 3;
+      grid-row: 1;
+    }
+    .d-thumb {
+      display: block;
+      grid-column: 3;
+      grid-row: 2 / 5;
+      align-self: start;
+      justify-self: end;
+    }
+    .d-thumb :global(img) {
+      width: 96px;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: var(--soft);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .d-header {
+      grid-template-columns: 1fr auto;
+    }
+    .d-place {
+      display: none;
+    }
+    .d-links {
+      grid-column: 1 / -1;
+    }
+    .d-now {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .d-now-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding-bottom: 0;
+    }
+    .d-rows li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .d-years {
+      grid-column: 1 / -1;
+    }
+    .d-title,
+    .d-line,
+    .d-archive .d-line,
+    .d-meta {
+      grid-column: 1;
+    }
+    .d-link {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .d-thumb {
+      grid-column: 2;
+      grid-row: 3 / 6;
+    }
+  }
+</style>

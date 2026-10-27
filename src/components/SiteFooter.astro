@@ -1,0 +1,60 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" id="colophon">
+  <div>
+    <p class="lbl mute">Contact</p>
+    <p><a href="mailto:robert@straubmueller.com">robert@straubmueller.com</a></p>
+    <p>Konstanz, Germany</p>
+  </div>
+  <div>
+    <p class="lbl mute">Colophon</p>
+    <p>No cookies, no tracking. <a href="https://github.com/RobStraubm/straubmueller.com">Source on GitHub</a>.</p>
+  </div>
+  <div>
+    <p class="lbl mute">Legal</p>
+    <p><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
+    <p class="mute">© {year} Robert Straubmüller</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--ink);
+  }
+
+  .site-footer > div {
+    padding: 20px var(--m) 28px;
+    border-right: 1px solid var(--ink);
+  }
+
+  .site-footer > div:last-child {
+    border-right: 0;
+  }
+
+  p {
+    margin: 0 0 6px;
+    max-width: 46ch;
+    font-size: 15px;
+  }
+
+  .lbl {
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 760px) {
+    .site-footer {
+      grid-template-columns: 1fr;
+    }
+    .site-footer > div {
+      border-right: 0;
+      border-bottom: 1px solid var(--ink);
+    }
+    .site-footer > div:last-child {
+      border-bottom: 0;
+    }
+  }
+</style>

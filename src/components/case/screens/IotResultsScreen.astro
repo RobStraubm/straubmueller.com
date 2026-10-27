@@ -1,0 +1,347 @@
+---
+// The results view of the IoT footprint tool, redrawn in 2026 as a finished screen from Robert's wireframe of 18 Jun
+// 2024 (~/Desktop/Job/IOT/OUTPUT/results.pdf): carbon over the time in use for high, normal and low use, the impact
+// categories of a life cycle assessment, and the overall impact per part of the system, where the cloud is largest.
+// Curve shapes and the radar follow the wireframe; no axis values are given because the wireframe gives none.
+const tabs = ['Summary', 'Production', 'Operation', 'End of life'];
+const categories = [
+  'Climate change',
+  'Ozone depletion',
+  'Human toxicity',
+  'Ionizing radiation',
+  'Acidification',
+  'Eutrophication',
+  'Ecotoxicity',
+  'Land use',
+  'Resource use',
+];
+// Radar: share per part of the system, read off the wireframe (scale 0–50).
+const parts = [
+  { name: 'Cloud', value: 48 },
+  { name: 'Electricity hardware', value: 20 },
+  { name: 'Internet', value: 16 },
+  { name: 'Thermostats', value: 30 },
+  { name: 'Router', value: 27 },
+  { name: 'Gateway', value: 13 },
+];
+const cx = 200;
+const cy = 190;
+const R = 140;
+const point = (i: number, v: number) => {
+  const a = (-90 + i * (360 / parts.length)) * (Math.PI / 180);
+  return [cx + Math.cos(a) * R * (v / 50), cy + Math.sin(a) * R * (v / 50)];
+};
+const polygon = parts.map((part, i) => point(i, part.value).join(',')).join(' ');
+const rings = [10, 20, 30, 40, 50].map((v) => parts.map((_, i) => point(i, v).join(',')).join(' '));
+---
+
+<div class="res-wrap">
+  <div
+    class="res"
+    role="img"
+    aria-label="Finished screen of the results view, redrawn from the June 2024 wireframe: carbon over the time in use for high, normal and low use, the nine impact categories of a life cycle assessment, and a radar of the overall environmental impact in which the cloud has by far the largest share."
+  >
+    <div class="res-top" aria-hidden="true">
+      <span class="res-app">IoT footprint</span>
+      <span class="res-tabs"><i>Model</i><b>Results</b></span>
+      <span class="res-case">Average household · 3 people · 4 rooms</span>
+    </div>
+
+    <div class="res-body" aria-hidden="true">
+      <div class="res-left">
+        <div class="res-phases">{tabs.map((tab, i) => <span class:list={{ 'is-on': i === 0 }}>{tab}</span>)}</div>
+
+        <div class="res-card">
+          <div class="res-head">
+            <h4>CO₂-equivalent</h4>
+            <span class="res-soft">Cumulative energy demand</span>
+          </div>
+          <svg viewBox="0 0 560 250" class="res-chart">
+            <line x1="40" y1="190" x2="500" y2="190" class="res-zero" />
+            <line x1="40" y1="20" x2="40" y2="230" class="res-axis" />
+            <path d="M40 190 C 80 200, 110 214, 150 214 S 300 120, 470 40" class="res-high" />
+            <path d="M40 190 C 80 198, 120 212, 170 212 S 320 140, 470 88" class="res-normal" />
+            <path d="M40 190 C 80 196, 130 208, 190 208 S 340 180, 470 156" class="res-low" />
+            <text x="478" y="44">High</text>
+            <text x="478" y="92">Normal</text>
+            <text x="478" y="160">Low</text>
+            <text x="44" y="246" class="res-label">time in use →</text>
+          </svg>
+          <p class="res-note">Savings come first. With heavy use the network and cloud traffic outgrow them.</p>
+        </div>
+
+        <div class="res-card">
+          <h4>Impact categories</h4>
+          <div class="res-chips">{categories.map((c) => <span>{c}</span>)}</div>
+        </div>
+      </div>
+
+      <div class="res-card res-radar">
+        <h4>Overall environmental impact</h4>
+        <svg viewBox="-50 0 500 390" class="res-chart">
+          {rings.map((ring) => <polygon points={ring} class="res-ring" />)}
+          {
+            parts.map((_, i) => {
+              const [x, y] = point(i, 50);
+              return <line x1={cx} y1={cy} x2={x} y2={y} class="res-spoke" />;
+            })
+          }
+          <polygon points={polygon} class="res-area" />
+          {
+            parts.map((part, i) => {
+              const [x, y] = point(i, 58);
+              return (
+                <text x={x} y={y + 5} class:list={['res-part', { 'is-top': i === 0 }]}>
+                  {part.name}
+                </text>
+              );
+            })
+          }
+        </svg>
+        <div class="res-insight">
+          <b>Largest share: the cloud</b>
+          <span>The lever is how often people check their data, not which thermostat they buy.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .res-wrap {
+    container-type: inline-size;
+  }
+
+  .res {
+    --u: calc(100cqw / 1200);
+    --bg: #eef1ef;
+    --card: #ffffff;
+    --ink: #1c2321;
+    --soft: #6c7773;
+    --line: #d5dcd8;
+    --accent: #1f6f5b;
+    --accent-soft: #d9ebe4;
+    color: var(--ink);
+    background: var(--bg);
+    font-family: var(--f-sans);
+    font-size: calc(15 * var(--u));
+  }
+
+  .res-top {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: calc(14 * var(--u)) calc(24 * var(--u));
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    font-size: calc(15 * var(--u));
+  }
+
+  .res-app {
+    font-weight: 600;
+  }
+
+  .res-tabs {
+    display: inline-flex;
+    gap: calc(4 * var(--u));
+    padding: calc(4 * var(--u));
+    background: var(--bg);
+    border-radius: calc(8 * var(--u));
+  }
+
+  .res-tabs b,
+  .res-tabs i {
+    padding: calc(6 * var(--u)) calc(18 * var(--u));
+    border-radius: calc(6 * var(--u));
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .res-tabs b {
+    background: var(--card);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  }
+
+  .res-tabs i,
+  .res-case,
+  .res-soft {
+    color: var(--soft);
+  }
+
+  .res-case {
+    justify-self: end;
+  }
+
+  .res-body {
+    display: grid;
+    grid-template-columns: 640fr 460fr;
+    gap: calc(18 * var(--u));
+    padding: calc(22 * var(--u)) calc(24 * var(--u)) calc(26 * var(--u));
+  }
+
+  .res-left {
+    display: flex;
+    flex-direction: column;
+    gap: calc(14 * var(--u));
+  }
+
+  .res-phases {
+    display: flex;
+    gap: calc(6 * var(--u));
+  }
+
+  .res-phases span {
+    padding: calc(7 * var(--u)) calc(14 * var(--u));
+    border: 1px solid var(--line);
+    border-radius: calc(20 * var(--u));
+    background: var(--card);
+    font-size: calc(14 * var(--u));
+  }
+
+  .res-phases .is-on {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .res .res-card {
+    margin: 0;
+    padding: calc(16 * var(--u)) calc(18 * var(--u));
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: calc(10 * var(--u));
+  }
+
+  .res .res-card h4 {
+    margin: 0 0 calc(10 * var(--u));
+    font-size: calc(12 * var(--u));
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+
+  .res-head {
+    display: flex;
+    gap: calc(18 * var(--u));
+    align-items: baseline;
+    font-size: calc(13 * var(--u));
+  }
+
+  .res-head h4 {
+    color: var(--ink) !important;
+  }
+
+  .res-chart {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .res-zero {
+    stroke: var(--soft);
+    stroke-dasharray: 4 4;
+  }
+
+  .res-axis {
+    stroke: var(--line);
+  }
+
+  .res-high,
+  .res-normal,
+  .res-low {
+    fill: none;
+    stroke-width: 3;
+  }
+
+  .res-high {
+    stroke: var(--ink);
+  }
+
+  .res-normal {
+    stroke: var(--accent);
+  }
+
+  .res-low {
+    stroke: #9db3aa;
+  }
+
+  .res-chart text {
+    font-family: var(--f-sans);
+    font-size: 14px;
+    fill: var(--ink);
+  }
+
+  .res-chart .res-label {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    fill: var(--soft);
+  }
+
+  .res .res-note {
+    margin: calc(6 * var(--u)) 0 0;
+    font-size: calc(13 * var(--u));
+    line-height: 1.4;
+    color: var(--soft);
+  }
+
+  .res-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(6 * var(--u));
+  }
+
+  .res-chips span {
+    padding: calc(5 * var(--u)) calc(10 * var(--u));
+    border-radius: calc(6 * var(--u));
+    background: var(--bg);
+    font-size: calc(13 * var(--u));
+  }
+
+  .res-radar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .res-ring {
+    fill: none;
+    stroke: var(--line);
+  }
+
+  .res-spoke {
+    stroke: var(--line);
+  }
+
+  .res-area {
+    fill: rgb(31 111 91 / 0.22);
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+
+  .res-chart .res-part {
+    font-size: 14px;
+    text-anchor: middle;
+    fill: var(--soft);
+  }
+
+  .res-chart .res-part.is-top {
+    fill: var(--accent);
+    font-weight: 600;
+  }
+
+  .res-insight {
+    display: flex;
+    flex-direction: column;
+    gap: calc(4 * var(--u));
+    margin-top: auto;
+    padding: calc(12 * var(--u)) calc(14 * var(--u));
+    border-radius: calc(8 * var(--u));
+    background: var(--accent-soft);
+    font-size: calc(14 * var(--u));
+    line-height: 1.35;
+  }
+
+  .res-insight b {
+    color: var(--accent);
+  }
+</style>

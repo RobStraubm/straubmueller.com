@@ -1,0 +1,196 @@
+---
+// Case: SayFit, team capstone of the neue fische AI Engineering bootcamp. Facts from the public README
+// (~/Desktop/Job/sayfit-showcase), Robert's commits in the team repo (~/bootcamp/capstone1/sayfit-alpha, 9–11 Mar
+// 2026), the capstone 1 slides (~/bootcamp/capstone1/presentation_slides_en.txt: 29 tests, 11 runs, ~12 % → ~71 %)
+// and the capstone 2 deck (~/bootcamp/capstone2/SayFit_Capstone2.pptx: roles, V3 → V4, prompt lengths).
+// Run 09 used simpler test cases (slides), so the case does not quote its score.
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import Shot from '../../components/case/Shot.astro';
+import SayFitPipeline from '../../components/case/diagrams/SayFitPipeline.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import processing from '../../assets/cases/sayfit/processing.jpg';
+import review from '../../assets/cases/sayfit/review.jpg';
+import recipes from '../../assets/cases/sayfit/recipes.jpg';
+import today from '../../assets/cases/sayfit/today.jpg';
+
+const half = '(max-width: 900px) 100vw, 45vw';
+---
+
+<CaseLayout
+  title="SayFit"
+  years="2026"
+  summary="Say what you ate and get nutrition data back. I worked on the two language-model steps, the search between them and the web UI."
+  meta={[
+    ['Role', 'ML engineering in a team of four: prompts and evaluation of both LLM steps, retrieval quality, web UI'],
+    ['Team', 'Four participants of the AI Engineering bootcamp at neue fische; most backend commits by Kevin Schmitt'],
+    ['Period', 'Mar – Jun 2026'],
+    ['Status', 'Team project; my part open source (MIT)'],
+  ]}
+  links={[
+    { href: 'https://github.com/RobStraubm/sayfit', label: 'My part on GitHub' },
+    { href: 'https://github.com/KevinSchmitt1/sayfit-alpha', label: 'Team repository' },
+  ]}
+  film="sayfit"
+  stage="sayfit"
+  next={{ href: '/work/sustainable-iot/', title: 'Sustainable IoT' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">Saying what you ate takes five seconds. Logging it properly takes five minutes.</p>
+    <p>
+      Food diaries fail because every item has to be found in a database and weighed. A sentence like “2 scrambled eggs
+      and a banana” is easy to say, but a database needs exact foods and grams. SayFit takes the sentence and returns
+      structured nutrition data that the user checks before it counts.
+    </p>
+    <p>
+      This is why the project mattered to me: free speech in, structured and checkable data out, and a person who
+      confirms the result. Our assessment at Levelwork has the same shape.
+    </p>
+  </section>
+
+  <section>
+    <h2>What I did</h2>
+    <p class="c-lead">Two language-model steps around a vector search, and the screen where people check the result.</p>
+    <p>
+      In March I wrote the test suite, the first food ontology that filters categories before the search, and the
+      multi-query retrieval. In June my role in the team was ML engineering: I rewrote the prompts of both LLM steps,
+      evaluated them end to end and built the web UI. Kevin Schmitt wrote most of the backend and most of the commits;
+      the data pipeline, the API and the recipe feature were the work of the others. I built the web UI with Claude
+      Code.
+    </p>
+    <figure class="c-wide">
+      <SayFitPipeline />
+      <figcaption>The pipeline in eight steps. Marked in red: my part.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>How we tested it</h2>
+    <p class="c-lead">A fixed set of test meals, run again after every change.</p>
+    <p>
+      In March we ran 29 test meals of varied difficulty through the pipeline in 11 runs over three days, about 150
+      item decisions in all. Each match got a confidence score and landed in a bucket: high, medium or low. Without the
+      language models, about 12 % of the matches came back with high confidence. With both LLM steps it was about 71 %.
+    </p>
+    <p>
+      In June we traced every LLM call in Langfuse and measured latency, errors, confidence and accuracy against known
+      answers. The new prompts were shorter and stricter: the extractor went from about 520 to 310 words, the reranker
+      from 680 to 220, with an output schema, positive and negative examples, hard exclusion rules and a confidence
+      score instead of more prose.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="sayfit-prompts" ratio="1200 / 480" narrow="600 / 860" />
+      <figcaption>Both prompts, old and new: the extractor from about 520 to 310 words, the reranker from 680 to 220, structure instead of more prose.</figcaption>
+    </figure>
+    <dl class="c-numbers">
+      <div><dt>12 → 71 %</dt><dd>matches with high confidence, without and with the LLM steps, 29 test meals</dd></div>
+      <div><dt>−23 %</dt><dd>end-to-end latency from prompt version 3 to 4, 16.4 s to 12.6 s</dd></div>
+      <div><dt>1.88 M</dt><dd>food entries from USDA and OpenFoodFacts in the search index</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">Search for breadth, a language model for the final choice, a person for the last word.</p>
+    <p>
+      <strong>Search alone was not enough.</strong> A vector search finds things that sound alike, so “peach” returned
+      “peach pie”. We could have tuned the search further; instead the search brings back 20 candidates from several
+      phrasings of the same item, category boosts push the right kind of food up, and a second LLM step picks one and
+      estimates the grams.
+    </p>
+    <p>
+      <strong>Stricter prompts, not longer ones.</strong> The first prompts explained a lot and still let the model
+      guess. Structure did more than words: task tags, examples of what not to match and rules the model may not break.
+    </p>
+    <p>
+      <strong>Nothing is saved unchecked.</strong> The model is sometimes wrong, so the result goes to a review screen
+      first, where every item can be corrected or removed. The screenshot below shows why: 150 g of avocado came back
+      with 47 kcal.
+    </p>
+    <div class="c-pair">
+      <figure>
+        <Shot
+          src={processing}
+          source="SayFit web UI"
+          label="Processing"
+          alt="SayFit while a meal is analysed: the pipeline steps listed one under the other with their timings"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>While the backend works, the steps are shown with estimated timings.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={review}
+          source="SayFit web UI"
+          label="Review"
+          alt="Review dialog with four recognised foods: smoked salmon poke bowl, quinoa, avocado and spinach, each with grams, calories and macros, and a Save Meal button"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>Review before saving. Avocado at 47 kcal for 150 g is wrong; this is where it can be caught.</figcaption>
+      </figure>
+    </div>
+    <div class="c-pair">
+      <figure>
+        <Shot
+          src={today}
+          source="SayFit web UI"
+          label="Today"
+          alt="Daily view with the logged meals and the macros of the day"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>The day: meals and macros. In our own demo the wrong avocado went through.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={recipes}
+          source="SayFit web UI"
+          label="Recipes"
+          alt="Recipe suggestions ranked by how well they fill the remaining macros of the day"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>What to eat next, from the remaining macros. The recipe feature was built by a teammate.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>What I'd change</h2>
+    <p class="c-lead">Measure cleaner, ask back sooner, show the real progress.</p>
+    <ul>
+      <li>
+        Run every configuration on exactly the same test meals. One of our best runs used simpler cases, so I don't quote
+        its score.
+      </li>
+      <li>
+        Flag implausible values in the review. In our own demo, 47 kcal for 150 g of avocado went into the log unnoticed.
+      </li>
+      <li>
+        Ask a follow-up question when the confidence is low, instead of guessing. “The usual at the Thai place” has no
+        answer in any database.
+      </li>
+      <li>
+        Stream the real pipeline steps to the screen. The UI shows the steps with estimated timings, not live progress.
+      </li>
+      <li>
+        Some gaps are in the data, not the code: USDA and OpenFoodFacts barely cover Korean or South Asian food.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <ol class="c-timeline">
+      <li><time>Nov 2025</time><span>Full-time AI Engineering bootcamp at neue fische starts.</span></li>
+      <li><time>5 Mar 2026</time><span>Team repository, first working version in the terminal.</span></li>
+      <li><time>9–11 Mar</time><span>My test suite, the food ontology and multi-query retrieval; 11 test runs.</span></li>
+      <li><time>May 2026</time><span>Langfuse tracing for every LLM call.</span></li>
+      <li><time>Jun 2026</time><span>From terminal prototype to web app: prompt version 4, web UI, API, recipes.</span></li>
+      <li><time>21 Oct 2026</time><span>My part public on GitHub.</span></li>
+      <li><time>26 Oct 2026</time><span>Web UI with unit tests and CI on every push.</span></li>
+    </ol>
+  </section>
+</CaseLayout>

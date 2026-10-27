@@ -1,0 +1,145 @@
+---
+// Short text pages of the live site (Impressum, Datenschutz, 404) with the same header and footer as the
+// homepage. `lang` marks the language of the text itself; the legal pages are German.
+import Base from '../../layouts/Base.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+  lang?: string;
+}
+const { title, description, heading, lang = 'en' } = Astro.props;
+---
+
+<Base title={title} description={description} chrome={false}>
+  <header class="t-header" slot="header">
+    <a class="t-name" href="/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="t-place">Konstanz</span>
+    <span class="t-links">
+      <a href="/work/">Projects</a>
+      <a href="/about/">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <div class="t-page" lang={lang}>
+    <h1 class="t-statement">{heading}</h1>
+    <div class="t-text">
+      <slot />
+    </div>
+  </div>
+
+  <footer class="t-footer" slot="footer">
+    <p><a href="/">← Back to the homepage</a></p>
+    <p class="t-legal">
+      <a href="/colophon/">Colophon</a>
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+</Base>
+
+<style>
+  :global(body) {
+    font-family: var(--f-sans);
+  }
+
+  .t-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .t-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .t-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .t-links a,
+  .t-footer a {
+    text-decoration: none;
+  }
+
+  .t-links a:hover,
+  .t-footer a:hover {
+    text-decoration: underline;
+  }
+
+  .t-page {
+    padding: clamp(40px, 6vw, 96px) var(--m) 0;
+  }
+
+  .t-statement {
+    margin: 0 0 clamp(32px, 4vw, 56px);
+    font-size: clamp(40px, 5.6vw, 100px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+
+  .t-text {
+    max-width: 62ch;
+    border-top: 1px solid var(--ink);
+  }
+
+  .t-text :global(h2) {
+    margin: 28px 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .t-text :global(p) {
+    margin: 0 0 12px;
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .t-text :global(a) {
+    text-underline-offset: 3px;
+  }
+
+  .t-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .t-footer p {
+    margin: 0;
+  }
+
+  .t-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 640px) {
+    .t-header {
+      grid-template-columns: 1fr auto;
+    }
+    .t-place {
+      display: none;
+    }
+    .t-links {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

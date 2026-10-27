@@ -1,0 +1,420 @@
+---
+// Draft variant B, "Index": one calm list, the work trace appears on hover.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+import constatPage from '../../assets/variants/constat-page.jpg';
+import sayfitToday from '../../assets/variants/sayfit-today.jpg';
+import flowculate2024 from '../../assets/variants/flowculate-2024.jpg';
+import storyboard from '../../assets/notes/iot-storyboard.jpg';
+import tokens from '../../assets/variants/tealucent-tokens.jpg';
+import sketchbook from '../../assets/notes/conactive-sketchbook.jpg';
+
+const rows = [
+  {
+    years: '2026–',
+    title: 'Levelwork',
+    line: 'Co-founder. Building Constat with Michael Gajda.',
+    status: 'Startup',
+    live: true,
+    href: 'https://levelwork.ai',
+    link: 'levelwork.ai',
+    image: constatPage,
+    alt: 'Page from the Constat brochure: from assumption to evidence',
+  },
+  {
+    years: '2026',
+    title: 'AI meeting minutes',
+    line: 'Product design and build for a district administration.',
+    status: 'Pilot',
+    live: true,
+  },
+  {
+    years: '2026',
+    title: 'Saunter',
+    line: 'Walk while you work: a walking-pad companion for the Mac, built with Claude Code.',
+    status: 'Open source',
+    live: true,
+    href: 'https://github.com/RobStraubm/saunter',
+    link: 'GitHub',
+  },
+  {
+    years: '2026',
+    title: 'SayFit',
+    line: 'Voice food logger, team of four. My part: web UI and LLM evaluation.',
+    status: 'Team project',
+    href: 'https://github.com/RobStraubm/sayfit',
+    link: 'GitHub',
+    image: sayfitToday,
+    alt: 'SayFit daily log with meals and macros',
+  },
+  {
+    years: '2022–25',
+    title: 'Flowculate',
+    line: 'From a math-only research tool to a public web app.',
+    status: 'Live',
+    live: true,
+    href: 'https://flowculate.eu',
+    link: 'flowculate.eu',
+    image: flowculate2024,
+    alt: 'Flowculate simulation: crowd density as a heat map in a floor plan',
+  },
+  {
+    years: '2024',
+    title: 'Sustainable IoT',
+    line: 'A design sprint that changed the lab’s direction.',
+    status: 'Research',
+    image: storyboard,
+    alt: 'Whiteboard storyboard from the design sprint',
+  },
+  {
+    years: '2022–24',
+    title: 'Tealucent',
+    line: 'Design system for a small developer team.',
+    status: 'Client',
+    image: tokens,
+    alt: 'Token architecture of the Tealucent design system',
+  },
+  {
+    years: '2022',
+    title: 'Conactive',
+    line: 'Master’s thesis on interacting with connected systems.',
+    status: '1st prize',
+    href: 'https://www.htwg-konstanz.de/bachelor/kommunikationsdesign/abschlussarbeiten/konstanzer-designpreis/straubueller-robert',
+    link: 'HTWG',
+    image: sketchbook,
+    alt: 'Sketchbook spread with pencil sketches',
+  },
+];
+const firstWithImage = rows.findIndex((r) => r.image);
+---
+
+<Base
+  title="Robert Straubmüller · Version B"
+  description="Robert Straubmüller researches, designs and builds software for people who are not experts. Co-founder of Levelwork, Konstanz."
+  chrome={false}
+>
+  <header class="b-header" slot="header">
+    <a class="b-name" href="/varianten/b/">Robert Straubmüller</a>
+    <span>Co-founder, Levelwork</span>
+    <span class="b-place">Konstanz</span>
+    <span class="b-links">
+      <a href="/varianten/b/about/">About</a>
+      <a href="mailto:robert@straubmueller.com">Email</a>
+      <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn</a>
+      <a href="https://github.com/RobStraubm">GitHub</a>
+    </span>
+  </header>
+
+  <h1 class="b-statement">I research, design and build software for people who are not experts.</h1>
+
+  <section class="b-index" aria-labelledby="b-work">
+    <h2 id="b-work" class="visually-hidden">Work</h2>
+    <ol class="b-rows" data-rows>
+      {
+        rows.map((row, i) => (
+          <li data-key={row.image ? i : undefined}>
+            <span class="b-years">{row.years}</span>
+            <span class="b-title">{row.title}</span>
+            <span class="b-line">{row.line}</span>
+            <span class:list={['b-status', { 'is-live': row.live }]}>{row.status}</span>
+            <span class="b-link">{row.href && <a href={row.href}>{row.link} ↗</a>}</span>
+            {row.image && (
+              <span class="b-thumb">
+                <Image src={row.image} alt={row.alt} widths={[160, 320]} sizes="96px" loading="lazy" />
+              </span>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+    <div class="b-preview" aria-hidden="true" data-preview>
+      {
+        rows.map(
+          (row, i) =>
+            row.image && (
+              <figure data-key={i} class:list={{ 'is-on': i === firstWithImage }}>
+                <Image src={row.image} alt="" widths={[480, 800, 1200]} sizes="34vw" loading="lazy" />
+                <figcaption>{row.title}</figcaption>
+              </figure>
+            ),
+        )
+      }
+    </div>
+  </section>
+
+  <footer class="b-footer" slot="footer">
+    <p>Ten years in design, three of them at a research institute. Now co-founder of Levelwork.</p>
+    <p class="b-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+  <VariantSwitch />
+</Base>
+
+<script>
+  // Swap the preview to the hovered or focused row.
+  const figures = document.querySelectorAll<HTMLElement>('[data-preview] figure');
+  document.querySelectorAll<HTMLElement>('[data-rows] li[data-key]').forEach((row) => {
+    const show = () =>
+      figures.forEach((figure) => figure.classList.toggle('is-on', figure.dataset.key === row.dataset.key));
+    row.addEventListener('pointerenter', show);
+    row.addEventListener('focusin', show);
+  });
+</script>
+
+<style>
+  :global(body) {
+    --signal: #e5361b;
+    font-family: var(--f-sans);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(body) {
+      --signal: #ff6a4d;
+    }
+  }
+
+  .b-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 8px 24px;
+    padding: 18px var(--m);
+    font-size: 15px;
+  }
+
+  .b-name {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .b-links {
+    display: flex;
+    gap: 18px;
+  }
+
+  .b-links a,
+  .b-legal a,
+  .b-link a {
+    text-decoration: none;
+  }
+
+  .b-links a:hover,
+  .b-legal a:hover,
+  .b-link a:hover {
+    text-decoration: underline;
+  }
+
+  .b-statement {
+    margin: 0;
+    padding: clamp(48px, 7vw, 120px) var(--m) clamp(40px, 6vw, 96px);
+    max-width: 21ch;
+    font-family: var(--f-sans);
+    font-size: clamp(40px, 6.2vw, 112px);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .b-index {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 34%;
+    gap: 0 clamp(24px, 3vw, 48px);
+    padding: 0 var(--m);
+  }
+
+  .b-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .b-rows li {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 0.9fr) minmax(0, 1.6fr) 104px 104px;
+    gap: 4px 16px;
+    align-items: baseline;
+    padding: 16px 0 15px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .b-years {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .b-title {
+    font-size: clamp(20px, 1.7vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .b-line {
+    font-size: 16px;
+    color: var(--mute);
+  }
+
+  .b-status {
+    font-size: 14px;
+    white-space: nowrap;
+    color: var(--mute);
+  }
+
+  .b-status.is-live::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    background: var(--signal);
+  }
+
+  .b-link {
+    font-size: 14px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .b-thumb {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    .b-rows li[data-key]:hover .b-title {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+  }
+
+  /* The preview stays in view while the list scrolls past. */
+  .b-preview {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    display: grid;
+    margin-top: 16px;
+  }
+
+  .b-preview figure {
+    grid-area: 1 / 1;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .b-preview figure.is-on {
+    opacity: 1;
+  }
+
+  .b-preview :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: var(--soft);
+  }
+
+  .b-preview figcaption {
+    padding-top: 8px;
+    font-size: 14px;
+    color: var(--mute);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .b-preview figure {
+      transition: none;
+    }
+  }
+
+  .b-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .b-footer p {
+    margin: 0;
+  }
+
+  .b-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  @media (max-width: 1100px) {
+    .b-index {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .b-preview {
+      display: none;
+    }
+    .b-rows li {
+      grid-template-columns: 76px minmax(0, 1fr) auto;
+    }
+    .b-line {
+      grid-column: 2 / 3;
+    }
+    .b-status {
+      grid-column: 2 / 3;
+    }
+    .b-link {
+      grid-column: 3;
+      grid-row: 1;
+    }
+    .b-thumb {
+      display: block;
+      grid-column: 3;
+      grid-row: 2 / 4;
+      align-self: start;
+      justify-self: end;
+    }
+    .b-thumb :global(img) {
+      width: 96px;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .b-header {
+      grid-template-columns: 1fr auto;
+    }
+    .b-place {
+      display: none;
+    }
+    .b-links {
+      grid-column: 1 / -1;
+    }
+    .b-rows li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .b-years {
+      grid-column: 1 / -1;
+    }
+    .b-title,
+    .b-line,
+    .b-status {
+      grid-column: 1;
+    }
+    .b-link {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .b-thumb {
+      grid-column: 2;
+      grid-row: 3 / 5;
+    }
+  }
+</style>

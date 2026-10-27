@@ -1,0 +1,294 @@
+---
+// About page for versions F, G and H: the approved paragraph set as one big statement next to the
+// portrait, then the CV as ruled lists with a label column, like the reference sites.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../VariantSwitch.astro';
+import FHeader from './FHeader.astro';
+import FFooter from './FFooter.astro';
+import { aboutText, strengths, experience, education, awards, languages } from '../../data/cv';
+import portrait from '../../assets/variants/portrait.jpg';
+
+interface Props {
+  base: string;
+  version: string;
+}
+const { base, version } = Astro.props;
+
+const lists = [
+  { id: 'experience', title: 'Experience', items: experience },
+  { id: 'education', title: 'Education', items: education },
+];
+---
+
+<Base
+  title={`About · Robert Straubmüller · Version ${version}`}
+  description="Robert Straubmüller: ten years in design, from the family restaurant to UX research and AI engineering. Now co-founder of Levelwork."
+  chrome={false}
+>
+  <FHeader slot="header" current="about" base={base} />
+
+  <section class="fa-hero" aria-labelledby="fa-h">
+    <h1 id="fa-h" class="fa-words">
+      <span class="fa-word"><span>About</span></span>
+    </h1>
+    <div class="fa-intro">
+      <figure class="fa-me">
+        <Image
+          src={portrait}
+          alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+          widths={[400, 700, 1000]}
+          sizes="(max-width: 760px) 70vw, 34vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <figcaption>Robert Straubmüller · Konstanz</figcaption>
+      </figure>
+      <div>
+        <p class="fa-statement">{aboutText}</p>
+        <ul class="fa-strengths" aria-label="What Robert brings">
+          {strengths.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {
+    lists.map((list) => (
+      <section class="fa-list" aria-labelledby={`fa-${list.id}`}>
+        <h2 id={`fa-${list.id}`} class="fa-label">
+          {list.title}
+        </h2>
+        <ol>
+          {list.items.map((item) => (
+            <li>
+              <span class="fa-years">{item.years}</span>
+              <span class="fa-role">
+                {item.href ? <a href={item.href}>{item.title}</a> : item.title}
+                <span class="fa-org">{item.org}</span>
+              </span>
+              <span class="fa-note">{item.note}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+
+  <section class="fa-list" aria-labelledby="fa-awards">
+    <h2 id="fa-awards" class="fa-label">Awards</h2>
+    <ol>
+      {
+        awards.map((award) => (
+          <li>
+            <span class="fa-years">{award.year}</span>
+            <span class="fa-role">
+              {award.title}
+              <span class="fa-org">{award.for}</span>
+            </span>
+            <span class="fa-note">{award.href && <a href={award.href}>Source ↗</a>}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="fa-list" aria-labelledby="fa-languages">
+    <h2 id="fa-languages" class="fa-label">Languages</h2>
+    <p class="fa-langs">{languages.join(' · ')}</p>
+  </section>
+
+  <FFooter slot="footer" />
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  :global(body) {
+    font-family: var(--f-sans);
+  }
+
+  .fa-label {
+    margin: 0;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .fa-hero {
+    padding: clamp(32px, 6vw, 96px) var(--m) 0;
+  }
+
+  .fa-words {
+    margin: 0;
+    font-size: clamp(64px, 17vw, 300px);
+    font-weight: 500;
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    text-transform: uppercase;
+  }
+
+  .fa-word {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.04em;
+  }
+
+  .fa-word > span {
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .fa-word > span {
+      animation: fa-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+  }
+
+  @keyframes fa-rise {
+    from {
+      translate: 0 105%;
+    }
+  }
+
+  .fa-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: clamp(24px, 4vw, 72px);
+    align-items: end;
+    margin-top: clamp(40px, 6vw, 96px);
+  }
+
+  .fa-me {
+    margin: 0;
+  }
+
+  .fa-me :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 22%;
+  }
+
+  .fa-me figcaption {
+    padding-top: 10px;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .fa-statement {
+    margin: 0;
+    font-size: clamp(22px, 2.4vw, 40px);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+
+  .fa-strengths {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: clamp(24px, 3vw, 40px) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .fa-strengths li {
+    padding: 3px 8px;
+    border: 1px solid currentColor;
+  }
+
+  /* CV lists: a label column on the left, ruled rows on the right. */
+  .fa-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    gap: 16px var(--m);
+    margin-top: clamp(64px, 8vw, 128px);
+    padding: 0 var(--m);
+  }
+
+  .fa-list ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .fa-list li {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 4px 16px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .fa-years {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    color: var(--mute);
+  }
+
+  .fa-role {
+    font-size: clamp(18px, 1.5vw, 22px);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+
+  .fa-role a,
+  .fa-note a {
+    text-decoration: none;
+  }
+
+  .fa-role a:hover,
+  .fa-note a:hover {
+    text-decoration: underline;
+  }
+
+  .fa-org {
+    display: block;
+    margin-top: 3px;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--mute);
+  }
+
+  .fa-note {
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--mute);
+  }
+
+  .fa-langs {
+    margin: 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--ink);
+    font-size: 18px;
+  }
+
+  @media (max-width: 760px) {
+    .fa-intro,
+    .fa-list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .fa-me {
+      max-width: 70%;
+    }
+    .fa-list li {
+      grid-template-columns: 72px minmax(0, 1fr);
+    }
+    .fa-note {
+      grid-column: 2;
+    }
+  }
+</style>

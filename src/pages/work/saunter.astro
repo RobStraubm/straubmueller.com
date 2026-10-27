@@ -1,0 +1,162 @@
+---
+// Case: Saunter, Robert's own walking-pad app. Story from Robert (26.10.2026), facts from the public README and
+// git log (~/Desktop/Job/laufband-public) and befund/saunter/case-study.md; numbers marked [prüfen] there are left
+// out. The dashboard is rendered from the public copy (befund/saunter/overview.png).
+import { Image } from 'astro:assets';
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import dashboard from '../../assets/cases/saunter/dashboard.jpg';
+import SaunterProtocol from '../../components/case/diagrams/SaunterProtocol.astro';
+import SaunterSystem from '../../components/case/diagrams/SaunterSystem.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+
+/** The film opens the page as a stage across the width (version J, live since 27 October 2026). */
+const { stage = true } = Astro.props as { stage?: boolean };
+---
+
+<CaseLayout
+  title="Saunter"
+  years="2026"
+  summary="I was tired of the remote and wanted a record of every office walk, so I built the app myself."
+  meta={[
+    ['Role', 'Problem, interaction design, decisions, testing on the real pad'],
+    ['Built with', 'Claude Code as pair programmer'],
+    ['Client', 'Own project'],
+    ['Status', 'Open source (GPL-3.0)'],
+  ]}
+  links={[{ href: 'https://github.com/RobStraubm/saunter', label: 'Code on GitHub' }]}
+  film="saunter"
+  stage={stage ? 'saunter' : undefined}
+  next={{ href: '/work/colla-parte/', title: 'Colla parte' }}
+>
+  <section>
+    <h2>The itch</h2>
+    <p class="c-lead">To change the speed I had to find a remote and press plus five times. Nothing was recorded.</p>
+    <p>
+      I walk on a small walking pad under my desk while I work. It came with a remote and a phone app, and neither kept
+      a distance, a history or anything in Apple Health. I wanted the belt where my work already is, on the Mac, and a
+      quiet record of every walk.
+    </p>
+  </section>
+
+  <section>
+    <h2>What I built</h2>
+    <p class="c-lead">A menu bar app that replaces the remote and turns walking into a habit.</p>
+    <p>
+      Start, pause and speed live in the menu bar and on keyboard shortcuts that work everywhere. Every walk is saved,
+      and a finished walk goes to Apple Health, where it shows up in Fitness. On top sit a daily and a weekly streak and a
+      virtual journey around Lake Constance from Konstanz on real footpaths, one walk at a time.
+    </p>
+    <figure class="c-wide">
+      <Image
+        src={dashboard}
+        alt="Saunter overview: distance today, this week and in total, the journey around Lake Constance, the weekly streak at two of three walking days, distance over 30 days and the daily streak"
+        widths={[1000, 2000]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+        loading="lazy"
+      />
+      <figcaption>The overview: distance, the journey around the lake, the weekly and the daily streak. German UI.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Friction log</h2>
+    <p class="c-lead">I was the first user. Three things annoyed me, and each one changed the product.</p>
+    <div class="c-trio">
+      <div>
+        <p><strong>The app kept asking where I had been.</strong></p>
+        <p>
+          The streak only counts office days, so after every weekday without a walk a banner asked whether I had been
+          in the office. Now one question covers all open days, at most once a day, the last four weeks can be
+          corrected in one list, and the app can recognise the office network on its own.
+        </p>
+      </div>
+      <div>
+        <p><strong>The weekly goal was a lake.</strong></p>
+        <p>
+          At first the goal was one lap of Lake Constance a week, 204 km. On a Friday the app said I needed 67.6 km a
+          day; that week I had walked 1.26 km. The goal is now a weekly streak: as many walking days as office days,
+          minus one cheat day. The lake stayed, as the long journey.
+        </p>
+        {
+          stage && (
+            <figure>
+              <ScrubFigure kind="saunter-lake" ratio="1 / 1" />
+              <figcaption>The lap the goal asked for, the week I actually walked, the goal that replaced it.</figcaption>
+            </figure>
+          )
+        }
+      </div>
+      <div>
+        <p><strong>Bluetooth hung, and I said no to a watchdog.</strong></p>
+        <p>
+          After a few days the connection could get stuck while the pad was on and in range. Instead of a watchdog in
+          the background there is a “search again” button that only appears while the pad is disconnected. No extra
+          background activity on the machine I work on all day.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it is built</h2>
+    <p class="c-lead">One small daemon holds the connection, and everything else talks to it.</p>
+    <p>
+      A Python daemon on the Mac keeps the Bluetooth LE connection to the pad, records every session in SQLite and
+      offers a local HTTP and WebSocket interface on 127.0.0.1. The SwiftUI menu bar app with its widget, Shortcuts and
+      Siri, the terminal and Claude through an MCP server all talk to it. Data stays on the Mac. The pad speaks a short
+      binary protocol: “set the belt to 2.0 km/h” is seven bytes.
+    </p>
+    <div class="c-pair">
+      <figure>
+        <SaunterSystem />
+        <figcaption>One daemon, many ways in.</figcaption>
+      </figure>
+      <figure>
+        <SaunterProtocol />
+        <figcaption>A real command, byte by byte, from a session on 23 October 2026.</figcaption>
+      </figure>
+    </div>
+    <p>
+      The streak rules and the packet parsing are covered by unit tests that run on every push on GitHub Actions, which
+      also builds the app. A first-launch setup finds the pad and asks for the few settings it needs, so nobody has to
+      edit a config file.
+    </p>
+  </section>
+
+  <section>
+    <h2>Built with Claude Code</h2>
+    <p class="c-lead">My part was the problem, the interaction design, every decision above and testing on the real pad.</p>
+    <p>
+      The code was written with Claude Code as pair programmer. For me that is the point of the project: a daily
+      annoyance became a tool I use, and I stay responsible for what it does and how it feels.
+    </p>
+    <ol class="c-timeline">
+      <li><time>Sep 2026</time><span>First version on my own pad</span></li>
+      <li><time>29 Sep – 22 Oct</time><span>Friction log from daily use</span></li>
+      <li><time>21 Oct</time><span>Public on GitHub</span></li>
+      <li><time>23 Oct</time><span>Named Saunter, weekly streak, setup in the app, tests and CI</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <dl class="c-numbers">
+      <div>
+        <dt>0.71 km</dt>
+        <dd>in 21 minutes at 2.0 km/h, one real walk</dd>
+      </div>
+      <div>
+        <dt>4</dt>
+        <dd>ways to run the pad: menu bar, Shortcuts and Siri, terminal, Claude</dd>
+      </div>
+      <div>
+        <dt>2 days</dt>
+        <dd>from the first public commit to tests and CI on every push</dd>
+      </div>
+    </dl>
+    <p>
+      Saunter runs my own walking pad, every finished walk goes to Apple Health, and the code is open source for anyone
+      with the same kind of pad.
+    </p>
+  </section>
+</CaseLayout>

@@ -1,0 +1,213 @@
+---
+// Case: Stayin' Alive, student exhibition on living with epidemics, Turm zur Katz Konstanz, 30 Jul – 3 Oct 2021.
+// Facts from befund/cases/stayin-alive.md (HTWG magazine 2 Aug 2021, red-dot.org, ADC credits PDF, CommClubs press,
+// University of Konstanz news 31 Oct 2022). Robert, 27 Oct 2026: co-lead of a two-person UX team for the whole
+// exhibition that led the computer science students; on stage at the ADC talk in Stuttgart (Oct 2022); credited as
+// photographer everywhere. Only photographs without recognisable faces; three are cropped (0965, 1193, 1974).
+import { Image } from 'astro:assets';
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import Shot from '../../components/case/Shot.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import room from '../../assets/cases/stayin-alive/2209-abteilung-a-raum.jpg';
+import arBody from '../../assets/cases/stayin-alive/0965-ipad-ar-krankheitsverlauf-crop.jpg';
+import arWall from '../../assets/cases/stayin-alive/1193-ipad-ar-pinnwand-crop.jpg';
+import simTable from '../../assets/cases/stayin-alive/1974-simulationstisch-crop.jpg';
+import medicine from '../../assets/cases/stayin-alive/0104-ipad-entwicklung-der-medizin.jpg';
+import figures from '../../assets/cases/stayin-alive/1395-figuren-spalten-zweifeln.jpg';
+import uiStats from '../../assets/cases/stayin-alive/ui-statistiken---besuchszeit.jpg';
+import uiSim from '../../assets/cases/stayin-alive/ui-simulation.jpg';
+
+const widths = [600, 1000, 1600];
+const half = '(max-width: 900px) 100vw, 45vw';
+---
+
+<CaseLayout
+  title="Stayin’ Alive"
+  years="2021"
+  summary="An exhibition on living with epidemics, opened in the middle of one. Visitors went through it with an iPad, and I led the team that designed it."
+  meta={[
+    ['Role', 'Co-lead of the two-person UX team for the iPad visitor guide; ground-floor concept and the AR experience; exhibition photography'],
+    ['Team', 'About 80 students from HTWG Konstanz, the University of Konstanz and hfm Trossingen; project lead Prof. Eberhard Schlag'],
+    ['Client', 'Kulturamt Konstanz'],
+    ['Period', 'Winter 2020/21 – Oct 2021; open 30 Jul – 3 Oct 2021'],
+    ['Awards', 'Red Dot: Junior Award 2022, ADC Talent Award 2022 Gold, CommAwards 2021 Gold'],
+  ]}
+  links={[
+    { href: 'https://www.red-dot.org/project/stayin-alive-60726', label: 'Red Dot' },
+    {
+      href: 'https://www.uni-konstanz.de/universitaet/aktuelles-und-medien/aktuelle-meldungen/aktuelles-1/stayin-alive-studentische-ausstellung-erneut-ausgezeichnet/',
+      label: 'University of Konstanz',
+    },
+  ]}
+  film="stayin-alive"
+  stage="stayin"
+  next={{ href: '/work/levelwork/', title: 'Levelwork' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">Four floors of plague, cholera and Spanish flu, shown in the second summer of Covid.</p>
+    <p>
+      “Stayin’ Alive – mit Seuchen leben” filled the Turm zur Katz in Konstanz with the history of epidemics and what
+      they did to societies. It was framed as a fictional research institute with four departments, one per floor: data
+      collection, research, management and a real-world lab. Historians, computer scientists, architects, music and
+      communication designers built it together, about 80 students in all.
+    </p>
+    <p>
+      In 2021 a visitor could not be asked to touch shared screens or crowd around a guide. Most of the content had to
+      come to each visitor on their own device.
+    </p>
+  </section>
+
+  <section>
+    <h2>What I did</h2>
+    <p class="c-lead">One iPad that carried the whole exhibition, apart from the texts on the walls.</p>
+    <p>
+      Every visitor got an iPad at the entrance. The UX team for the whole exhibition was two people, and I was one of
+      its two leads. We designed the guide, led the computer science students who built it, and I worked on the concept
+      of the ground floor, where the institute collects data about its visitors, and on the augmented reality that turns
+      objects into stations. The historians wrote the content; our part was to make it usable by anyone who walks in.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="stayin-floors" ratio="1200 / 560" narrow="600 / 1000" />
+      <figcaption>
+        One iPad for all four floors: it measured the visitor on the ground floor, showed five diseases in AR, ran the
+        simulation and asked for an answer in their own words (schematic section, times illustrative).
+      </figcaption>
+    </figure>
+    <figure class="c-wide">
+      <Image
+        src={room}
+        alt="Ground floor, department A: a dark blue room with a pin board, panels on visiting time, tracking and risk contacts, a black counter with places for the iPads and monitors of the database"
+        widths={widths}
+        sizes="(max-width: 900px) 100vw, 75vw"
+        loading="lazy"
+      />
+      <figcaption>Ground floor, department A: data collection. The visitor is the first data point.</figcaption>
+    </figure>
+    <div class="c-pair">
+      <figure>
+        <Image
+          src={arBody}
+          alt="A visitor holds an iPad over a glowing body model; the augmented reality shows the course of a disease, with tabs for plague, cholera, Spanish flu, malaria and Covid"
+          widths={widths}
+          sizes={half}
+          loading="lazy"
+        />
+        <figcaption>First floor: the course of five diseases, in augmented reality on a body model.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={arWall}
+          alt="An iPad held up to a grey wall shows a visitor comment, I learned a lot, with likes, placed on the wall in augmented reality"
+          widths={widths}
+          sizes={half}
+          loading="lazy"
+        />
+        <figcaption>The pin board: visitors' comments live on the wall, but only on the iPad.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">The iPad as the institute's instrument, not as a second screen.</p>
+    <p>
+      <strong>The visitor becomes part of the data.</strong> On the ground floor the institute measures its own visitors:
+      how long they stay on each floor compared with the fastest and the slowest, which risk contacts they had. It made
+      the exhibition's subject personal before the history began.
+    </p>
+    <p>
+      <strong>Hands on the table, not on a shared screen.</strong> On the management floor a simulation asks what you
+      would decree when an epidemic arrives, work, schools, hospitals, and shows infections and the R value change. It
+      runs on the iPad, laid into a table map of the city.
+    </p>
+    <p>
+      <strong>Ending with a question, not an answer.</strong> On the top floor cut-out figures ask “Divide?”, “Doubt?”,
+      “Isolate?”, “Stand together?”, and the iPad asks the visitor to answer in their own words.
+    </p>
+    <div class="c-pair">
+      <figure>
+        <Shot
+          src={uiStats}
+          source="iPad guide, design June 2021"
+          label="Visiting time"
+          alt="Design of the visiting-time statistics: the visitor's own time on each floor next to the fastest and the slowest visitor"
+          widths={[700, 1366]}
+          sizes={half}
+        />
+        <figcaption>Your time on each floor, next to the fastest and the slowest visitor.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={uiSim}
+          source="iPad guide, design June 2021"
+          label="Simulation"
+          alt="Design of the simulation: decrees on work, school and hospitals, with infected people, the R value and new infections"
+          widths={[600, 1194]}
+          sizes={half}
+        />
+        <figcaption>Decide on work, schools and hospitals, and watch the R value.</figcaption>
+      </figure>
+    </div>
+    <div class="c-trio">
+      <figure>
+        <Image
+          src={simTable}
+          alt="Simulation table on the management floor: a dark city map with green buildings and an iPad set into it, the question how do you react"
+          widths={widths}
+          sizes="(max-width: 900px) 100vw, 33vw"
+          loading="lazy"
+        />
+        <figcaption>The simulation table, second floor.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={medicine}
+          alt="An iPad set into a white table shows the station on the development of medicine with a choice of films"
+          widths={widths}
+          sizes="(max-width: 900px) 100vw, 33vw"
+          loading="lazy"
+        />
+        <figcaption>The development of medicine, first floor.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={figures}
+          alt="White cut-out figures with texts in a bright room, under the questions Divide? and Doubt?"
+          widths={widths}
+          sizes="(max-width: 900px) 100vw, 33vw"
+          loading="lazy"
+        />
+        <figcaption>Divide? Doubt? The real-world lab, third floor.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <p class="c-lead">Three awards for the team, a talk at the ADC, and the photographs of the exhibition.</p>
+    <p>
+      The exhibition ran from 30 July to 3 October 2021. I photographed it before it opened, and the photographs are
+      credited to me wherever they appear, from HTWG Konstanz to the University of Konstanz. The project won three
+      awards, all for the team, and in October 2022 I was on stage with the team to present it at the ADC in Stuttgart.
+    </p>
+    <dl class="c-numbers">
+      <div><dt>Red Dot</dt><dd>Junior Award 2022, Exhibition Design</dd></div>
+      <div><dt>ADC Gold</dt><dd>Talent Award 2022, Exhibition</dd></div>
+      <div><dt>CommAwards</dt><dd>2021, Gold in the category Space</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <ol class="c-timeline">
+      <li><time>Winter 2020/21</time><span>Course “Design und Raum”: concept of the institute and its four floors.</span></li>
+      <li><time>Jun 2021</time><span>Designs of the iPad guide.</span></li>
+      <li><time>27–29 Jul 2021</time><span>I photograph the finished exhibition.</span></li>
+      <li><time>30 Jul – 3 Oct 2021</time><span>Open in the Turm zur Katz, Konstanz.</span></li>
+      <li><time>Nov 2021</time><span>CommAwards, Gold in Space.</span></li>
+      <li><time>2022</time><span>Red Dot: Junior Award and ADC Talent Award Gold.</span></li>
+      <li><time>Oct 2022</time><span>Talk at the ADC in Stuttgart.</span></li>
+    </ol>
+  </section>
+</CaseLayout>

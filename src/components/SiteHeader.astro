@@ -1,0 +1,103 @@
+---
+const nav = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#werkstatt', label: 'Werkstatt' },
+  { href: '/about/', label: 'About' },
+  { href: '/#colophon', label: 'Colophon' },
+];
+---
+
+<header class="site-header lbl">
+  <a class="name" href="/">Robert Straubmüller</a>
+  <nav aria-label="Main">
+    <ul>
+      {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+    </ul>
+  </nav>
+  <p class="clock"><span>Konstanz</span> <time data-clock>CET</time></p>
+  <p class="out">
+    <a href="https://github.com/RobStraubm">GitHub ↗</a>
+    <a href="https://www.linkedin.com/in/robert-straubmueller">LinkedIn ↗</a>
+  </p>
+</header>
+
+<script>
+  // Local time in Konstanz, refreshed every 30 seconds.
+  const el = document.querySelector<HTMLTimeElement>('[data-clock]');
+  const format = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Berlin',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  });
+  const tick = () => {
+    if (!el) return;
+    const now = new Date();
+    el.textContent = format.format(now);
+    el.dateTime = now.toISOString();
+  };
+  tick();
+  setInterval(tick, 30000);
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-height: var(--header-h);
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .site-header > * {
+    margin: 0;
+    padding: 14px var(--m);
+    border-right: 1px solid var(--ink);
+  }
+
+  .site-header > *:last-child {
+    border-right: 0;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .out {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 860px) {
+    .site-header {
+      position: static;
+      grid-template-columns: 1fr 1fr;
+    }
+    .site-header > *:nth-child(2) {
+      border-right: 0;
+    }
+    .site-header > *:nth-child(-n + 2) {
+      border-bottom: 1px solid var(--ink);
+    }
+    .out {
+      justify-content: flex-start;
+    }
+  }
+</style>

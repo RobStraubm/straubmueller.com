@@ -1,0 +1,314 @@
+---
+// Draft variant C, About: the whole CV as one log, grouped by the year each station began.
+import { Image } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import VariantSwitch from '../../../components/VariantSwitch.astro';
+import { aboutText, strengths, experience, education, awards, languages } from '../../../data/cv';
+import portrait from '../../../assets/variants/portrait.jpg';
+
+interface Entry {
+  start: number;
+  date: string;
+  text: string;
+  sub?: string;
+  kind: 'Work' | 'Study' | 'Award';
+  href?: string;
+}
+
+const entries: Entry[] = [
+  ...experience.map((item) => ({
+    start: item.start,
+    date: item.years,
+    text: `${item.title}, ${item.org}`,
+    sub: item.note,
+    kind: 'Work' as const,
+    href: item.href,
+  })),
+  ...education.map((item) => ({
+    start: item.start,
+    date: item.years,
+    text: `${item.title}, ${item.org}`,
+    sub: item.note,
+    kind: 'Study' as const,
+  })),
+  ...awards.map((award) => ({
+    start: Number(award.year),
+    date: award.year,
+    text: award.title,
+    sub: award.for,
+    kind: 'Award' as const,
+    href: award.href,
+  })),
+].sort((a, b) => b.start - a.start);
+
+const years = [...new Set(entries.map((entry) => entry.start))];
+---
+
+<Base
+  title="About · Robert Straubmüller · Version C"
+  description="Robert Straubmüller: ten years in design, from the family restaurant to UX research and AI engineering. Now co-founder of Levelwork."
+  chrome={false}
+>
+  <header class="c-header" slot="header">
+    <a href="/varianten/c/">Robert Straubmüller</a>
+    <a class="c-about" href="/varianten/c/about/" aria-current="page">About</a>
+  </header>
+
+  <section class="c-intro" aria-labelledby="c-about-h">
+    <div class="c-portrait">
+      <Image
+        src={portrait}
+        alt="Robert Straubmüller, smiling, seated on a cantilever chair"
+        widths={[400, 700, 1000]}
+        sizes="(max-width: 760px) 60vw, 28vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="c-who">
+      <h1 id="c-about-h">From the family restaurant to a software startup.</h1>
+      <p class="c-text">{aboutText}</p>
+      <p class="c-strengths"><span class="mute">What Robert brings:</span> {strengths.join(', ')}.</p>
+    </div>
+  </section>
+
+  <section class="c-log" aria-labelledby="c-log-h">
+    <h2 id="c-log-h">Log</h2>
+    {
+      years.map((year) => (
+        <div class="c-year">
+          <p class="c-year-n" aria-hidden="true">
+            {year}
+          </p>
+          <ol aria-label={`Started in ${year}`}>
+            {entries
+              .filter((entry) => entry.start === year)
+              .map((entry) => (
+                <li>
+                  <span class="c-date">{entry.date}</span>
+                  <span class="c-entry">
+                    {entry.href ? <a href={entry.href}>{entry.text}&nbsp;↗</a> : entry.text}
+                    {entry.sub && <span class="c-sub">{entry.sub}</span>}
+                  </span>
+                  <span class="c-kind">{entry.kind}</span>
+                </li>
+              ))}
+          </ol>
+        </div>
+      ))
+    }
+  </section>
+
+  <footer class="c-footer" slot="footer">
+    <p>Languages: {languages.join(' · ')}</p>
+    <p class="c-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="https://github.com/RobStraubm/straubmueller.com">Source</a>
+    </p>
+  </footer>
+
+  <VariantSwitch />
+</Base>
+
+<style>
+  .c-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px var(--m);
+    font-size: 15px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .c-header a {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .c-header .c-about {
+    font-weight: 400;
+    text-decoration: underline;
+  }
+
+  .c-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
+    gap: clamp(24px, 4vw, 72px);
+    align-items: end;
+    padding: clamp(32px, 5vw, 80px) var(--m);
+  }
+
+  .c-portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 20%;
+  }
+
+  .c-who h1 {
+    margin: 0 0 28px;
+    font-family: var(--f-display);
+    font-size: clamp(40px, 5.2vw, 96px);
+    font-weight: 300;
+    font-stretch: 75%;
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .c-text {
+    max-width: 54ch;
+    margin: 0;
+    font-size: clamp(18px, 1.4vw, 21px);
+    line-height: 1.45;
+  }
+
+  .c-strengths {
+    margin: 18px 0 0;
+    font-size: 16px;
+  }
+
+  .c-log {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr);
+    gap: 0 clamp(24px, 4vw, 72px);
+    padding: 0 var(--m);
+  }
+
+  .c-log h2 {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 18px 0;
+    font-size: 15px;
+    font-weight: 600;
+    border-top: 1px solid var(--ink);
+  }
+
+  .c-year {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .c-year-n {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    margin: 0;
+    padding: 10px 0 24px;
+    font-family: var(--f-display);
+    font-size: clamp(64px, 9vw, 160px);
+    font-weight: 200;
+    font-stretch: 62.5%;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+  }
+
+  .c-year ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .c-year li {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 72px;
+    gap: 6px 16px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .c-year li:last-child {
+    border-bottom: 0;
+  }
+
+  .c-date {
+    font-size: 14px;
+    color: var(--mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-entry {
+    font-size: clamp(18px, 1.5vw, 22px);
+    line-height: 1.35;
+  }
+
+  .c-entry a {
+    text-decoration: none;
+  }
+
+  .c-entry a:hover {
+    text-decoration: underline;
+  }
+
+  .c-sub {
+    display: block;
+    margin-top: 4px;
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+
+  .c-kind {
+    font-size: 14px;
+    color: var(--mute);
+    text-align: right;
+  }
+
+  .c-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(48px, 6vw, 96px);
+    padding: 20px var(--m) 72px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+  }
+
+  .c-footer p {
+    margin: 0;
+  }
+
+  .c-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  .c-legal a {
+    text-decoration: none;
+  }
+
+  @media (max-width: 760px) {
+    .c-intro,
+    .c-log {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .c-portrait {
+      max-width: 60%;
+    }
+    .c-year {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .c-year-n {
+      position: static;
+      padding-bottom: 8px;
+    }
+    .c-year li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .c-date {
+      grid-column: 1;
+    }
+    .c-kind {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .c-entry {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

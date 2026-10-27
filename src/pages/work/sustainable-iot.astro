@@ -1,0 +1,192 @@
+---
+// Case: Sustainable IoT, design sprint for the IoT Sustainability Lab of HTWG Konstanz (Interreg), Mar–Jun 2024.
+// Facts from befund/cases/sustainable-iot.md (files in ~/Desktop/Job/IOT: lab deck of 13 Mar 2024, wireframes of 16
+// May and 18 Jun 2024) and Robert's account of 26 Oct 2026. The finding about phone access is Robert's reading of the
+// model (Robert, 27 Oct 2026: calculated). Two finished screens redrawn in 2026 from the June wireframes, marked so.
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import Shot from '../../components/case/Shot.astro';
+import hmw from '../../assets/cases/iot/workshop-hmw-zettel.jpg';
+import storyboard from '../../assets/cases/iot/workshop-whiteboard-storyboard.jpg';
+import flowWall from '../../assets/cases/iot/workshop-wand-ablauf.jpg';
+import flipchart from '../../assets/cases/iot/workshop-flipchart-skizzen.jpg';
+import before from '../../assets/cases/iot/wireframe-frueh-modell-netz.jpg';
+import after from '../../assets/cases/iot/wireframe-2-modell-basis.jpg';
+import IotModelScreen from '../../components/case/screens/IotModelScreen.astro';
+import IotResultsScreen from '../../components/case/screens/IotResultsScreen.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+
+const half = '(max-width: 900px) 100vw, 45vw';
+---
+
+<CaseLayout
+  title="Sustainable IoT"
+  years="2024"
+  summary="The lab planned a tool that simulates how smart devices are wired. A design sprint turned it into one that shows what their use costs the planet."
+  meta={[
+    ['Role', 'Led the design sprint, UX concept, all wireframes'],
+    ['Client', 'IoT Sustainability Lab, HTWG Konstanz (Interreg project)'],
+    ['Period', 'Mar – Jun 2024'],
+    ['Status', 'Research: concept and wireframes'],
+  ]}
+  film="sustainable-iot"
+  stage="iot"
+  next={{ href: '/work/tealucent/', title: 'Tealucent' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">Smart thermostats save energy. Building, running and connecting them costs energy too.</p>
+    <p>
+      The IoT Sustainability Lab at HTWG Konstanz wanted to put numbers on both sides over the whole life of a device,
+      with a life cycle assessment. The software it had in mind simulated the setup: which devices, connected by WLAN or
+      by Bluetooth. That answers how a system is wired, not what it costs once people live with it.
+    </p>
+    <p>
+      The question a tool is built around decides what it can ever show. That is as true for this lab as it is for
+      Levelwork.
+    </p>
+  </section>
+
+  <section>
+    <h2>What I did</h2>
+    <p class="c-lead">A sprint with the lab to find the real question, then three rounds of wireframes.</p>
+    <p>
+      I planned and ran a design sprint with the lab team. We wrote “how might we” questions, mapped who would use the
+      tool, from device makers and facility managers to climate officers and people at home, laid out what each of them
+      brings in, what has to be calculated and what they need out, and drew the path from a question to a printed
+      result. From there I drew the wireframes, in March, May and June.
+    </p>
+    <div class="c-pair">
+      <figure>
+        <Shot
+          src={hmw}
+          source="Design sprint, March 2024"
+          label="How might we"
+          alt="Thirteen pink sticky notes on a white wall, how-might-we questions such as how might we exclude greenwashing and how might we include the sustainability of the device itself"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>Thirteen questions, among them: exclude greenwashing, include the device itself.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={storyboard}
+          source="Design sprint, March 2024"
+          label="Storyboard"
+          alt="Whiteboard storyboard in ten panels, from has a sustainability question and load model to compare scenarios and print results"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>From a sustainability question to printed results, in ten panels.</figcaption>
+      </figure>
+    </div>
+    <div class="c-split">
+      <figure>
+        <Shot
+          src={flowWall}
+          source="Design sprint, March 2024"
+          label="Flow"
+          alt="Wall of coloured sticky notes laying out the flow from the question to the app, in two rows for the devices and the users"
+          widths={[800, 1600]}
+          sizes="(max-width: 900px) 100vw, 60vw"
+        />
+        <figcaption>The flow, once for the devices and once for the people.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={flipchart}
+          source="Design sprint, March 2024"
+          label="Sketches"
+          alt="Flipchart with interface sketches, model to simulation, expert and non-expert view, and a network of devices, users and the cloud"
+          widths={[600, 1200]}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>Expert and non-expert view, devices, users, cloud.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">From the wiring to the use: rooms, people and how often they reach for the data.</p>
+    <p>
+      <strong>Model the use, not the network.</strong> The first wireframe put the network in the middle: cloud, router,
+      gateway, lamps and heaters, each link marked WLAN or Bluetooth. The later ones model three things that act on each
+      other: the rooms and when they are used, the people, whether they are active or passive, how long they are at home
+      and which device they connect with, and the IoT services. A switch sets how much the system talks to the cloud
+      server.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="iot-model" ratio="1200 / 560" narrow="600 / 920" />
+      <figcaption>The March network sorts itself into rooms, people and IoT services; the switch sets how often the phones' requests travel through the network to the cloud.</figcaption>
+    </figure>
+    <p>
+      <strong>Results in the language of a life cycle assessment.</strong> The results page splits the footprint into
+      production, operation and end of life, shows carbon and energy demand for high, normal and low use, and lists the
+      impact categories of a life cycle assessment instead of a single green score.
+    </p>
+    <p>
+      <strong>Start from a template.</strong> Simple, average or complex household, or an upload, so that nobody starts
+      from an empty canvas.
+    </p>
+    <div class="c-pair">
+      <figure>
+        <Shot
+          src={before}
+          source="Wireframe, March 2024"
+          label="Before"
+          alt="Early wireframe: a network from the cloud through a router and gateway to lamps and heaters, each link marked with a Bluetooth or WLAN symbol"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>March: the wiring in the middle, Bluetooth or WLAN on every link.</figcaption>
+      </figure>
+      <figure>
+        <Shot
+          src={after}
+          source="Wireframe, June 2024"
+          label="After"
+          alt="Later wireframe: environment with rooms and their hours of use, users who are active or passive with their connection devices, IoT services, and a switch for cloud server interaction from high to low and green energy"
+          widths={[800, 1600]}
+          sizes={half}
+        />
+        <figcaption>June: rooms, people and devices acting on each other, and how often the cloud is asked.</figcaption>
+      </figure>
+    </div>
+    <figure class="c-wide">
+      <Shot source="Model view, redrawn 2026" label="From the June 2024 wireframe">
+        <IotModelScreen />
+      </Shot>
+      <figcaption>The model view as a finished screen, redrawn from the June wireframe.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <p class="c-lead">The biggest lever was not the device. It was how often people look at their data.</p>
+    <p>
+      Once use was in the model, the calculations showed the network and the cloud standing out: every time someone checks the heating on their
+      phone, data travels through the network, and access and transfer take the most energy. The lab then turned its
+      work towards the ecological footprint of the whole system.
+    </p>
+    <figure class="c-wide">
+      <Shot source="Results view, redrawn 2026" label="From the June 2024 wireframe">
+        <IotResultsScreen />
+      </Shot>
+      <figcaption>The results as a finished screen: by life phase and impact category, the cloud with the largest share.</figcaption>
+    </figure>
+    <dl class="c-numbers">
+      <div><dt>13</dt><dd>how-might-we questions from the sprint</dd></div>
+      <div><dt>6</dt><dd>roles the tool serves, from device makers to climate officers</dd></div>
+      <div><dt>3</dt><dd>rounds of wireframes in fourteen weeks</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <ol class="c-timeline">
+      <li><time>13 Mar 2024</time><span>Sprint results, analysis and first wireframes presented to the lab.</span></li>
+      <li><time>16 May 2024</time><span>Second round: rooms, people and devices; results by usage.</span></li>
+      <li><time>18 Jun 2024</time><span>Third round: results as a life cycle assessment.</span></li>
+    </ol>
+  </section>
+</CaseLayout>

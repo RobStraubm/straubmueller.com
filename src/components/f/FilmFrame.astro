@@ -1,0 +1,154 @@
+---
+// Version F: one sticky frame next to a list. The row in the middle of the screen, or under the
+// pointer, is the active one; the frame shows its film, picture or title card. Rows opt in with
+// data-film-key="<key>". Films play once and hold on the result.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  items: {
+    key: string;
+    /** /public paths: the film and its last frame. */
+    film?: { src: string; poster: string };
+    /** A picture of the work, or a rendered title card in /public. */
+    still?: ImageMetadata | string;
+  }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="ffr" aria-hidden="true" data-film-frame>
+  {
+    items.map((item, i) => (
+      <figure
+        class:list={['ffr-shot', { 'is-on': i === 0, 'is-picture': item.still && typeof item.still !== 'string' }]}
+        data-key={item.key}
+      >
+        {item.film ? (
+          <video
+            muted
+            playsinline
+            disablepictureinpicture
+            preload="none"
+            width="400"
+            height="500"
+            data-src={item.film.src}
+            data-poster={item.film.poster}
+          />
+        ) : typeof item.still === 'string' ? (
+          <img src={item.still} alt="" width="800" height="1000" loading="lazy" fetchpriority="low" decoding="async" />
+        ) : item.still ? (
+          <Image
+            src={item.still}
+            alt=""
+            widths={[480, 800, 1200]}
+            sizes="32vw"
+            loading="lazy"
+            fetchpriority="low"
+          />
+        ) : null}
+      </figure>
+    ))
+  }
+</div>
+
+<script>
+  const frame = document.querySelector<HTMLElement>('[data-film-frame]');
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-film-key]')];
+
+  if (frame && rows.length) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const shots = new Map(
+      [...frame.querySelectorAll<HTMLElement>('.ffr-shot')].map((shot) => [shot.dataset.key ?? '', shot]),
+    );
+
+    // Films load only where the frame is on screen; on small screens it is hidden.
+    const load = () => {
+      if (!frame.getClientRects().length) return;
+      frame.querySelectorAll('video').forEach((video) => {
+        if (video.src) return;
+        video.poster = video.dataset.poster ?? '';
+        video.src = video.dataset.src ?? '';
+        video.preload = 'auto';
+      });
+    };
+    if ('requestIdleCallback' in window) window.requestIdleCallback(load);
+    else window.setTimeout(load, 1500);
+
+    let active: HTMLElement | null = null;
+    const activate = (row: HTMLElement) => {
+      if (row === active) return;
+      active?.classList.remove('is-active');
+      active = row;
+      row.classList.add('is-active');
+      shots.forEach((shot, key) => {
+        const on = key === row.dataset.filmKey;
+        shot.classList.toggle('is-on', on);
+        const video = shot.querySelector('video');
+        if (!video) return;
+        if (!on) return video.pause();
+        load();
+        // Without motion the poster stays: it is the last frame, the result.
+        if (reduce.matches) return;
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      });
+    };
+
+    // The row crossing a line at 40 % of the screen height is the active one, so scrolling works on phones too.
+    const watch = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => entry.isIntersecting && activate(entry.target as HTMLElement)),
+      { rootMargin: '-40% 0px -60% 0px' },
+    );
+    rows.forEach((row) => {
+      watch.observe(row);
+      row.addEventListener('pointerenter', () => activate(row));
+      row.addEventListener('focusin', () => activate(row));
+    });
+  }
+</script>
+
+<style>
+  .ffr {
+    position: sticky;
+    top: 14vh;
+    align-self: start;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--frame-ground, #1b1e1c);
+  }
+
+  .ffr-shot {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) 0.55s;
+  }
+
+  /* The new shot wipes in from the top over the old one, which leaves only once it is covered. */
+  .ffr-shot.is-on {
+    z-index: 1;
+    clip-path: inset(0);
+    transition-delay: 0s;
+  }
+
+  .ffr-shot video,
+  .ffr-shot img,
+  .ffr-shot :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ffr-shot.is-picture :global(img) {
+    padding: 8%;
+    object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ffr-shot {
+      transition: none;
+    }
+  }
+</style>

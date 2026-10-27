@@ -1,0 +1,167 @@
+---
+// One walking-pad command, byte by byte, redrawn from befund/saunter/protocol.html in the site's style.
+// Bytes and log lines are from a real session on 23 October 2026 (daemon log).
+const bytes = [
+  { hex: '02', note: 'start of packet' },
+  { hex: '53', note: 'control' },
+  { hex: '02', note: 'set speed' },
+  { hex: '14', note: '20 tenths = 2.0 km/h', key: true },
+  { hex: '00', note: 'incline 0' },
+  { hex: '45', note: 'XOR of the payload' },
+  { hex: '03', note: 'end of packet' },
+];
+
+const log = [
+  { t: '16:01:56', bytes: '02 50 00 1a 0a 17 10 01 38 7e 03', note: 'tell the pad the time' },
+  { t: '16:01:56', bytes: '02 53 01 00 00 00 00 00 00 00 00 52 03', note: 'start' },
+  { t: '16:01:57', bytes: '02 53 02 14 00 45 03', note: 'speed 2.0', key: true },
+  { t: '16:01:57', note: 'status: countdown' },
+  { t: '16:02:00', note: 'status: running · session 21 started' },
+  { t: '16:23:12', bytes: '02 53 03 50 03', note: 'stop · 21 min, 0.71 km' },
+];
+---
+
+<div class="sp">
+  <div class="sp-head" aria-hidden="true"><span>FitShow over Bluetooth LE</span><span>23 Oct 2026, 16:01</span></div>
+
+  <ol class="sp-bytes" aria-label="The command to set the belt to 2.0 km/h, seven bytes">
+    {
+      bytes.map((byte) => (
+        <li class:list={{ 'is-key': byte.key }}>
+          <b>{byte.hex}</b>
+          <span>{byte.note}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <ol class="sp-log" aria-label="Excerpt from the daemon log">
+    {
+      log.map((line) => (
+        <li class:list={{ 'is-key': line.key }}>
+          <time>{line.t}</time>
+          {line.bytes && <code>→ {line.bytes}</code>}
+          <span>{line.note}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="sp-foot">The byte layout follows the open-source project qdomyos-zwift.</div>
+</div>
+
+<style>
+  .sp {
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .sp-head,
+  .sp-foot {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .sp-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 8px 0 28px;
+  }
+
+  .sp-bytes {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--hair);
+  }
+
+  .sp-bytes li {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 14px 8px 12px;
+    border-right: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .sp-bytes b {
+    font-family: var(--f-mono);
+    font-weight: 400;
+    font-size: clamp(22px, 3vw, 40px);
+    line-height: 1;
+  }
+
+  .sp-bytes span {
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  /* The one byte that carries the speed. */
+  .sp-bytes .is-key {
+    border-bottom: 2px solid var(--signal);
+  }
+
+  .sp-bytes .is-key b,
+  .sp-bytes .is-key span {
+    color: var(--signal);
+  }
+
+  .sp-log {
+    margin: 40px 0 0;
+    padding: 0 0 0 14px;
+    list-style: none;
+    border-left: 1px solid var(--ink);
+    font-family: var(--f-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--mute);
+  }
+
+  .sp .sp-log li {
+    font-size: 12px;
+    line-height: 1.5;
+    display: grid;
+    grid-template-columns: 7.5ch minmax(0, 1fr);
+    column-gap: 12px;
+    margin: 0 0 8px;
+  }
+
+  .sp-log code {
+    font: inherit;
+    overflow-wrap: anywhere;
+  }
+
+  .sp-log span {
+    grid-column: 2;
+  }
+
+  .sp-log .is-key {
+    color: var(--ink);
+  }
+
+  .sp-log .is-key code {
+    color: var(--signal);
+  }
+
+  .sp-foot {
+    margin-top: 28px;
+    padding-top: 8px;
+    border-top: 1px solid var(--hair);
+  }
+
+  @media (max-width: 760px) {
+    .sp-bytes li {
+      padding: 10px 4px;
+    }
+    .sp-bytes span {
+      font-size: 10px;
+    }
+  }
+</style>

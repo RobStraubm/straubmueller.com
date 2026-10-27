@@ -1,0 +1,61 @@
+---
+// Local only: switch between draft versions while Robert compares them. Version I is the live site at the
+// root and has no switch; /varianten/ is removed from the build before deploying.
+// Every version has a homepage and an About page; switching keeps the kind of page.
+const variants = [
+  { label: 'A', home: '/varianten/a/', about: '/varianten/a/about/' },
+  { label: 'B', home: '/varianten/b/', about: '/varianten/b/about/' },
+  { label: 'C', home: '/varianten/c/', about: '/varianten/c/about/' },
+  { label: 'D', home: '/varianten/d/', about: '/varianten/d/about/' },
+  { label: 'E', home: '/varianten/e/', about: '/varianten/e/about/' },
+  { label: 'F', home: '/varianten/f/', about: '/varianten/f/about/' },
+  { label: 'G', home: '/varianten/g/', about: '/varianten/g/about/' },
+  { label: 'H', home: '/varianten/h/', about: '/varianten/h/about/' },
+  { label: 'I', home: '/', about: '/about/' },
+];
+const current = Astro.url.pathname.replace(/\/?$/, '/');
+const onAbout = current.endsWith('/about/');
+const active = variants.find((v) => v.home === current || v.about === current);
+---
+
+<nav class="variant-switch lbl" aria-label="Draft versions">
+  <a href="/varianten/">Versions</a>
+  {
+    variants.map((v) => {
+      const href = onAbout ? v.about : v.home;
+      return (
+        <a href={href} aria-current={current === href ? 'page' : undefined}>
+          {v.label}
+        </a>
+      );
+    })
+  }
+  {active && <a href={onAbout ? active.home : active.about}>{onAbout ? 'Home' : 'About'}</a>}
+</nav>
+
+<style>
+  .variant-switch {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 150;
+    display: flex;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+  }
+
+  a {
+    padding: 8px 12px;
+    text-decoration: none;
+    border-right: 1px solid var(--ink);
+  }
+
+  a:last-child {
+    border-right: 0;
+  }
+
+  a[aria-current='page'] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+</style>

@@ -1,0 +1,476 @@
+---
+// Version I: a sticky frame that shows Robert by default and plays a project's film once its row is chosen.
+// A row is chosen when the pointer comes to rest on it, not while it sweeps across the list; focus, a tap or
+// a click choose it at once. The chosen row opens a little and shows one more line, then the film starts.
+// Rows opt in with data-row="<key>"; they may hold a [data-row-more] block and a [data-row-trigger] button.
+// Under each film a bar of three steps follows the acts; a click replays one. Projects change with a
+// transition: parallax (default), curtain, stack, push, tiles or shutter, chosen with data-transition or
+// ?transition= for comparing.
+import { Image } from 'astro:assets';
+import seated from '../../assets/variants/portrait.jpg';
+import type { Film } from '../../data/films';
+import FilmSteps from '../FilmSteps.astro';
+
+interface Props {
+  films: Film[];
+  /** The resting picture; the homepage has Robert seated, the about page standing. */
+  portrait?: ImageMetadata;
+}
+const { films, portrait = seated } = Astro.props;
+---
+
+<div class="wp" data-work-panel data-transition="parallax">
+  <div class="wp-veil" aria-hidden="true"></div>
+  <figure class="wp-shot is-on" data-key="">
+    <div class="wp-frame is-portrait">
+      <Image src={portrait} alt="" widths={[400, 700, 1000]} sizes="30vw" loading="eager" fetchpriority="high" />
+    </div>
+    <figcaption>
+      <span>Robert Straubmüller</span>
+      <span class="mute">Konstanz</span>
+    </figcaption>
+  </figure>
+  {
+    films.map((film) => (
+      <figure class="wp-shot" data-key={film.key}>
+        <div class="wp-frame">
+          <video
+            aria-hidden="true"
+            muted
+            playsinline
+            disablepictureinpicture
+            preload="none"
+            width="800"
+            height="1000"
+            data-base={film.base}
+            data-acts={JSON.stringify(film.acts)}
+          />
+        </div>
+        <figcaption>
+          <FilmSteps film={film} />
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<script>
+  import { bindSteps, type ActMark } from '../../scripts/filmSteps';
+
+  const panel = document.querySelector<HTMLElement>('[data-work-panel]');
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-row]')];
+
+  if (panel && rows.length) {
+    // The pointer counts as resting when it moves less than REST_PX within REST_MS.
+    const REST_MS = 100;
+    const REST_PX = 6;
+    // The row opens first and the film follows, so the eye goes from the list to the frame.
+    const FILM_DELAY_MS = 160;
+    // Matches the longest transition of an opening row (0.24s in the page styles).
+    const CLOSE_MS = 260;
+    const LEAVE_MS = 450;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const dark = window.matchMedia('(prefers-color-scheme: dark)');
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const shots = new Map(
+      [...panel.querySelectorAll<HTMLElement>('.wp-shot')].map((shot) => [shot.dataset.key ?? '', shot]),
+    );
+
+    let open: HTMLElement | null = null;
+    let candidate: HTMLElement | null = null;
+    let shown = '';
+    let pointer = { x: NaN, y: NaN };
+    let anchor = { x: NaN, y: NaN };
+    let inside = false;
+    let restTimer = 0;
+    let filmTimer = 0;
+    let leaveTimer = 0;
+    let scrollTimer = 0;
+    // Until this time the pointer is on its way from the open row to the frame; rows it crosses wait.
+    let aimUntil = 0;
+
+    const scheme = () => (dark.matches ? 'dark' : 'light');
+    const videoFor = (key: string) => shots.get(key)?.querySelector('video') ?? null;
+
+    // Films load only when they are about to be shown, and only where the frame is on screen.
+    const prepare = (key: string) => {
+      const video = videoFor(key);
+      if (!video || video.src || !panel.getClientRects().length) return;
+      const base = `${video.dataset.base}-${scheme()}`;
+      // The last frame stands in for the film when motion is reduced.
+      if (reduce.matches) video.poster = `${base}.jpg`;
+      video.src = `${base}.mp4`;
+      video.preload = 'auto';
+    };
+
+    // Each film's bar of steps follows it from the start; it only needs the acts.
+    shots.forEach((shot) => {
+      const video = shot.querySelector('video');
+      const steps = shot.querySelector<HTMLElement>('[data-steps]');
+      if (video && steps) bindSteps(video, steps, JSON.parse(video.dataset.acts ?? '[]') as ActMark[]);
+    });
+
+    const play = (video: HTMLVideoElement) => {
+      // Without motion the film stays on its poster, the last frame; a click on a step still plays it.
+      if (reduce.matches) return;
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    };
+
+    // The veil covers the frame while one project gives way to the next.
+    const veil = panel.querySelector<HTMLElement>('.wp-veil')!;
+    const transition = new URLSearchParams(window.location.search).get('transition') ?? panel.dataset.transition;
+    let running: Animation[] = [];
+    let finish: (() => void) | null = null;
+
+    const swap = (from: HTMLElement, to: HTMLElement, start: () => void) => {
+      from.classList.remove('is-on');
+      to.classList.add('is-on');
+      start();
+    };
+
+    const settle = () => {
+      running.forEach((animation) => animation.finish());
+      running = [];
+      finish?.();
+      finish = null;
+    };
+
+    /** Tiles or bands of ink close over the old film in a diagonal or top-down wave and open on the new one. */
+    const veiled = (from: HTMLElement, to: HTMLElement, start: () => void, kind: 'tiles' | 'shutter') => {
+      const cols = kind === 'tiles' ? 5 : 1;
+      const rows = kind === 'tiles' ? 6 : 7;
+      veil.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      veil.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+      const pieces = Array.from({ length: cols * rows }, () => document.createElement('span'));
+      veil.replaceChildren(...pieces);
+      const order = (i: number) => (kind === 'tiles' ? (i % cols) + Math.floor(i / cols) : i);
+      const step = kind === 'tiles' ? 14 : 22;
+      const grow = kind === 'tiles' ? 'scale(0)' : 'scaleY(0)';
+      const timing = (i: number) => ({ duration: 120, delay: order(i) * step, easing: 'steps(3, end)', fill: 'both' as const });
+      const cover = pieces.map((piece, i) =>
+        piece.animate([{ transform: grow, transformOrigin: 'top' }, { transform: 'none', transformOrigin: 'top' }], timing(i)),
+      );
+      running = cover;
+      finish = () => {
+        veil.replaceChildren();
+      };
+      Promise.all(cover.map((animation) => animation.finished)).then(() => {
+        if (!running.includes(cover[0])) return;
+        swap(from, to, start);
+        const open = pieces.map((piece, i) =>
+          piece.animate([{ transform: 'none', transformOrigin: 'bottom' }, { transform: grow, transformOrigin: 'bottom' }], timing(i)),
+        );
+        running = open;
+        Promise.all(open.map((animation) => animation.finished)).then(() => {
+          if (running.includes(open[0])) settle();
+        }, () => {});
+      }, () => {});
+    };
+
+    /** Order of the projects in the list, so a move down the list comes from below and a move up from above. */
+    const order = [...shots.keys()];
+
+    /**
+     * The new film moves in, the old one moves away. Direction follows the list.
+     * push: both move the full height together.
+     * parallax: the old one drifts only a third of the way and fades, so the new one seems to come from in front.
+     * curtain: the new film is uncovered from the edge it comes from while the old one drifts and fades.
+     * stack: the new film slides over the old one, which sinks back a little.
+     */
+    const moved = (from: HTMLElement, to: HTMLElement, start: () => void, kind: string) => {
+      const dir = order.indexOf(to.dataset.key ?? '') >= order.indexOf(from.dataset.key ?? '') ? 1 : -1;
+      const easing = kind === 'push' ? 'cubic-bezier(0.7, 0, 0.2, 1)' : 'cubic-bezier(0.65, 0, 0.15, 1)';
+      const duration = kind === 'push' ? 360 : 560;
+      to.classList.add('is-on', 'is-entering');
+      if (kind === 'curtain') to.classList.add('is-opaque');
+      from.classList.add('is-leaving');
+      start();
+      const media = (shot: HTMLElement) => shot.querySelector<HTMLElement>('.wp-frame > *')!;
+      const frame = (shot: HTMLElement) => shot.querySelector<HTMLElement>('.wp-frame')!;
+      const away = {
+        push: [{ transform: 'none' }, { transform: `translateY(${-100 * dir}%)` }],
+        parallax: [{ transform: 'none', opacity: 1 }, { transform: `translateY(${-30 * dir}%)`, opacity: 0.25 }],
+        curtain: [{ transform: 'none', opacity: 1 }, { transform: `translateY(${-20 * dir}%)`, opacity: 0.4 }],
+        stack: [{ transform: 'none', opacity: 1 }, { transform: 'scale(0.9)', opacity: 0.35 }],
+      }[kind]!;
+      const out = media(from).animate(away, { duration, easing });
+      const into =
+        kind === 'curtain'
+          ? frame(to).animate(
+              [{ clipPath: dir > 0 ? 'inset(100% 0 0 0)' : 'inset(0 0 100% 0)' }, { clipPath: 'inset(0)' }],
+              { duration, easing },
+            )
+          : media(to).animate(
+              [{ transform: `translateY(${100 * dir}%)` }, { transform: 'none' }],
+              { duration, easing },
+            );
+      running = [out, into];
+      finish = () => {
+        from.classList.remove('is-on', 'is-leaving');
+        to.classList.remove('is-entering', 'is-opaque');
+      };
+      into.finished.then(() => {
+        if (running.includes(into)) settle();
+      }, () => {});
+    };
+
+    const show = (key: string) => {
+      if (!shots.has(key) || !panel.getClientRects().length) key = '';
+      if (key === shown) return;
+      settle();
+      const from = shots.get(shown)!;
+      const to = shots.get(key)!;
+      shown = key;
+      from.querySelector('video')?.pause();
+      const start = () => {
+        const video = to.querySelector('video');
+        if (!video) return;
+        prepare(key);
+        play(video);
+      };
+      if (reduce.matches) return swap(from, to, start);
+      if (['push', 'parallax', 'curtain', 'stack'].includes(transition ?? '')) return moved(from, to, start, transition!);
+      veiled(from, to, start, transition === 'shutter' ? 'shutter' : 'tiles');
+    };
+
+    const expand = (row: HTMLElement) => {
+      const more = row.querySelector<HTMLElement>('[data-row-more]');
+      if (more?.hidden) {
+        more.hidden = false;
+        // Lay the closed state out once, so the opening can transition from it.
+        void more.offsetHeight;
+      }
+      row.classList.add('is-open');
+      row.querySelector('[data-row-trigger]')?.setAttribute('aria-expanded', 'true');
+    };
+
+    const collapse = (row: HTMLElement) => {
+      row.classList.remove('is-open');
+      row.querySelector('[data-row-trigger]')?.setAttribute('aria-expanded', 'false');
+      const more = row.querySelector<HTMLElement>('[data-row-more]');
+      if (!more) return;
+      // Hidden only once it has closed, so assistive tech skips it but the closing still animates.
+      window.setTimeout(
+        () => {
+          if (!row.classList.contains('is-open')) more.hidden = true;
+        },
+        reduce.matches ? 0 : CLOSE_MS,
+      );
+    };
+
+    const choose = (row: HTMLElement | null) => {
+      window.clearTimeout(leaveTimer);
+      leaveTimer = 0;
+      if (row === open) return;
+      if (open) collapse(open);
+      open = row;
+      if (row) expand(row);
+      window.clearTimeout(filmTimer);
+      const key = row?.dataset.row ?? '';
+      if (key) prepare(key);
+      filmTimer = window.setTimeout(() => show(key), row && !reduce.matches ? FILM_DELAY_MS : 0);
+    };
+
+    const leaveSoon = () => {
+      if (!open || leaveTimer) return;
+      leaveTimer = window.setTimeout(() => {
+        leaveTimer = 0;
+        choose(null);
+      }, LEAVE_MS);
+    };
+
+    const checkRest = () => {
+      if (!candidate || candidate === open) return;
+      // Still on the same row after a check: start loading while the pointer settles. A sweep never gets here.
+      prepare(candidate.dataset.row ?? '');
+      if (performance.now() < aimUntil) {
+        restTimer = window.setTimeout(checkRest, REST_MS);
+        return;
+      }
+      if (Math.hypot(pointer.x - anchor.x, pointer.y - anchor.y) <= REST_PX) return choose(candidate);
+      anchor = { ...pointer };
+      restTimer = window.setTimeout(checkRest, REST_MS);
+    };
+
+    document.addEventListener(
+      'pointermove',
+      (event) => {
+        if (event.pointerType === 'touch' || !canHover.matches) return;
+        // Rows that open or close move the page under a still pointer; only real movement counts.
+        if (event.clientX === pointer.x && event.clientY === pointer.y) return;
+        const dx = event.clientX - pointer.x;
+        const dy = event.clientY - pointer.y;
+        pointer = { x: event.clientX, y: event.clientY };
+        // Heading right towards the frame (to watch or to use the steps) keeps the open project.
+        if (open && dx > 0 && Math.abs(dy) < dx * 2) aimUntil = performance.now() + 350;
+        const target = event.target as Element;
+        const row = target.closest<HTMLElement>('[data-row]');
+        const frame = panel.getBoundingClientRect();
+        // The whole column of the frame counts, also the empty space under it.
+        const inColumn = frame.width > 0 && pointer.x >= frame.left - 48;
+        inside = Boolean(row || inColumn || target.closest('[data-work-panel]'));
+        if (inside) {
+          window.clearTimeout(leaveTimer);
+          leaveTimer = 0;
+        } else leaveSoon();
+        if (row === candidate) return;
+        candidate = row;
+        window.clearTimeout(restTimer);
+        if (!row || row === open) return;
+        anchor = { ...pointer };
+        restTimer = window.setTimeout(checkRest, REST_MS);
+      },
+      { passive: true },
+    );
+
+    document.documentElement.addEventListener('pointerleave', () => {
+      inside = false;
+      candidate = null;
+      window.clearTimeout(restTimer);
+      leaveSoon();
+    });
+
+    // Scrolling moves the rows under a still pointer: it never opens a row, but it can leave one.
+    window.addEventListener(
+      'scroll',
+      () => {
+        window.clearTimeout(scrollTimer);
+        scrollTimer = window.setTimeout(() => {
+          if (!open || Number.isNaN(pointer.x)) return;
+          const under = document.elementFromPoint(pointer.x, pointer.y);
+          inside = Boolean(under?.closest('[data-row]') === open || under?.closest('[data-work-panel]'));
+          if (!inside) leaveSoon();
+        }, 120);
+      },
+      { passive: true },
+    );
+
+    rows.forEach((row) => {
+      row.addEventListener('click', (event) => {
+        if ((event.target as Element).closest('a')) return;
+        // With a mouse the whole row of a case is its link: hovering already showed the film and the extra line.
+        const href = row.dataset.href;
+        if (href && canHover.matches) {
+          if (event.metaKey || event.ctrlKey) window.open(href, '_blank');
+          else window.location.assign(href);
+          return;
+        }
+        // Without hover a second tap closes the row again; with a mouse a click only ever opens it.
+        choose(row === open && !canHover.matches ? null : row);
+      });
+      row.addEventListener('focusin', () => choose(row));
+      row.addEventListener('focusout', (event) => {
+        const next = event.relatedTarget as Element | null;
+        if (next?.closest('[data-row]') || inside) return;
+        leaveSoon();
+      });
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && open) choose(null);
+    });
+
+    // A colour-scheme switch swaps the sources; the film in the frame starts again in the new scheme.
+    dark.addEventListener('change', () => {
+      shots.forEach((shot, key) => {
+        const video = shot.querySelector('video');
+        if (!video?.src) return;
+        video.removeAttribute('src');
+        video.removeAttribute('poster');
+        video.load();
+        if (key === shown) {
+          prepare(key);
+          play(video);
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  /* One frame for the person and the work: the portrait is the resting state. */
+  .wp {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    display: grid;
+  }
+
+  .wp-shot {
+    grid-area: 1 / 1;
+    margin: 0;
+    visibility: hidden;
+  }
+
+  .wp-shot.is-on {
+    visibility: visible;
+  }
+
+  .wp-frame {
+    display: grid;
+    aspect-ratio: 4 / 5;
+    background: var(--soft);
+    overflow: hidden;
+  }
+
+  .wp-frame video,
+  .wp-frame :global(img) {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .wp-frame.is-portrait :global(img) {
+    object-position: 50% 22%;
+  }
+
+  .wp-shot figcaption {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The portrait has no steps; its caption keeps the plain two-part line. */
+  .wp-shot:first-of-type figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0 0;
+    font-size: 14px;
+  }
+
+  /* The veil sits over the frame only, never over the caption and its steps. */
+  .wp-veil {
+    grid-area: 1 / 1;
+    z-index: 3;
+    display: grid;
+    align-self: start;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    pointer-events: none;
+  }
+
+  .wp-veil :global(span) {
+    background: var(--ink);
+    transform: scale(0);
+  }
+
+  /* Push: the incoming film lies on top with a clear background, so the outgoing one shows as it leaves. */
+  .wp-shot.is-entering {
+    z-index: 2;
+  }
+
+  .wp-shot.is-entering:not(.is-opaque) .wp-frame {
+    background: transparent;
+  }
+
+  /* The outgoing film sits on the frame's own ground while it drifts and fades. */
+  .wp-shot.is-leaving .wp-frame {
+    background: var(--soft);
+  }
+
+  .wp-shot.is-leaving figcaption {
+    visibility: hidden;
+  }
+</style>

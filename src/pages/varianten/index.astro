@@ -1,0 +1,202 @@
+---
+// Temporary comparison page for Robert (German, internal). Remove before launch.
+import Base from '../../layouts/Base.astro';
+import VariantSwitch from '../../components/VariantSwitch.astro';
+
+const versions = [
+  {
+    key: 'A',
+    href: '/varianten/a/',
+    about: '/varianten/a/about/',
+    name: 'Editorial',
+    idea: 'Ein großer Satz in Serif und Grotesk trägt den ersten Bildschirm, darunter Projekte, Arbeitsspuren, Werkstatt und About als Abschnitte.',
+    good: 'Stark als Typo-Bild, zeigt Haltung, alles auf einer Seite.',
+    risk: 'Haarlinien, Mono-Etiketten und Abschnittsnummern liegen nah an der „zweiten Welle“ der KI-Optik. Der Bilderstreifen steht ohne Aussage da.',
+  },
+  {
+    key: 'B',
+    href: '/varianten/b/',
+    about: '/varianten/b/about/',
+    name: 'Index',
+    idea: 'Ein ruhiger Satz und eine einzige Liste. Die Arbeitsspur erscheint erst, wenn man über ein Projekt fährt, auf dem Handy als kleines Bild in der Zeile.',
+    good: 'Am ruhigsten, am schnellsten erfasst. Jedes Bild hängt an einem Projekt. Status wie Live, Pilot und Open Source zeigt, was läuft.',
+    risk: 'Wenig Persönlichkeit, kein Gesicht. Die Haltung kommt nur aus der Typografie.',
+  },
+  {
+    key: 'C',
+    href: '/varianten/c/',
+    about: '/varianten/c/about/',
+    name: 'Ship Log',
+    idea: 'Porträt und Satz zuerst, dann „Now“ mit drei Zeilen, dann ein datiertes Protokoll, was du wann gebaut, abgeschlossen oder gewonnen hast.',
+    good: 'Passt am genauesten zu Speedrun: zeigt Tempo 2026 und dass du selbst baust, mit Datum und Belegen. Das Gesicht schafft Vertrauen.',
+    risk: 'Muss gepflegt werden, sonst wirkt es veraltet. Weniger Fläche für einzelne Projekte.',
+  },
+  {
+    key: 'D',
+    href: '/varianten/d/',
+    about: '/varianten/d/about/',
+    name: 'Index + Now',
+    idea: 'Dein Porträt steht oben rechts als Ruhezustand eines Bildrahmens. Fährt man über ein Projekt, blättert der Rahmen dessen Arbeitsspuren einmal durch, von der Skizze bis zum fertigen Stand, und bleibt dort stehen. Dazu „Now“ aus C, die Liste aus B mit Spalte „Client“ (eigene Projekte heißen „Own“) und ein Archiv mit älteren Kundenprojekten.',
+    good: 'Man sieht dich sofort. Jedes Bild zeigt, wie ein Projekt entstanden ist. Eigene Projekte und Kundenarbeit sind auf einen Blick getrennt. Auf der About-Seite blättert der Rahmen die Belege zu den Stationen im Lebenslauf durch.',
+    risk: 'Die Animation wirkt nur mit Maus. Auf dem Handy bleibt es eine ruhige Liste mit kleinen Bildern.',
+  },
+  {
+    key: 'E',
+    href: '/varianten/e/',
+    about: '/varianten/e/about/',
+    name: 'Index + Film',
+    idea: 'Wie D, aber ohne Fotos und Screenshots: Flowculate zeigt im Rahmen einen kurzen Film im Zeichenstil der Seite (mit Remotion gebaut): Zahlen, Grundriss, App. Das Archiv ist von der Startseite verschwunden; ein Link führt zu einer Übersicht mit allen Projekten, auch den alten. Die Awards stehen unter der Projektliste.',
+    good: 'Ein einheitlicher Stil statt gemischter Bilder. Der Film erzählt genau deinen Beitrag: aus Mathematik und Zahleneingabe wurde ein Programm mit eigenen Seiten pro Funktion.',
+    risk: 'Bisher hat nur Flowculate einen Film; die anderen Projekte zeigen im Rahmen vorerst dein Porträt. Jeder weitere Film braucht etwa einen halben Tag.',
+  },
+  {
+    key: 'F',
+    href: '/varianten/f/',
+    about: '/varianten/f/about/',
+    name: 'Poster',
+    idea: 'In Richtung deiner drei Beispielseiten: riesige Wörter über die ganze Breite, kleine Versal-Etiketten im Raster, ein großer Satz zum Jetzt und ein dunkler Projektbereich. Darin leuchtet das Projekt in der Bildschirmmitte auf, und sein Film läuft daneben. Filme gibt es für Levelwork (Constat), Saunter und Flowculate, die übrigen Projekte zeigen Titelkarten im selben Stil. Die Übersicht aller Projekte folgt demselben Muster, alte Printarbeiten zeigen ihre Originalbilder.',
+    good: 'Wirkt wie ein Studio, ohne Effekthascherei. Funktioniert durch Scrollen auch auf dem Handy, die Liste leuchtet mit. Startseite, Filme und Übersicht sehen aus einem Guss aus.',
+    risk: 'Weniger Forschungsnotizbuch, mehr Plakat; die Serifenschrift fällt fast weg. Die großen Flächen brauchen starke Inhalte. Die Filme spielen auf dem Handy noch nicht.',
+  },
+  {
+    key: 'G',
+    href: '/varianten/g/',
+    about: '/varianten/g/about/',
+    name: 'Grid',
+    idea: 'Wie F, aber hell und nach Right Hemisphere: oben links die drei Wörter, rechts du groß. Die Projekte stehen als versetztes Raster aus Filmkacheln im Bauhaus-Stil (Kreise, Quadrate, Dreiecke in Rot, Blau, Gelb). Jede Kachel spielt ihren Film, sobald sie im Bild ist, auch auf dem Handy.',
+    good: 'Am meisten Farbe und Leben, du bist oben groß zu sehen, alle neun Projekte haben einen Film.',
+    risk: 'Bauhaus-Farben sind laut und weit weg vom ruhigen Schwarz-Weiß der Referenzen. Viele gleichzeitig laufende Filme können unruhig wirken.',
+  },
+  {
+    key: 'H',
+    href: '/varianten/h/',
+    about: '/varianten/h/about/',
+    name: 'Stage',
+    idea: 'Wie F, aber ganz dunkel und nach ESR: oben ein breiter Film aus bewegter Schrift (Research, Design, Build), dann bekommt jedes Projekt eine eigene Bühne in Bildschirmhöhe mit seinem Film im Kinetic-Stil, nur Typografie.',
+    good: 'Am filmischsten, jedes Projekt hat Raum, funktioniert auch auf dem Handy. Kinetic ist am nächsten an Obys Format.',
+    risk: 'Lange Seite: neun volle Bildschirme. Ganz dunkel wirkt ernster und weniger persönlich.',
+  },
+  {
+    key: 'I',
+    href: '/',
+    about: '/about/',
+    name: 'Index + Filme',
+    idea: 'Wie E, aber alle neun Projekte haben einen Film im Poster-Stil, hell oder dunkel passend zur Seite. Fährt man mit der Maus über die Liste, passiert nichts. Erst wo sie kurz stehen bleibt, öffnet sich die Zeile ein Stück, mit einem Satz mehr zu deinem Anteil, dann startet der Film im Rahmen. Der Weg zu allen Projekten ist ein Button.',
+    good: 'Ruhig trotz neun Filmen, jedes Projekt zeigt in Bild und Satz, was du beigetragen hast. Filme laden erst, wenn die Maus auf ein Projekt zusteuert.',
+    risk: 'Auf dem Handy gibt es keinen Rahmen und keine Filme; dort öffnet ein Tipp auf den Titel nur den Zusatzsatz.',
+  },
+  {
+    key: 'J',
+    href: '/varianten/j/work/saunter/',
+    about: '/varianten/j/work/flowculate/',
+    aboutLabel: 'Flowculate',
+    homeLabel: 'Saunter',
+    name: 'Case-Bühne',
+    idea: 'Nur die Case-Seiten, erst für Saunter und Flowculate: Der Film steht nicht mehr im Kasten neben dem Titel, sondern wird zur Bühne über die ganze Breite, ohne eigenen Hintergrund. Titel und Satz sind echter Text in derselben Fläche, die Zeichnung baut auf ihnen auf. Bei Saunter steht der Titel auf dem Laufband, bei Flowculate wird er zum Logo der App. Die Bühne bleibt beim Scrollen stehen, das Scrollen ist die Uhr: Der erste Akt spielt von selbst, dann läuft die Szene mit dem Scrollen vor und zurück. Im Text greift je eine Abbildung die Animation wieder auf (Flowculate: die drei Seiten der App, Saunter: warum der See als Wochenziel scheiterte).',
+    good: 'Die Seite reagiert auf den Besucher, statt ein Video abzuspielen. Dieselbe Zeichnung wie auf der Startseite, also ein Stil. Kein Video mehr: Die Szene wird live gezeichnet (12 KB). Auf dem Handy läuft der Hochformat-Film mit dem Scrollen.',
+    risk: 'Gepinnte Bühnen verlängern die Seite um gut zwei Bildschirmhöhen; wer schnell zu den Fakten will, scrollt durch. Für jedes weitere Projekt braucht es eine eigene Breitfassung, etwa einen halben Tag.',
+  },
+];
+---
+
+<Base title="Versionen · Robert Straubmüller" description="Interne Vergleichsseite der Entwürfe.">
+  <section class="v">
+    <h1>Versionen</h1>
+    <p class="lede">
+      Gleiche Fakten, gleiche Schriften, verschiedene Haltungen. Jede Version hat eine Startseite und eine About-Seite.
+      Unten rechts wechselst du zwischen den Versionen und zwischen Start und About. Alle Animationsstile nebeneinander:
+      <a href="/varianten/stile/">Animationsstile vergleichen</a>.
+    </p>
+    <ol class="v-list">
+      {
+        versions.map((v) => (
+          <li>
+            <a class="v-key" href={v.href}>
+              {v.key}
+            </a>
+            <div>
+              <h2>
+                <a href={v.href}>{v.name}</a>
+              </h2>
+              <p class="v-links">
+                <a href={v.href}>{v.homeLabel ?? 'Startseite'}</a> · <a href={v.about}>{v.aboutLabel ?? 'About'}</a>
+              </p>
+              <p>{v.idea}</p>
+              <p>
+                <strong>Stärke:</strong> {v.good}
+              </p>
+              <p>
+                <strong>Risiko:</strong> {v.risk}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+  <VariantSwitch />
+</Base>
+
+<style>
+  .v {
+    padding: clamp(32px, 5vw, 72px) var(--m) 96px;
+    max-width: 1100px;
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-family: var(--f-display);
+    font-weight: 300;
+    font-stretch: 75%;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 1;
+  }
+
+  .lede {
+    margin: 0 0 40px;
+    max-width: 60ch;
+    font-size: 19px;
+  }
+
+  .v-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .v-list li {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .v-key {
+    font-family: var(--f-display);
+    font-size: 72px;
+    font-weight: 200;
+    line-height: 0.9;
+    text-decoration: none;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 600;
+  }
+
+  h2 a {
+    text-decoration: none;
+  }
+
+  .v-links {
+    font-size: 15px;
+  }
+
+  p {
+    margin: 0 0 8px;
+    max-width: 70ch;
+  }
+</style>
