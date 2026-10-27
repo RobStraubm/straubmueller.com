@@ -3,7 +3,8 @@
 // (~/Desktop/Job/sayfit-showcase), Robert's commits in the team repo (~/bootcamp/capstone1/sayfit-alpha, 9–11 Mar
 // 2026), the capstone 1 slides (~/bootcamp/capstone1/presentation_slides_en.txt: 29 tests, 11 runs, ~12 % → ~71 %)
 // and the capstone 2 deck (~/bootcamp/capstone2/SayFit_Capstone2.pptx: roles, V3 → V4, prompt lengths).
-// Run 09 used simpler test cases (slides), so the case does not quote its score.
+// Run 09 used simpler test cases (slides), so the case does not quote its score. The 12 → 71 % is the pipeline's own
+// confidence, not accuracy against known answers; no accuracy figure exists, so none is claimed (Robert, 27 Oct 2026).
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
 import SayFitPipeline from '../../components/case/diagrams/SayFitPipeline.astro';
@@ -71,10 +72,11 @@ const half = '(max-width: 900px) 100vw, 45vw';
       In March we ran 29 test meals of varied difficulty through the pipeline in 11 runs over three days, about 150
       item decisions in all. Each match got a confidence score and landed in a bucket: high, medium or low. Without the
       language models, about 12 % of the matches came back with high confidence. With both LLM steps it was about 71 %.
+      That score is the pipeline's own rating of how sure it is: it shows how often the system was sure, not how often
+      it was right.
     </p>
     <p>
-      In June we traced every LLM call in Langfuse and measured latency, errors, confidence and accuracy against known
-      answers. The new prompts were shorter and stricter: the extractor went from about 520 to 310 words, the reranker
+      In June we traced every LLM call in Langfuse and measured latency, errors and confidence. The new prompts were shorter and stricter: the extractor went from about 520 to 310 words, the reranker
       from 680 to 220, with an output schema, positive and negative examples, hard exclusion rules and a confidence
       score instead of more prose.
     </p>
@@ -83,7 +85,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <figcaption>Both prompts, old and new: the extractor from about 520 to 310 words, the reranker from 680 to 220, structure instead of more prose.</figcaption>
     </figure>
     <dl class="c-numbers">
-      <div><dt>12 → 71 %</dt><dd>matches with high confidence, without and with the LLM steps, 29 test meals</dd></div>
+      <div><dt>12 → 71 %</dt><dd>matches the pipeline itself rated as high confidence, without and with the LLM steps, 29 test meals</dd></div>
       <div><dt>−23 %</dt><dd>end-to-end latency from prompt version 3 to 4, 16.4 s to 12.6 s</dd></div>
       <div><dt>1.88 M</dt><dd>food entries from USDA and OpenFoodFacts in the search index</dd></div>
     </dl>
@@ -164,6 +166,9 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <li>
         Run every configuration on exactly the same test meals. One of our best runs used simpler cases, so I don't quote
         its score.
+      </li>
+      <li>
+        Check every match against a known right answer. We measured how sure the pipeline was, not how often it was right.
       </li>
       <li>
         Flag implausible values in the review. In our own demo, 47 kcal for 150 g of avocado went into the log unnoticed.
