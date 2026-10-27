@@ -5,6 +5,7 @@
 // exhibition that led the computer science students; on stage at the ADC talk in Stuttgart (Oct 2022); credited as
 // photographer everywhere. Only photographs without recognisable faces; three are cropped (0965, 1193, 1974).
 import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
@@ -78,7 +79,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <Image
         src={room}
         alt="Ground floor, department A: a dark blue room with a pin board, panels on visiting time, tracking and risk contacts, a black counter with places for the iPads and monitors of the database"
-        widths={widths}
+        widths={full(widths, room)}
         sizes="(max-width: 900px) 100vw, 75vw"
         loading="lazy"
       />
@@ -89,7 +90,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={arBody}
           alt="A visitor holds an iPad over a glowing body model; the augmented reality shows the course of a disease, with tabs for plague, cholera, Spanish flu, malaria and Covid"
-          widths={widths}
+          widths={full(widths, arBody)}
           sizes={half}
           loading="lazy"
         />
@@ -99,7 +100,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={arWall}
           alt="An iPad held up to a grey wall shows a visitor comment, I learned a lot, with likes, placed on the wall in augmented reality"
-          widths={widths}
+          widths={full(widths, arWall)}
           sizes={half}
           loading="lazy"
         />
@@ -154,7 +155,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={simTable}
           alt="Simulation table on the management floor: a dark city map with green buildings and an iPad set into it, the question how do you react"
-          widths={widths}
+          widths={full(widths, simTable)}
           sizes="(max-width: 900px) 100vw, 33vw"
           loading="lazy"
         />
@@ -164,7 +165,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={medicine}
           alt="An iPad set into a white table shows the station on the development of medicine with a choice of films"
-          widths={widths}
+          widths={full(widths, medicine)}
           sizes="(max-width: 900px) 100vw, 33vw"
           loading="lazy"
         />
@@ -174,7 +175,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={figures}
           alt="White cut-out figures with texts in a bright room, under the questions Divide? and Doubt?"
-          widths={widths}
+          widths={full(widths, figures)}
           sizes="(max-width: 900px) 100vw, 33vw"
           loading="lazy"
         />

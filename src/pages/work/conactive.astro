@@ -4,6 +4,7 @@
 // befund/cases/conactive.md (thesis, exposé of 17 May 2022, HTWG award page, PAGE article draft). Speculative design:
 // physical models, no user tests (the thesis names tests as the next step). Interviewees are not named.
 import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
 import cup from '../../assets/cases/conactive/foto_concup-auf-gelb.jpg';
@@ -55,7 +56,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <Image
         src={channels}
         alt="Sketch of the interview result: before digitalisation a person with notice board, letter, phone, note and memo; after, a person in front of a screen with invitation, chat, email, phone, note, appointment, comment and voice message"
-        widths={widths}
+        widths={full(widths, channels)}
         sizes="(max-width: 900px) 100vw, 75vw"
         loading="lazy"
       />
@@ -83,7 +84,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={sketchbook}
           alt="Sketchbook spread in pencil: a project plan as Tetris, the forerunner of the conblocks, notes on critical design and design fiction, and a coloured ring of a working day"
-          widths={widths}
+          widths={full(widths, sketchbook)}
           sizes={half}
           loading="lazy"
         />
@@ -93,7 +94,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={story}
           alt="Printed thesis open at a user story with the user's thoughts and an emotion curve, on a yellow background"
-          widths={widths}
+          widths={full(widths, story)}
           sizes={half}
           loading="lazy"
         />
@@ -125,7 +126,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <Image
         src={model}
         alt="Hand-drawn model: today a cycle from input through digital information to visual output on a screen; proposed a person working with both a tangible and an intangible representation of digital information; below, activity based working, information based media, data based interaction"
-        widths={widths}
+        widths={full(widths, model)}
         sizes="(max-width: 900px) 100vw, 75vw"
         loading="lazy"
       />
@@ -136,7 +137,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={blocks}
           alt="White line drawing on black of connote and conblock: a tray with a notes area and blocks whose depth stands for the length of a meeting, labelled room and time"
-          widths={widths}
+          widths={full(widths, blocks)}
           sizes={half}
           loading="lazy"
         />
@@ -146,7 +147,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
         <Image
           src={cupDrawing}
           alt="White line drawing on black of the concup: a light ring as a visual signal, a speaker, and the handle to accept or decline a call"
-          widths={widths}
+          widths={full(widths, cupDrawing)}
           sizes={half}
           loading="lazy"
         />
@@ -167,7 +168,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <Image
         src={cup}
         alt="The concup model on a yellow background: a black cup with a wooden rim and handle and the word concup"
-        widths={widths}
+        widths={full(widths, cup)}
         sizes="(max-width: 900px) 100vw, 75vw"
         loading="lazy"
       />

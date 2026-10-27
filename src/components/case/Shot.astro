@@ -3,6 +3,7 @@
 // comes from. The image itself is never retouched. Without `src`, the frame holds a redrawn screen from its slot.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { full } from '../../lib/widths';
 
 interface Props {
   src?: ImageMetadata;
@@ -21,7 +22,7 @@ const { src, alt, source, label, widths, sizes } = Astro.props;
     <span>{source}</span>
     {label && <span>{label}</span>}
   </div>
-  {src ? <Image src={src} alt={alt ?? ''} widths={widths} sizes={sizes} loading="lazy" /> : <slot />}
+  {src ? <Image src={src} alt={alt ?? ''} widths={widths && full(widths, src)} sizes={sizes} loading="lazy" /> : <slot />}
 </div>
 
 <style>

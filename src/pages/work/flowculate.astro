@@ -3,6 +3,7 @@
 // wrote the code, Robert conceived the program, did UX research, UI, brand and project management.
 // Images are Robert's own presentation boards from the old site (~/Portfolio/flowculateUX) and the corporate design.
 import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import maths from '../../assets/cases/flowculate/maths.jpg';
 import pocNotes from '../../assets/cases/flowculate/poc-notes.jpg';
@@ -56,11 +57,11 @@ const { stage = true } = Astro.props as { stage?: boolean };
       simple enough for someone who plans a lecture hall, a fair stand or an evacuation route?
     </p>
     <figure class="c-wide">
-      <Image src={maths} alt="Simulation output as the mathematicians saw it: 3D density plots and a velocity field around two obstacles" widths={widths} sizes={wide} loading="lazy" />
+      <Image src={maths} alt="Simulation output as the mathematicians saw it: 3D density plots and a velocity field around two obstacles" widths={full(widths, maths)} sizes={wide} loading="lazy" />
       <figcaption>The starting point: density and velocity fields, readable for mathematicians only.</figcaption>
     </figure>
     <figure class="c-wide">
-      <Image src={pocNotes} alt="Diagram of the proof-of-concept workflow, annotated by hand in green and purple marker" widths={widths} sizes={wide} loading="lazy" />
+      <Image src={pocNotes} alt="Diagram of the proof-of-concept workflow, annotated by hand in green and purple marker" widths={full(widths, pocNotes)} sizes={wide} loading="lazy" />
       <figcaption>Working through the proof of concept, 2022: five manual steps, no evaluation, no graphics.</figcaption>
     </figure>
   </section>
@@ -81,7 +82,7 @@ const { stage = true } = Astro.props as { stage?: boolean };
       built the things that mattered first.
     </p>
     <figure class="c-wide">
-      <Image src={workshop} alt="Digital summary of the user-testing workshop: the partners' wishes as sticky notes, sorted by effort and time, most of them ticked off" widths={widths} sizes={wide} loading="lazy" />
+      <Image src={workshop} alt="Digital summary of the user-testing workshop: the partners' wishes as sticky notes, sorted by effort and time, most of them ticked off" widths={full(widths, workshop)} sizes={wide} loading="lazy" />
       <figcaption>The workshop summary: the partners’ wishes, sorted by effort (up) and timing (across), ticked off as they shipped.</figcaption>
     </figure>
   </section>
@@ -113,16 +114,16 @@ const { stage = true } = Astro.props as { stage?: boolean };
       )
     }
     <figure class="c-wide">
-      <Image src={tools} alt="Interface details: interactive graph, DXF import, tooltips, interactive module, guidelines and the density heat map in a floor plan" widths={widths} sizes={wide} loading="lazy" />
+      <Image src={tools} alt="Interface details: interactive graph, DXF import, tooltips, interactive module, guidelines and the density heat map in a floor plan" widths={full(widths, tools)} sizes={wide} loading="lazy" />
       <figcaption>Tools from version 2.0: graphs, DXF import, tooltips, guidelines, the density map.</figcaption>
     </figure>
     <div class="c-pair">
       <figure>
-        <Image src={uiTests} alt="Four colour variants of the same floor-plan screen, tested side by side" widths={widths} sizes={half} loading="lazy" />
+        <Image src={uiTests} alt="Four colour variants of the same floor-plan screen, tested side by side" widths={full(widths, uiTests)} sizes={half} loading="lazy" />
         <figcaption>UI tests: four variants of one screen.</figcaption>
       </figure>
       <figure>
-        <Image src={components} alt="Component overview on a dark background: labels, text fields, toggles, sliders, tabs and buttons in their states" widths={widths} sizes={half} loading="lazy" />
+        <Image src={components} alt="Component overview on a dark background: labels, text fields, toggles, sliders, tabs and buttons in their states" widths={full(widths, components)} sizes={half} loading="lazy" />
         <figcaption>The components, with every state.</figcaption>
       </figure>
     </div>
@@ -166,11 +167,11 @@ const { stage = true } = Astro.props as { stage?: boolean };
     </p>
     <div class="c-pair">
       <figure>
-        <Image src={version1} alt="Version 1 of the web app: floor plan with a density heat map, parameters on the left, charts on the right" widths={widths} sizes={half} loading="lazy" />
+        <Image src={version1} alt="Version 1 of the web app: floor plan with a density heat map, parameters on the left, charts on the right" widths={full(widths, version1)} sizes={half} loading="lazy" />
         <figcaption>Version 1.</figcaption>
       </figure>
       <figure>
-        <Image src={version2} alt="Version 2 of the web app: a calmer layout with the floor plan in the centre and grouped parameters" widths={widths} sizes={half} loading="lazy" />
+        <Image src={version2} alt="Version 2 of the web app: a calmer layout with the floor plan in the centre and grouped parameters" widths={full(widths, version2)} sizes={half} loading="lazy" />
         <figcaption>Version 2: the plan in the centre, the parameters grouped and quiet.</figcaption>
       </figure>
     </div>

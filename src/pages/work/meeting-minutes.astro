@@ -5,9 +5,14 @@
 // beta outside the contracted scope; Robert, 27 Oct 2026: the focus moved from the verbatim record to the minutes)
 // and the first-run report of 15 Oct 2026 (berichte/2026-10-15_kreistag-2026-05-18_erster-durchlauf). Robert approved
 // naming the district office (26 Oct 2026). The screens of the real session (councillors' names, the district's arms)
-// came off on 27 Oct 2026 (Robert); anonymous ones from a fictional session are to replace them.
+// came off on 27 Oct 2026 (Robert). The screens here are the same app, run locally with a fictional session swapped
+// in at load time ("Landkreis Musterkreis", invented speakers and speech); no real name or real speech is in them.
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import Shot from '../../components/case/Shot.astro';
+import editor from '../../assets/cases/minutes/editor.jpg';
+import review from '../../assets/cases/minutes/review.jpg';
+import documents from '../../assets/cases/minutes/documents.jpg';
 ---
 
 <CaseLayout
@@ -55,6 +60,20 @@ import ScrubFigure from '../../components/stage/ScrubFigure.astro';
       are uploaded, and the editor takes over the resolutions with their votes, attendance, start and end and the
       signatures, word for word. The office corrects inside the tool instead of in Word and exports to Word or PDF.
     </p>
+    <figure class="c-wide">
+      <Shot
+        src={editor}
+        source="Minutes editor, beta"
+        label="Fictional session"
+        alt="The minutes editor with a fictional council meeting: on the left the contributions, each with the choices edit, verbatim, leave out, standard text and indirect; on the right the minutes as they will be printed, with a placeholder letterhead, place, start and end and the agenda"
+        widths={[800, 1600]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>
+        Left the record, right the minutes as they will print. One choice per contribution. The app with a fictional
+        session, German UI.
+      </figcaption>
+    </figure>
   </section>
 
   <section>
@@ -103,6 +122,28 @@ import ScrubFigure from '../../components/stage/ScrubFigure.astro';
       <strong>The minutes stay in view.</strong> Editing and preview scroll together, so the office always sees the
       page that will be signed, not a form that becomes a page later.
     </p>
+    <figure class="c-wide">
+      <Shot
+        src={review}
+        source="Minutes tool"
+        label="Review"
+        alt="Review of a fictional council meeting: section 1 of 16, the chair's opening words with timestamps, names the speech recognition was unsure of highlighted, and a note “name unconfirmed”"
+        widths={[800, 1600]}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Before the minutes: the record is checked section by section, uncertain names are marked. Fictional session.</figcaption>
+    </figure>
+    <figure>
+      <Shot
+        src={documents}
+        source="Minutes editor, beta"
+        label="Meeting documents"
+        alt="Dialog with the meeting documents of a fictional session: from the resolution record 31 agenda items and 37 resolutions with votes; from the template also attendance, start and end, place and the formulas, with a warning that a PDF was reconstructed from its layout"
+        widths={[576]}
+        sizes="(max-width: 640px) 100vw, 576px"
+      />
+      <figcaption>What the editor read from the documents, and where to double-check.</figcaption>
+    </figure>
   </section>
 
   <section>

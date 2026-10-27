@@ -3,6 +3,7 @@
 // git log (~/Desktop/Job/laufband-public) and befund/saunter/case-study.md; numbers marked [prüfen] there are left
 // out. The dashboard is rendered from the public copy (befund/saunter/overview.png).
 import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import dashboard from '../../assets/cases/saunter/dashboard.jpg';
 import SaunterProtocol from '../../components/case/diagrams/SaunterProtocol.astro';
@@ -50,7 +51,7 @@ const { stage = true } = Astro.props as { stage?: boolean };
       <Image
         src={dashboard}
         alt="Saunter overview: distance today, this week and in total, the journey around Lake Constance, the weekly streak at two of three walking days, distance over 30 days and the daily streak"
-        widths={[1000, 2000]}
+        widths={full([1000, 2000], dashboard)}
         sizes="(max-width: 900px) 100vw, 75vw"
         loading="lazy"
       />
