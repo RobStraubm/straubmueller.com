@@ -3,7 +3,8 @@
 // (agreed wording, 20 Oct 2026). Facts from befund/cases/tealucent.md: goconut sales deck of June 2022 ("Transparenz &
 // Überblick"), Sketch file of Dec 2022 (mobile app, formerly Kapago), Robert's boards (palette, token architecture,
 // components). Robert, 27 Oct 2026: lead UX at goconut for the web app, design system by him alone, base UX of the
-// mobile app by ugd, still in use at goconut. Left out: the ten test participants, the share of desktop and mobile use. Only boards without photos of people.
+// mobile app by ugd, still in use at goconut; the design was then used for the mobile app too, and the four modes are
+// light, dark, translucent and action (Robert, 27 Oct 2026). Left out: the ten test participants, the share of desktop and mobile use. Only boards without photos of people.
 import { row } from '../../lib/row';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
@@ -50,7 +51,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
     <p>
       The base UX of the mobile app came from user generated design. When goconut turned the app into a web app, I was
       lead UX at goconut and created its design system on my own. I named it Tealucent, after teal and translucent: the
-      colour system, the components, the modes and the tokens that connect the design to the code.
+      colour system, the components, the modes and the tokens that connect the design to the code. The mobile app then took it over too.
     </p>
     <figure class="c-wide">
       <Shot
@@ -80,12 +81,12 @@ const half = '(max-width: 900px) 100vw, 45vw';
     </p>
     <p>
       <strong>Tokens in three tiers.</strong> A value becomes a global token, an alias token switches between light, dark,
-      side panel and translucent modes, and component tokens use the aliases. A new mode changes the aliases, not every
+      translucent and action modes, and component tokens use the aliases. A new mode changes the aliases, not every
       component.
     </p>
     <figure class="c-wide">
       <ScrubFigure kind="tealucent-tokens" ratio="1200 / 520" narrow="600 / 910" />
-      <figcaption>One alias, four modes: the dropdown and the input take their colour from action_background_ in light, dark, side and trans, and their own tokens stay the same.</figcaption>
+      <figcaption>One alias, four modes: the dropdown and the input take their colour from action_background_ in each mode, and their own tokens stay the same.</figcaption>
     </figure>
     <div class="c-split">
       <figure>
@@ -152,12 +153,12 @@ const half = '(max-width: 900px) 100vw, 45vw';
     <h2>Result</h2>
     <p class="c-lead">A system small enough to keep consistent, and still in use.</p>
     <p>
-      Tealucent gave goconut's web app one visual language: ten shades of one colour, an orange signal, four
+      Tealucent gave goconut one visual language across mobile and web: ten shades of one colour, an orange signal, four
       modes, IBM Plex Sans and Mono, and tokens that tie the design to the code. goconut still uses it today.
     </p>
     <dl class="c-numbers">
       <div><dt>1</dt><dd>colour, in ten steps from teal to white</dd></div>
-      <div><dt>4</dt><dd>modes: light, dark, side panel, translucent</dd></div>
+      <div><dt>4</dt><dd>modes: light, dark, translucent, action</dd></div>
       <div><dt>3</dt><dd>tiers of tokens: global, alias, component</dd></div>
     </dl>
   </section>
