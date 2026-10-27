@@ -214,7 +214,7 @@ export const StayinStage = ({ palette: c }: { palette: Palette }) => {
       </g>
 
       <text x={0} y={LABEL_Y} fontSize={19} opacity={progress(f, 86, 94) * (1 - progress(f, 132, 138))} style={mono}>
-        THE IPAD VISITOR GUIDE · LED THE UX TEAM
+        THE IPAD VISITOR GUIDE · CO-LED THE UX TEAM
       </text>
       {/* What the guide meant for a visitor, in the case text's words, while it shows the stations. */}
       <g opacity={1 - progress(f, 132, 138)}>

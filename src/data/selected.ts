@@ -87,7 +87,7 @@ export const selected: Selected[] = [
   {
     years: '2021',
     title: 'Stayin’ Alive',
-    line: 'Exhibition on living with epidemics, built by about 80 students. Led the UX team.',
+    line: 'Exhibition on living with epidemics, built by about 80 students. Co-led the UX team.',
     client: 'HTWG Konstanz',
     status: 'Red Dot',
     href: 'https://www.red-dot.org/project/stayin-alive-60726',

@@ -145,7 +145,7 @@ export const recent: Project[] = [
     years: '2021',
     start: 2021.5,
     title: 'Stayin’ Alive',
-    line: 'Exhibition on living with epidemics, built by about 80 students. Led the UX team.',
+    line: 'Exhibition on living with epidemics, built by about 80 students. Co-led the UX team.',
     client: 'HTWG Konstanz',
     field: 'Exhibition',
     href: 'https://www.red-dot.org/project/stayin-alive-60726',

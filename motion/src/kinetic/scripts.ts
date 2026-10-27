@@ -101,7 +101,7 @@ export const scripts: Record<string, Script> = {
     years: '2021',
     beats: [
       { at: 0, kind: 'stack', lines: [ink('STAYIN’'), ink('ALIVE')], caption: 'AN EXHIBITION ABOUT EPIDEMICS' },
-      { at: 58, kind: 'count', from: 0, to: 80, caption: 'STUDENTS · I LED THE UX TEAM' },
+      { at: 58, kind: 'count', from: 0, to: 80, caption: 'STUDENTS · I CO-LED THE UX TEAM' },
       { at: 128, kind: 'stack', lines: [red('RED DOT'), ink('ADC GOLD'), ink('COMMAWARDS')], caption: 'THE PROJECT’S AWARDS' },
     ],
   },

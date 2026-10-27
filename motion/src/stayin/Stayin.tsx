@@ -287,7 +287,7 @@ export const Stayin = ({ theme }: { theme: Theme }) => {
         )}
 
         <text x={64} y={860} fontSize={19} opacity={progress(f, 86, 94) * (1 - progress(f, 134, 140))} style={mono}>
-          THE IPAD VISITOR GUIDE · LED THE UX TEAM
+          THE IPAD VISITOR GUIDE · CO-LED THE UX TEAM
         </text>
 
         {/* Act 3: the awards, for the project and its team, under the exhibition they were given for. */}
