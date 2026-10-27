@@ -1,9 +1,10 @@
 // SayFit, how we tested it: the June prompts, shorter and stricter (version J). Drawn as the reader scrolls
-// past it: the old prompt of each LLM step as a bar of its length in words, then the bar steps back to the new
+// past it: the old prompt of each LLM step as a bar of its length in words, then the bar runs back to the new
 // length and leaves the old one as a trace, then what took the place of the prose. Words and numbers are the
 // case text's (from the capstone 2 deck); the stage at the top already shows the search and the 12 → 71 %.
 import type { Palette } from '../../../motion/src/style';
-import { fonts, stepped } from '../../../motion/src/style';
+import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 
 /** Prompt length in words, old and new, per LLM step. */
 const PROMPTS = [
@@ -15,6 +16,9 @@ const STRUCTURE = ['OUTPUT SCHEMA', 'POSITIVE EXAMPLES', 'NEGATIVE EXAMPLES', 'H
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
+/** Fade in: nothing pops, it comes up over a short stretch of scroll (Robert, 27 Oct 2026). */
+const FADE = 0.04;
+const fade = (share: number, from: number) => span(share, from, from + FADE);
 
 export const SayFitFigure = ({ palette: c, share, narrow = false }: { palette: Palette; share: number; narrow?: boolean }) => {
   if (narrow) return <SayFitNarrow palette={c} share={share} />;
@@ -27,37 +31,39 @@ export const SayFitFigure = ({ palette: c, share, narrow = false }: { palette: P
         const t = BAR.top + i * BAR.row;
         const y = t + 72;
         const draw = span(share, 0.04 + i * 0.08, 0.26 + i * 0.08);
-        // The cut comes in six hard steps, the word count with it.
-        const cut = stepped(span(share, 0.36 + i * 0.06, 0.52 + i * 0.06), 6);
+        const shown = fade(share, 0.04 + i * 0.08);
+        // The cut runs down smoothly, the word count with it; the old length fades in as a trace.
+        const cut = span(share, 0.36 + i * 0.06, 0.52 + i * 0.06);
+        const trace = fade(share, 0.36 + i * 0.06);
         const words = Math.round(prompt.old - (prompt.old - prompt.now) * cut);
         const end = BAR.x + prompt.old * BAR.perWord;
         return (
           <g key={prompt.name}>
-            <text x={40} y={t + 16} {...mono} opacity={draw > 0 ? 1 : 0}>
+            <text x={40} y={t + 16} {...mono} opacity={shown}>
               {prompt.name}
             </text>
             <text
               x={36}
               y={t + 104}
               fontSize={88}
-              opacity={draw > 0 ? 1 : 0}
+              opacity={shown}
               style={{ fontFamily: fonts.sans, fontWeight: 600, letterSpacing: -3, fill: c.ink, fontVariantNumeric: 'tabular-nums' }}
             >
               {words}
             </text>
-            <text x={212} y={t + 104} {...mono} opacity={draw > 0 ? 1 : 0}>
+            <text x={212} y={t + 104} {...mono} opacity={shown}>
               WORDS
             </text>
 
             {/* The old length stays as a trace once the cut has begun. */}
-            {cut > 0 && (
-              <>
+            {trace > 0 && (
+              <g opacity={trace}>
                 <line x1={BAR.x} y1={y} x2={end} y2={y} stroke={c.hair} strokeWidth={2} />
                 <line x1={end} y1={y - 12} x2={end} y2={y + 12} stroke={c.hair} strokeWidth={2} />
                 <text x={end} y={y - 22} textAnchor="end" {...mono}>
                   {`OLD ${prompt.old}`}
                 </text>
-              </>
+              </g>
             )}
             {draw > 0 && (
               <line
@@ -65,7 +71,7 @@ export const SayFitFigure = ({ palette: c, share, narrow = false }: { palette: P
                 y1={y}
                 x2={BAR.x + words * BAR.perWord * draw}
                 y2={y}
-                stroke={cut > 0 ? c.signal : c.ink}
+                stroke={mix(c.ink, c.signal, trace)}
                 strokeWidth={10}
               />
             )}
@@ -79,7 +85,7 @@ export const SayFitFigure = ({ palette: c, share, narrow = false }: { palette: P
         INSTEAD OF MORE PROSE
       </text>
       {STRUCTURE.map((part, k) => {
-        const on = stepped(span(share, 0.7 + k * 0.04, 0.71 + k * 0.04), 1);
+        const on = fade(share, 0.7 + k * 0.04);
         const x = BAR.x + (k % 3) * 290;
         const y = 416 + Math.floor(k / 3) * 40;
         return (
@@ -108,37 +114,39 @@ const SayFitNarrow = ({ palette: c, share }: { palette: Palette; share: number }
         const t = NARROW.top + i * NARROW.row;
         const y = t + 206;
         const draw = span(share, 0.04 + i * 0.08, 0.26 + i * 0.08);
-        // The cut comes in six hard steps, the word count with it.
-        const cut = stepped(span(share, 0.36 + i * 0.06, 0.52 + i * 0.06), 6);
+        const shown = fade(share, 0.04 + i * 0.08);
+        // The cut runs down smoothly, the word count with it; the old length fades in as a trace.
+        const cut = span(share, 0.36 + i * 0.06, 0.52 + i * 0.06);
+        const trace = fade(share, 0.36 + i * 0.06);
         const words = Math.round(prompt.old - (prompt.old - prompt.now) * cut);
         const end = NARROW.x + prompt.old * NARROW.perWord;
         return (
           <g key={prompt.name}>
-            <text x={NARROW.x} y={t + 24} {...mono} opacity={draw > 0 ? 1 : 0}>
+            <text x={NARROW.x} y={t + 24} {...mono} opacity={shown}>
               {prompt.name}
             </text>
             <text
               x={NARROW.x - 5}
               y={t + 146}
               fontSize={124}
-              opacity={draw > 0 ? 1 : 0}
+              opacity={shown}
               style={{ fontFamily: fonts.sans, fontWeight: 600, letterSpacing: -4, fill: c.ink, fontVariantNumeric: 'tabular-nums' }}
             >
               {words}
             </text>
-            <text x={NARROW.x + 236} y={t + 146} {...mono} opacity={draw > 0 ? 1 : 0}>
+            <text x={NARROW.x + 236} y={t + 146} {...mono} opacity={shown}>
               WORDS
             </text>
 
             {/* The old length stays as a trace once the cut has begun. */}
-            {cut > 0 && (
-              <>
+            {trace > 0 && (
+              <g opacity={trace}>
                 <line x1={NARROW.x} y1={y} x2={end} y2={y} stroke={c.hair} strokeWidth={2} />
                 <line x1={end} y1={y - 14} x2={end} y2={y + 14} stroke={c.hair} strokeWidth={2} />
                 <text x={end} y={y - 26} textAnchor="end" {...mono}>
                   {`OLD ${prompt.old}`}
                 </text>
-              </>
+              </g>
             )}
             {draw > 0 && (
               <line
@@ -146,7 +154,7 @@ const SayFitNarrow = ({ palette: c, share }: { palette: Palette; share: number }
                 y1={y}
                 x2={NARROW.x + words * NARROW.perWord * draw}
                 y2={y}
-                stroke={cut > 0 ? c.signal : c.ink}
+                stroke={mix(c.ink, c.signal, trace)}
                 strokeWidth={14}
               />
             )}
@@ -160,7 +168,7 @@ const SayFitNarrow = ({ palette: c, share }: { palette: Palette; share: number }
         INSTEAD OF MORE PROSE
       </text>
       {STRUCTURE.map((part, k) => {
-        const on = stepped(span(share, 0.7 + k * 0.04, 0.71 + k * 0.04), 1);
+        const on = fade(share, 0.7 + k * 0.04);
         const y = 644 + k * 46;
         return (
           <g key={part} opacity={on}>

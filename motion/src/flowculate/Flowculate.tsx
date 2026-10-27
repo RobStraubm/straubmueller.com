@@ -36,11 +36,14 @@ for (let row = 0, gy = 0.75; gy < PLAN.h; gy += 1.5, row++) {
   }
 }
 
-export const remainingAt = (f: number) => crowd[Math.min(f, LAST_FRAME)].filter((p) => p.gone === null).length;
+/** The crowd at frame f, held inside the simulated frames: the page's scroll can ask for a fraction or past the end. */
+export const crowdAt = (f: number) => crowd[Math.min(Math.max(0, Math.round(f)), LAST_FRAME)];
+
+export const remainingAt = (f: number) => crowdAt(f).filter((p) => p.gone === null).length;
 
 /** Crowd density on a fine grid, printed as halftone dots: red only where people pile up. */
 export const halftone = (f: number) => {
-  const here = crowd[f].filter((p) => p.gone === null);
+  const here = crowdAt(f).filter((p) => p.gone === null);
   const dots: { x: number; y: number; r: number }[] = [];
   if (f <= FIRST_MOVE) return dots;
   const step = 0.3;
@@ -201,7 +204,7 @@ export const Flowculate = ({ theme, titles = false }: { theme: Theme; titles?: b
             <circle key={i} cx={px(dot.x)} cy={px(dot.y)} r={dot.r} fill={c.signal} />
           ))}
 
-          {crowd[f].map((p, i) => {
+          {crowdAt(f).map((p, i) => {
             const appear = stepped(progress(f, T.people + (i % 12), T.people + (i % 12) + 3), 3);
             const out = p.gone === null ? 1 : 1 - progress(f, p.gone, p.gone + 6);
             if (!appear || !out) return null;

@@ -4,11 +4,12 @@
 // the June model: the house opens into the rooms and when they are used, the person into the people, active or
 // passive, how long at home and which device, the network into the IoT services, and the cloud steps out of the
 // chain with the switch for how much the system talks to it. Last, the requests of the active people's phones run
-// through router and internet to the cloud, and as the switch steps from high to low they thin out. The stage at
+// through router and internet to the cloud, and as the switch moves from high to low they thin out. The stage at
 // the top already shows the shift and the cost; this figure shows what the switch stands for. Shapes and the
 // hours of rooms and people follow the wireframes; the request rhythm is illustration, and there are no values.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 
 type Point = [number, number];
 type Rect = [number, number, number, number];
@@ -229,8 +230,8 @@ const span = (share: number, from: number, to: number) => clamp((share - from) /
 const ease = (t: number) => t * t * (3 - 2 * t);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const lerpPoint = (a: Point, b: Point, t: number): Point => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
-/** Hard step: off until the share reaches it, then on. */
-const at = (share: number, from: number) => (share >= from ? 1 : 0);
+/** Fade in: from nothing to full over a short stretch of scroll, so that nothing pops (Robert, 27 Oct 2026). */
+const at = (share: number, from: number) => span(share, from, from + 0.04);
 
 /** Where a line from a node's centre towards another point leaves the node, a box of half width hw and half height hh. */
 const edge = ([x, y]: Point, hw: number, hh: number, [tx, ty]: Point): Point => {
@@ -275,11 +276,14 @@ export const IotFigure = ({ palette: c, share, narrow }: { palette: Palette; sha
   const rows = (i: number) => at(share, 0.34 + i * 0.02);
   const devices = (i: number) => at(share, 0.36 + i * 0.012);
   const cloudPanel = span(share, 0.38, 0.46);
-  // The requests: their way first, then the stream, while the switch steps from high to low. What the requests
+  // The requests: their way first, then the stream, while the switch moves from high to low. What the requests
   // do not touch steps back.
   const lanes = span(share, 0.54, 0.6);
-  const level = share < 0.7 ? 0 : share < 0.82 ? 1 : 2;
-  const flowing = share >= 0.58;
+  // How much each level is the one set, 0 to 1: the switch fades from high to normal to low.
+  const toNormal = at(share, 0.7);
+  const toLow = at(share, 0.82);
+  const flowing = at(share, 0.58);
+  const levelOn = [flowing * (1 - toNormal), toNormal * (1 - toLow), toLow];
   const aside = 1 - 0.6 * span(share, 0.54, 0.6);
 
   const big = lerp(M.big, 1, move) * k;
@@ -394,7 +398,7 @@ export const IotFigure = ({ palette: c, share, narrow }: { palette: Palette; sha
     { at: M.heaters[1], text: 'HEATER' },
   ];
   const names = [
-    { p: cloud, h: 18 * cloudScale, text: 'CLOUD', side: june ? 'none' : M.names, show: 1 },
+    { p: cloud, h: 18 * cloudScale, text: 'CLOUD', side: june > 0 ? 'none' : M.names, show: 1 },
     { p: globe, h: 20 * big, text: 'INTERNET', side: move > 0.5 ? 'below' : M.names, show: 1 },
     { p: router, h: 13 * big, text: 'ROUTER', side: move > 0.5 ? J.names.router : M.names, show: 1 },
     { p: gateway, h: 24 * big, text: 'GATEWAY', side: move > 0.5 ? J.names.gateway : M.gatewayName, show: aside },
@@ -403,8 +407,11 @@ export const IotFigure = ({ palette: c, share, narrow }: { palette: Palette; sha
   return (
     <svg viewBox={`0 0 ${L.w} ${L.h}`} width="100%" height="100%" aria-hidden="true">
       {/* Which wireframe the drawing is in. */}
-      <text x={L.stamp[0]} y={L.stamp[1]} textAnchor="end" style={{ ...label, letterSpacing: 1 }}>
-        {june ? 'JUNE WIREFRAME' : 'MARCH WIREFRAME'}
+      <text x={L.stamp[0]} y={L.stamp[1]} textAnchor="end" opacity={1 - june} style={{ ...label, letterSpacing: 1 }}>
+        MARCH WIREFRAME
+      </text>
+      <text x={L.stamp[0]} y={L.stamp[1]} textAnchor="end" opacity={june} style={{ ...label, letterSpacing: 1 }}>
+        JUNE WIREFRAME
       </text>
 
       {/* March: the house and the person as small settings at the side. */}
@@ -608,14 +615,14 @@ export const IotFigure = ({ palette: c, share, narrow }: { palette: Palette; sha
           <line x1={J.levels.xs[0]} y1={J.levels.ys[0]} x2={J.levels.xs[2]} y2={J.levels.ys[2]} stroke={c.hair} strokeWidth={sw} />
         )}
         {LEVELS.map((name, i) => {
-          const on = flowing && i === level;
+          const on = levelOn[i];
           const x = J.levels.xs[i];
           const y = J.levels.ys[i];
           const r = RHYTHM[i];
           return (
             <g key={name}>
-              <circle cx={x} cy={y} r={7 * k} fill={on ? c.signal : c.ground} stroke={on ? c.signal : c.ink} strokeWidth={sw} />
-              <text x={x + 16 * k} y={y + L.font * 0.35} style={{ ...label, fill: on ? c.signal : c.ink }}>
+              <circle cx={x} cy={y} r={7 * k} fill={mix(c.ground, c.signal, on)} stroke={mix(c.ink, c.signal, on)} strokeWidth={sw} />
+              <text x={x + 16 * k} y={y + L.font * 0.35} style={{ ...label, fill: mix(c.ink, c.signal, on) }}>
                 {name}
               </text>
               {Array.from({ length: r.dots }, (_, n) => (
@@ -624,7 +631,7 @@ export const IotFigure = ({ palette: c, share, narrow }: { palette: Palette; sha
                   cx={x + J.levels.rhythm[0] + (n * r.gap + 3) * k}
                   cy={y + J.levels.rhythm[1]}
                   r={3 * k}
-                  fill={on ? c.signal : c.mute}
+                  fill={mix(c.mute, c.signal, on)}
                 />
               ))}
             </g>
@@ -645,10 +652,14 @@ export const IotFigure = ({ palette: c, share, narrow }: { palette: Palette; sha
       )}
       {ways.map((way, w) => {
         const length = polyLength(way);
-        const spacing = SPACING[level] * k;
-        const offset = (share * 2400 + w * spacing * 0.5) % spacing;
-        const dots: Point[] = [];
-        if (flowing) for (let d = offset; d < length; d += spacing) dots.push(along(way, d));
+        // One stream per level, each as strong as its level is set: the rhythms cross-fade as the switch moves.
+        const streams = SPACING.map((gap, i) => {
+          const spacing = gap * k;
+          const offset = (share * 2400 + w * spacing * 0.5) % spacing;
+          const dots: Point[] = [];
+          if (levelOn[i] > 0) for (let d = offset; d < length; d += spacing) dots.push(along(way, d));
+          return { dots, strength: levelOn[i] };
+        });
         return (
           <g key={w}>
             <polyline
@@ -659,9 +670,9 @@ export const IotFigure = ({ palette: c, share, narrow }: { palette: Palette; sha
               strokeDasharray={`${4 * k} ${6 * k}`}
               opacity={lanes}
             />
-            {dots.map(([x, y], n) => (
-              <circle key={n} cx={x} cy={y} r={5 * k} fill={c.signal} />
-            ))}
+            {streams.map(({ dots, strength }, i) =>
+              dots.map(([x, y], n) => <circle key={`${i}-${n}`} cx={x} cy={y} r={5 * k} fill={c.signal} opacity={strength} />),
+            )}
           </g>
         );
       })}

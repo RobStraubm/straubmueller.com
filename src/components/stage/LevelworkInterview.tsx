@@ -7,6 +7,7 @@
 // leads to F-07, the public example finding on levelwork.ai.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
@@ -127,14 +128,18 @@ export const LevelworkInterview = ({ palette: c, share, narrow = false }: { pale
       </g>
 
       {/* It lands in the record. */}
-      <g stroke={finding > 0 ? c.signal : c.ink} strokeWidth={2} fill="none">
+      <g stroke={mix(c.ink, c.signal, finding)} strokeWidth={2} fill="none">
         <line x1={L.link[0]} y1={L.link[1]} x2={L.link[0] + (L.link[2] - L.link[0]) * link} y2={L.link[1] + (L.link[3] - L.link[1]) * link} />
-        {link >= 1 &&
-          (narrow ? (
-            <polyline points={`${L.link[2] - 8},${L.link[3] - 12} ${L.link[2]},${L.link[3]} ${L.link[2] + 8},${L.link[3] - 12}`} />
-          ) : (
-            <polyline points={`${L.link[2] - 12},${L.link[3] - 8} ${L.link[2]},${L.link[3]} ${L.link[2] - 12},${L.link[3] + 8}`} />
-          ))}
+        {/* The arrowhead fades in as the line arrives, instead of popping up at its end. */}
+        {link > 0.9 && (
+          <g opacity={(link - 0.9) / 0.1}>
+            {narrow ? (
+              <polyline points={`${L.link[2] - 8},${L.link[3] - 12} ${L.link[2]},${L.link[3]} ${L.link[2] + 8},${L.link[3] - 12}`} />
+            ) : (
+              <polyline points={`${L.link[2] - 12},${L.link[3] - 8} ${L.link[2]},${L.link[3]} ${L.link[2] - 12},${L.link[3] + 8}`} />
+            )}
+          </g>
+        )}
       </g>
 
       <g opacity={entry} transform={rise(entry)}>

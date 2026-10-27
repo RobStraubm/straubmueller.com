@@ -6,6 +6,7 @@
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
 import { seeded } from '../../../motion/src/random';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 
 /** The timeline right of the row titles. */
 const LINE = { x: 260, width: 940 };
@@ -27,6 +28,9 @@ const LEVELS = Array.from({ length: Math.floor((LINE.width * END) / WAVE.pitch) 
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
+/** Fade in: nothing pops, it comes up over a short stretch of scroll (Robert, 27 Oct 2026). */
+const FADE = 0.04;
+const fade = (share: number, from: number) => span(share, from, from + FADE);
 /** A bar from one item boundary to the next, with a gap at both ends, drawn as far as the reveal has got. */
 const bar = (from: number, to: number, reveal: number, gap = 2) => {
   const x = at(from) + gap;
@@ -39,13 +43,13 @@ export const MinutesFigure = ({ palette: c, share, narrow = false }: { palette: 
   const mono = { fontFamily: fonts.mono, fontSize: 16, letterSpacing: 0.5, whiteSpace: 'pre' };
   const title = { fontFamily: fonts.sans, fontSize: 34, fontWeight: 500, fill: c.ink };
   const head = at(END * span(share, 0.04, 0.26));
-  const ended = share >= 0.27;
+  const ended = fade(share, 0.27);
   const first = span(share, 0.3, 0.46);
-  const wrong = share >= 0.5;
-  const silent = share >= 0.54;
+  const wrong = fade(share, 0.5);
+  const silent = fade(share, 0.54);
   const grid = span(share, 0.58, 0.66);
   const now = span(share, 0.66, 0.8);
-  const flagged = (k: number) => share >= 0.82 + k * 0.04;
+  const flagged = (k: number) => fade(share, 0.82 + k * 0.04);
   // The first run only knew the items the chair announced, and nothing after the recording.
   const announced = ITEMS.filter((t, i) => i !== UNANNOUNCED && t < END);
   const firstRun = announced.map((t, i) => [t, announced[i + 1] ?? END]);
@@ -53,7 +57,7 @@ export const MinutesFigure = ({ palette: c, share, narrow = false }: { palette: 
   return (
     <svg viewBox="0 0 1200 460" width="100%" height="100%" aria-hidden="true">
       {/* The recording, with a mark for every item the chair announced in so many words. */}
-      <g opacity={share >= 0.04 ? 1 : 0}>
+      <g opacity={fade(share, 0.04)}>
         <text x={0} y={WAVE.y + 12} style={title}>
           Recording
         </text>
@@ -71,8 +75,8 @@ export const MinutesFigure = ({ palette: c, share, narrow = false }: { palette: 
       {announced.map((t) =>
         at(t) <= head ? <polygon key={t} points={`${at(t)},118 ${at(t) + 7},106 ${at(t) + 14},118`} fill={c.ink} /> : null,
       )}
-      {ended && (
-        <g>
+      {ended > 0 && (
+        <g opacity={ended}>
           <line x1={at(END)} x2={at(END)} y1={WAVE.y - 40} y2={WAVE.y + 40} stroke={c.ink} strokeWidth={2} />
           <line x1={at(END) + 8} x2={at(1)} y1={WAVE.y} y2={WAVE.y} stroke={c.hair} strokeWidth={2} strokeDasharray="6 6" />
           <text x={at(END) + 12} y={WAVE.y - 22} style={{ ...mono, fill: c.mute }}>
@@ -93,13 +97,13 @@ export const MinutesFigure = ({ palette: c, share, narrow = false }: { palette: 
             y2={y - 10 + (ROW.h + 20) * grid}
             stroke={c.hair}
             strokeWidth={2}
-            opacity={grid > 0 ? 1 : 0}
+            opacity={fade(share, 0.58)}
           />
         )),
       )}
 
       {/* First run: speech after an unannounced item landed under the one before, and the export just stopped. */}
-      <g opacity={first > 0 ? 1 : 0}>
+      <g opacity={fade(share, 0.3)}>
         <text x={0} y={ROW.first + 30} style={title}>
           First run
         </text>
@@ -114,22 +118,22 @@ export const MinutesFigure = ({ palette: c, share, narrow = false }: { palette: 
         const b = bar(from, to, first * END, to === END ? 0 : 2);
         return b && <rect key={from} x={b.x} y={ROW.first} width={b.width} height={ROW.h} fill={c.ink} />;
       })}
-      {wrong && (
-        <g>
+      {wrong > 0 && (
+        <g opacity={wrong}>
           <rect x={at(ITEMS[UNANNOUNCED])} y={ROW.first} width={at(ITEMS[UNANNOUNCED + 1]) - 2 - at(ITEMS[UNANNOUNCED])} height={ROW.h} fill={c.signal} />
           <text x={at(ITEMS[UNANNOUNCED])} y={ROW.first + ROW.h + 26} style={{ ...mono, fill: c.signal }}>
             UNDER THE WRONG ITEM
           </text>
         </g>
       )}
-      {silent && (
-        <text x={at(END)} y={ROW.first + ROW.h + 26} style={{ ...mono, fill: c.mute }}>
+      {silent > 0 && (
+        <text opacity={silent} x={at(END)} y={ROW.first + ROW.h + 26} style={{ ...mono, fill: c.mute }}>
           EXPORT DOES NOT SAY SO
         </text>
       )}
 
       {/* Now: the items come down from the meeting documents, and every item without speech is flagged. */}
-      <g opacity={grid > 0 ? 1 : 0}>
+      <g opacity={fade(share, 0.58)}>
         <text x={0} y={ROW.now + 30} style={title}>
           Now
         </text>
@@ -167,13 +171,13 @@ export const MinutesFigure = ({ palette: c, share, narrow = false }: { palette: 
               width={Math.max(0, b.width - 2)}
               height={ROW.h - 2}
               fill="none"
-              stroke={flagged(k) ? c.signal : c.hair}
-              strokeWidth={flagged(k) ? 3 : 2}
+              stroke={mix(c.hair, c.signal, flagged(k))}
+              strokeWidth={2 + flagged(k)}
             />
           )
         );
       })}
-      <g opacity={flagged(2) ? 1 : 0}>
+      <g opacity={flagged(2)}>
         <text x={1200} y={ROW.now + ROW.h + 26} textAnchor="end" style={{ ...mono, fill: c.signal }}>
           NO SPEECH
         </text>
@@ -206,13 +210,13 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
   const mono = { fontFamily: fonts.mono, fontSize: 22, letterSpacing: 0.5, whiteSpace: 'pre' };
   const title = { fontFamily: fonts.sans, fontSize: 44, fontWeight: 500, fill: c.ink };
   const head = nat(END * span(share, 0.04, 0.26));
-  const ended = share >= 0.27;
+  const ended = fade(share, 0.27);
   const first = span(share, 0.3, 0.46);
-  const wrong = share >= 0.5;
-  const silent = share >= 0.54;
+  const wrong = fade(share, 0.5);
+  const silent = fade(share, 0.54);
   const grid = span(share, 0.58, 0.66);
   const now = span(share, 0.66, 0.8);
-  const flagged = (k: number) => share >= 0.82 + k * 0.04;
+  const flagged = (k: number) => fade(share, 0.82 + k * 0.04);
   const announced = ITEMS.filter((t, i) => i !== UNANNOUNCED && t < END);
   const firstRun = announced.map((t, i) => [t, announced[i + 1] ?? END]);
   const marks = NW.wave + NW.height + 32;
@@ -220,7 +224,7 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
   return (
     <svg viewBox="0 0 600 680" width="100%" height="100%" aria-hidden="true">
       {/* The recording, with a mark for every item the chair announced in so many words. */}
-      <g opacity={share >= 0.04 ? 1 : 0}>
+      <g opacity={fade(share, 0.04)}>
         <text x={0} y={40} style={title}>
           Recording
         </text>
@@ -236,8 +240,8 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
         return <rect key={i} x={x} y={NW.wave - h} width={4} height={h * 2} fill={c.ink} />;
       })}
       {announced.map((t) => (nat(t) <= head ? <polygon key={t} points={tick(nat(t), marks)} fill={c.ink} /> : null))}
-      {ended && (
-        <g>
+      {ended > 0 && (
+        <g opacity={ended}>
           <line x1={nat(END)} x2={nat(END)} y1={NW.wave - 46} y2={NW.wave + 46} stroke={c.ink} strokeWidth={2} />
           <line x1={nat(END) + 8} x2={600} y1={NW.wave} y2={NW.wave} stroke={c.hair} strokeWidth={2} strokeDasharray="6 6" />
           <text x={nat(END) + 14} y={NW.wave - 46} style={{ ...mono, fill: c.mute }}>
@@ -260,13 +264,13 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
             y2={y - 10 + (NW.h + 20) * grid}
             stroke={c.hair}
             strokeWidth={2}
-            opacity={grid > 0 ? 1 : 0}
+            opacity={fade(share, 0.58)}
           />
         )),
       )}
 
       {/* First run: speech after an unannounced item landed under the one before, and the export just stopped. */}
-      <g opacity={first > 0 ? 1 : 0}>
+      <g opacity={fade(share, 0.3)}>
         <text x={0} y={NW.first - 62} style={title}>
           First run
         </text>
@@ -278,8 +282,8 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
         const b = nbar(from, to, first * END, to === END ? 0 : 2);
         return b && <rect key={from} x={b.x} y={NW.first} width={b.width} height={NW.h} fill={c.ink} />;
       })}
-      {wrong && (
-        <g>
+      {wrong > 0 && (
+        <g opacity={wrong}>
           <rect x={nat(ITEMS[UNANNOUNCED])} y={NW.first} width={nat(ITEMS[UNANNOUNCED + 1]) - 2 - nat(ITEMS[UNANNOUNCED])} height={NW.h} fill={c.signal} />
           <text x={nat(ITEMS[UNANNOUNCED])} y={NW.first + NW.h + 34} style={{ ...mono, fill: c.signal }}>
             UNDER THE
@@ -289,8 +293,8 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
           </text>
         </g>
       )}
-      {silent && (
-        <g>
+      {silent > 0 && (
+        <g opacity={silent}>
           <text x={nat(END) + 8} y={NW.first + NW.h + 34} style={{ ...mono, fill: c.mute }}>
             EXPORT DOES
           </text>
@@ -301,7 +305,7 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
       )}
 
       {/* Now: the items come down from the meeting documents, and every item without speech is flagged. */}
-      <g opacity={grid > 0 ? 1 : 0}>
+      <g opacity={fade(share, 0.58)}>
         <text x={0} y={NW.now - 62} style={title}>
           Now
         </text>
@@ -336,13 +340,13 @@ const MinutesNarrow = ({ palette: c, share }: { palette: Palette; share: number 
               width={Math.max(0, b.width - 3)}
               height={NW.h - 3}
               fill="none"
-              stroke={flagged(k) ? c.signal : c.hair}
-              strokeWidth={flagged(k) ? 3 : 2}
+              stroke={mix(c.hair, c.signal, flagged(k))}
+              strokeWidth={2 + flagged(k)}
             />
           )
         );
       })}
-      <g opacity={flagged(2) ? 1 : 0}>
+      <g opacity={flagged(2)}>
         <text x={600} y={NW.now + NW.h + 34} textAnchor="end" style={{ ...mono, fill: c.signal }}>
           NO SPEECH
         </text>

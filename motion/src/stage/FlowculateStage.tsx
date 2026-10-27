@@ -7,7 +7,7 @@
 import { useCurrentFrame } from 'remotion';
 import type { Palette } from '../style';
 import { fonts, progress, stepped } from '../style';
-import { arrows, crowd, halftone, remainingAt, T } from '../flowculate/Flowculate';
+import { arrows, crowdAt, halftone, remainingAt, T } from '../flowculate/Flowculate';
 import { doors, FIRST_MOVE, LAST_FRAME, PILLAR, pillars, rows, walls } from '../flowculate/plan';
 
 export const FLOWCULATE_STAGE_FRAMES = LAST_FRAME + 1;
@@ -166,7 +166,7 @@ export const FlowculateStage = ({
           <circle key={i} cx={px(dot.x)} cy={px(dot.y)} r={(dot.r * S) / 32} fill={c.signal} />
         ))}
 
-        {crowd[f].map((p, i) => {
+        {crowdAt(f).map((p, i) => {
           const appear = stepped(progress(f, T.people + (i % 12), T.people + (i % 12) + 3), 3);
           const out = p.gone === null ? 1 : 1 - progress(f, p.gone, p.gone + 6);
           if (!appear || !out) return null;

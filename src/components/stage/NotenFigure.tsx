@@ -5,6 +5,7 @@
 // questions sit in each lane is drawn, not measured.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 
 const BARS = 83;
 const LANE = { x0: 80, x1: 1160, top: 100, step: 40 };
@@ -15,6 +16,9 @@ const OFF = { voice: 5, from: 40, to: 68, count: 22, rise: 12 };
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
+/** Fade in: nothing pops, it comes up over a short stretch of scroll (Robert, 27 Oct 2026). */
+const FADE = 0.04;
+const fade = (share: number, from: number) => span(share, from, from + FADE);
 const barX = (bar: number) => LANE.x0 + bar * BAR;
 const laneY = (voice: number) => LANE.top + voice * LANE.step;
 
@@ -41,7 +45,7 @@ export const NotenFigure = ({ palette: c, share, narrow = false }: { palette: Pa
   if (narrow) return <NotenNarrow palette={c} share={share} />;
   const mono = { fontFamily: fonts.mono, fontSize: 17, letterSpacing: 1, whiteSpace: 'pre' };
   const big = { fontFamily: fonts.sans, fontSize: 120, fontWeight: 600, letterSpacing: -2 };
-  const asked = share >= 0.42;
+  const asked = fade(share, 0.42);
   const result = span(share, 0.68, 0.8);
 
   return (
@@ -49,25 +53,28 @@ export const NotenFigure = ({ palette: c, share, narrow = false }: { palette: Pa
       <text x={40} y={44} style={{ ...mono, fill: c.mute }}>
         AN DIE STERNE · 83 BARS · 8 VOICES
       </text>
-      <text x={LANE.x1} y={44} textAnchor="end" style={{ ...mono, fill: asked ? c.signal : c.ink }}>
-        {asked ? 'OPEN QUESTIONS' : 'A CHECK OF EVERY BAR'}
+      <text x={LANE.x1} y={44} textAnchor="end" opacity={1 - asked} style={{ ...mono, fill: c.ink }}>
+        A CHECK OF EVERY BAR
+      </text>
+      <text x={LANE.x1} y={44} textAnchor="end" opacity={asked} style={{ ...mono, fill: c.signal }}>
+        OPEN QUESTIONS
       </text>
 
       {/* The eight voices draw themselves, then every bar is ticked in, one hard step per bar. */}
       {QUESTIONS.map((_, v) => {
         const line = span(share, 0.04 + v * 0.02, 0.2 + v * 0.02);
         const done = Math.floor(span(share, 0.1 + v * 0.02, 0.36 + v * 0.02) * BARS);
-        const wrong = asked && v === OFF.voice;
+        const wrong = v === OFF.voice ? asked : 0;
         return (
           <g key={v}>
-            <text x={40} y={laneY(v) + 6} style={{ ...mono, fill: wrong ? c.signal : c.mute }}>
+            <text x={40} y={laneY(v) + 6} style={{ ...mono, fill: mix(c.mute, c.signal, wrong) }}>
               {v + 1}
             </text>
-            <path d={ticks(v, done)} stroke={asked ? c.hair : c.ink} strokeWidth={1} />
+            <path d={ticks(v, done)} stroke={mix(c.ink, c.hair, asked)} strokeWidth={1} />
             <polyline
               points={lanePoints(v)}
               fill="none"
-              stroke={wrong ? c.signal : asked ? c.mute : c.ink}
+              stroke={wrong ? mix(c.ink, c.signal, wrong) : mix(c.ink, c.mute, asked)}
               strokeWidth={2}
               pathLength={1}
               strokeDasharray={1}
@@ -79,16 +86,17 @@ export const NotenFigure = ({ palette: c, share, narrow = false }: { palette: Pa
 
       {/* Only the questions stay, voice by voice; 22 along the line that was read an octave off. */}
       <g stroke={c.signal} strokeWidth={2} fill="none">
-        {QUESTIONS.map((bars, v) =>
-          share >= 0.44 + v * 0.02
-            ? bars.map((bar) => bracket(barX(bar + 0.5), laneY(v), `${v}-${bar}`))
-            : null,
-        )}
-        {share >= 0.44 + OFF.voice * 0.02 &&
-          Array.from({ length: OFF.count }, (_, k) => {
+        {QUESTIONS.map((bars, v) => (
+          <g key={v} opacity={fade(share, 0.44 + v * 0.02)}>
+            {bars.map((bar) => bracket(barX(bar + 0.5), laneY(v), `${v}-${bar}`))}
+          </g>
+        ))}
+        <g opacity={fade(share, 0.44 + OFF.voice * 0.02)}>
+          {Array.from({ length: OFF.count }, (_, k) => {
             const x = barX(OFF.from) + ((k + 0.5) * (barX(OFF.to) - barX(OFF.from))) / OFF.count;
             return bracket(x, laneY(OFF.voice) - OFF.rise, `off-${k}`);
           })}
+        </g>
       </g>
 
       {/* What it comes to: one to three answers for most voices, not a check of every bar. */}
@@ -143,7 +151,7 @@ const nBracket = (x: number, y: number, key: string) => (
 const NotenNarrow = ({ palette: c, share }: { palette: Palette; share: number }) => {
   const mono = { fontFamily: fonts.mono, fontSize: 22, letterSpacing: 0.5, whiteSpace: 'pre' };
   const big = { fontFamily: fonts.sans, fontSize: 150, fontWeight: 600, letterSpacing: -3 };
-  const asked = share >= 0.42;
+  const asked = fade(share, 0.42);
   const result = span(share, 0.68, 0.8);
 
   return (
@@ -154,25 +162,28 @@ const NotenNarrow = ({ palette: c, share }: { palette: Palette; share: number })
       <text x={0} y={60} style={{ ...mono, fill: c.mute }}>
         83 BARS · 8 VOICES
       </text>
-      <text x={0} y={104} style={{ ...mono, fill: asked ? c.signal : c.ink }}>
-        {asked ? 'OPEN QUESTIONS' : 'A CHECK OF EVERY BAR'}
+      <text x={0} y={104} opacity={1 - asked} style={{ ...mono, fill: c.ink }}>
+        A CHECK OF EVERY BAR
+      </text>
+      <text x={0} y={104} opacity={asked} style={{ ...mono, fill: c.signal }}>
+        OPEN QUESTIONS
       </text>
 
       {/* The eight voices draw themselves, then every bar is ticked in, one hard step per bar. */}
       {QUESTIONS.map((_, v) => {
         const line = span(share, 0.04 + v * 0.02, 0.2 + v * 0.02);
         const done = Math.floor(span(share, 0.1 + v * 0.02, 0.36 + v * 0.02) * BARS);
-        const wrong = asked && v === OFF.voice;
+        const wrong = v === OFF.voice ? asked : 0;
         return (
           <g key={v}>
-            <text x={0} y={nLaneY(v) + 8} style={{ ...mono, fill: wrong ? c.signal : c.mute }}>
+            <text x={0} y={nLaneY(v) + 8} style={{ ...mono, fill: mix(c.mute, c.signal, wrong) }}>
               {v + 1}
             </text>
-            <path d={nTicks(v, done)} stroke={asked ? c.hair : c.ink} strokeWidth={1} />
+            <path d={nTicks(v, done)} stroke={mix(c.ink, c.hair, asked)} strokeWidth={1} />
             <polyline
               points={nLanePoints(v)}
               fill="none"
-              stroke={wrong ? c.signal : asked ? c.mute : c.ink}
+              stroke={wrong ? mix(c.ink, c.signal, wrong) : mix(c.ink, c.mute, asked)}
               strokeWidth={2}
               pathLength={1}
               strokeDasharray={1}
@@ -184,14 +195,17 @@ const NotenNarrow = ({ palette: c, share }: { palette: Palette; share: number })
 
       {/* Only the questions stay, voice by voice; 22 along the line that was read an octave off. */}
       <g stroke={c.signal} strokeWidth={2} fill="none">
-        {QUESTIONS.map((bars, v) =>
-          share >= 0.44 + v * 0.02 ? bars.map((bar) => nBracket(nBarX(bar + 0.5), nLaneY(v), `${v}-${bar}`)) : null,
-        )}
-        {share >= 0.44 + OFF.voice * 0.02 &&
-          Array.from({ length: OFF.count }, (_, k) => {
+        {QUESTIONS.map((bars, v) => (
+          <g key={v} opacity={fade(share, 0.44 + v * 0.02)}>
+            {bars.map((bar) => nBracket(nBarX(bar + 0.5), nLaneY(v), `${v}-${bar}`))}
+          </g>
+        ))}
+        <g opacity={fade(share, 0.44 + OFF.voice * 0.02)}>
+          {Array.from({ length: OFF.count }, (_, k) => {
             const x = nBarX(OFF.from) + ((k + 0.5) * (nBarX(OFF.to) - nBarX(OFF.from))) / OFF.count;
             return nBracket(x, nLaneY(OFF.voice) - NL.rise, `off-${k}`);
           })}
+        </g>
       </g>
 
       {/* What it comes to, stacked: one to three answers for most voices, 22 in one. */}

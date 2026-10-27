@@ -5,6 +5,7 @@
 // The thresholds are find_regions() in stub/regions.py; the receipts and their places are invented.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 import { seeded } from '../../../motion/src/random';
 
 /** The glass in mm, lying on its side: 300 × 216. Receipts and the speck as [x0, y0, x1, y1] in mm. */
@@ -47,6 +48,9 @@ const STEPS = [
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
+/** Fade in: nothing pops, it comes up over a short stretch of scroll (Robert, 27 Oct 2026). */
+const FADE = 0.04;
+const fade = (share: number, from: number) => span(share, from, from + FADE);
 
 export const BelegFigure = ({ palette: c, share, narrow = false }: { palette: Palette; share: number; narrow?: boolean }) => {
   const k = 2.4; // px per mm
@@ -96,7 +100,7 @@ export const BelegFigure = ({ palette: c, share, narrow = false }: { palette: Pa
       </g>
 
       {/* Pass 1: the column profile under the glass, its wide gaps and the cuts through the glass. */}
-      <g opacity={columns ? 1 : 0}>
+      <g opacity={fade(share, 0.24)}>
         <rect x={ox} y={oy + H + 22} width={W} height={10} fill={c.hair} />
         {profile.map(([x0, x1], i) => (
           <rect key={i} x={X(x0)} y={oy + H + 22} width={(x1 - x0) * k * columns} height={10} fill={c.ink} />
@@ -127,19 +131,20 @@ export const BelegFigure = ({ palette: c, share, narrow = false }: { palette: Pa
             stroke={c.signal}
             strokeWidth={3}
             strokeDasharray="10 8"
-            opacity={rows ? 1 : 0}
+            opacity={fade(share, 0.46)}
           />
         )),
       )}
 
       {/* The result: a box per receipt with its margin, numbered in reading order. */}
       {RECEIPTS.map(([x0, y0, x1, y1], i) => {
-        const on = boxes >= (i + 1) / RECEIPTS.length - 0.2;
-        if (!on) return null;
+        // Each box fades in over a quarter of the boxes' stretch, from the point where it used to switch on.
+        const on = clamp((boxes - ((i + 1) / RECEIPTS.length - 0.2)) / 0.25);
+        if (on <= 0) return null;
         const bx = X(x0 - MARGIN);
         const by = Y(y0 - MARGIN);
         return (
-          <g key={i}>
+          <g key={i} opacity={on}>
             <rect x={bx} y={by} width={(x1 - x0 + 2 * MARGIN) * k} height={(y1 - y0 + 2 * MARGIN) * k} fill="none" stroke={c.signal} strokeWidth={3} />
             <rect x={bx} y={by} width={28} height={28} fill={c.signal} />
             <text x={bx + 14} y={by + 20} fontSize={18} textAnchor="middle" style={{ ...mono, fill: c.ground }}>
@@ -153,12 +158,14 @@ export const BelegFigure = ({ palette: c, share, narrow = false }: { palette: Pa
       {STEPS.map((step, i) => {
         const x = narrow ? ox : 812;
         const y = narrow ? oy + H + 110 + i * 64 : 60 + i * 56;
-        const current = share >= step.at && (i === STEPS.length - 1 || share < STEPS[i + 1].at);
-        if (share < step.at) return null;
+        // A step fades in when it starts and hands the mark over to the next one as that one fades in.
+        const shown = fade(share, step.at);
+        const current = shown * (i === STEPS.length - 1 ? 1 : 1 - fade(share, STEPS[i + 1].at));
+        if (shown <= 0) return null;
         return (
-          <g key={step.text}>
-            {current && <rect x={x} y={y - labelSize * 0.8} width={6} height={labelSize} fill={c.signal} />}
-            <text x={x + 18} y={y} fontSize={narrow ? labelSize : 14} style={{ ...mono, letterSpacing: narrow ? 1 : 0.4, fill: current ? c.ink : c.mute }}>
+          <g key={step.text} opacity={shown}>
+            {current > 0 && <rect x={x} y={y - labelSize * 0.8} width={6} height={labelSize} fill={c.signal} opacity={current} />}
+            <text x={x + 18} y={y} fontSize={narrow ? labelSize : 14} style={{ ...mono, letterSpacing: narrow ? 1 : 0.4, fill: mix(c.mute, c.ink, current) }}>
               {step.text}
             </text>
           </g>

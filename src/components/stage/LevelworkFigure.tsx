@@ -4,6 +4,7 @@
 // roles after three answers. Every word and number is from the case text; the lines are illustration.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 
 /** The conversation runs from here; the roles stand in their own column on the right. */
 const TALK_X = 200;
@@ -15,8 +16,10 @@ const ROLE = { size: 50, step: 75 };
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
-/** Hard step: off until the share reaches it, then on. */
-const at = (share: number, from: number) => (share >= from ? 1 : 0);
+/** Fade in: from nothing to full over a short stretch of scroll, so that nothing pops (Robert, 27 Oct 2026). */
+const at = (share: number, from: number) => span(share, from, from + 0.04);
+/** A role box filling in: outline in mute, then ink. */
+const role = (c: Palette, on: number) => ({ fill: c.ink, fillOpacity: on, stroke: mix(c.mute, c.ink, on), strokeWidth: 1 + on });
 
 export const LevelworkFigure = ({ palette: c, share, narrow = false }: { palette: Palette; share: number; narrow?: boolean }) => {
   if (narrow) return <LevelworkNarrow palette={c} share={share} />;
@@ -61,7 +64,7 @@ export const LevelworkFigure = ({ palette: c, share, narrow = false }: { palette
           y2={REPLAY + 14}
           stroke={c.ink}
           strokeWidth={4}
-          opacity={at(replay, (x - TALK_X) / (talkEnd - TALK_X))}
+          opacity={span(replay, (x - TALK_X) / (talkEnd - TALK_X) - 0.12, (x - TALK_X) / (talkEnd - TALK_X))}
         />
       ))}
 
@@ -69,7 +72,7 @@ export const LevelworkFigure = ({ palette: c, share, narrow = false }: { palette
       {translate > 0 && (
         <g stroke={c.signal} strokeWidth={3} fill="none">
           <line x1={talkEnd} y1={REPLAY} x2={talkEnd + (ROLES_X - 24 - talkEnd) * translate} y2={REPLAY} />
-          {translate === 1 && <polyline points={`${ROLES_X - 34},${REPLAY - 9} ${ROLES_X - 22},${REPLAY} ${ROLES_X - 34},${REPLAY + 9}`} />}
+          {translate > 0.85 && <polyline points={`${ROLES_X - 34},${REPLAY - 9} ${ROLES_X - 22},${REPLAY} ${ROLES_X - 34},${REPLAY + 9}`} opacity={(translate - 0.85) / 0.15} />}
         </g>
       )}
       {[0, 1, 2, 3].map((k) => (
@@ -79,9 +82,7 @@ export const LevelworkFigure = ({ palette: c, share, narrow = false }: { palette
           y={REPLAY - ROLE.size / 2}
           width={ROLE.size}
           height={ROLE.size}
-          fill={at(share, 0.72 + k * 0.03) ? c.ink : 'none'}
-          stroke={at(share, 0.72 + k * 0.03) ? c.ink : c.mute}
-          strokeWidth={at(share, 0.72 + k * 0.03) ? 2 : 1}
+          {...role(c, at(share, 0.72 + k * 0.03))}
           opacity={at(share, 0.4)}
         />
       ))}
@@ -147,7 +148,7 @@ const LevelworkNarrow = ({ palette: c, share }: { palette: Palette; share: numbe
           y2={N.replay + 18}
           stroke={c.ink}
           strokeWidth={5}
-          opacity={at(replay, x / talkEnd)}
+          opacity={span(replay, x / talkEnd - 0.12, x / talkEnd)}
         />
       ))}
 
@@ -155,7 +156,7 @@ const LevelworkNarrow = ({ palette: c, share }: { palette: Palette; share: numbe
       {translate > 0 && (
         <g stroke={c.signal} strokeWidth={3} fill="none">
           <line x1={talkEnd} y1={N.replay} x2={talkEnd + (N.roles - 14 - talkEnd) * translate} y2={N.replay} />
-          {translate === 1 && <polyline points={`${N.roles - 24},${N.replay - 9} ${N.roles - 12},${N.replay} ${N.roles - 24},${N.replay + 9}`} />}
+          {translate > 0.85 && <polyline points={`${N.roles - 24},${N.replay - 9} ${N.roles - 12},${N.replay} ${N.roles - 24},${N.replay + 9}`} opacity={(translate - 0.85) / 0.15} />}
         </g>
       )}
       {[0, 1, 2, 3].map((k) => (
@@ -165,9 +166,7 @@ const LevelworkNarrow = ({ palette: c, share }: { palette: Palette; share: numbe
           y={N.replay - N.role.size / 2}
           width={N.role.size}
           height={N.role.size}
-          fill={at(share, 0.72 + k * 0.03) ? c.ink : 'none'}
-          stroke={at(share, 0.72 + k * 0.03) ? c.ink : c.mute}
-          strokeWidth={at(share, 0.72 + k * 0.03) ? 2 : 1}
+          {...role(c, at(share, 0.72 + k * 0.03))}
           opacity={at(share, 0.4)}
         />
       ))}

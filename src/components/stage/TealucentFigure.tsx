@@ -21,7 +21,7 @@ const MODES = [
 const ALIAS = 'action_background_';
 const COMPONENTS = ['dropdown-background', 'input-background'];
 
-/** The chain draws over the first part of the scroll; then the alias steps through its modes, one hard step each,
+/** The chain draws over the first part of the scroll; then the alias steps through its modes, each a short fade,
  * late enough that the components under the chain are on screen when they change. */
 const MODE_AT = [0.56, 0.68, 0.8, 0.92];
 

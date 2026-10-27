@@ -8,6 +8,7 @@
 // times are illustrative, not measured. Floors, departments and what the iPad did are the case text's.
 import type { Palette } from '../../../motion/src/style';
 import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 
 type Floor = {
   level: string;
@@ -97,6 +98,9 @@ const NARROW: Layout = {
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+/** Fade in: nothing pops, it comes up over a short stretch of scroll (Robert, 27 Oct 2026). */
+const FADE = 0.04;
+const fade = (share: number, from: number) => span(share, from, from + FADE);
 
 /** A point a share t along a polyline, by length. */
 const along = (points: [number, number][], t: number): [number, number] => {
@@ -198,17 +202,18 @@ export const StayinFigure = ({ palette: c, share, narrow }: { palette: Palette; 
   const L = narrow ? NARROW : WIDE;
   const { x0, x1, slabs, ceiling, apex, door } = L.tower;
   const mono = { fontFamily: fonts.mono, letterSpacing: 0.5, whiteSpace: 'pre' };
-  const reached = (k: number) => share >= REACH[k];
-  const left = (k: number) => share >= (k === REACH.length - 1 ? 0.95 : REACH[k] + STAY);
+  // How far each floor is lit and each mark has landed, 0 to 1, so floors light up and marks land as a fade.
+  const reached = (k: number) => fade(share, REACH[k]);
+  const left = (k: number) => fade(share, k === REACH.length - 1 ? 0.95 : REACH[k] + STAY);
   const top = (k: number) => slabs[k + 1] ?? ceiling;
   const [ix, iy] = ipadAt(L, share);
-  const measured = share >= REACH[0] + 0.04;
+  const measured = fade(share, REACH[0] + 0.04);
   const roofLit = reached(REACH.length - 1);
 
   return (
     <svg viewBox={`0 0 ${L.view[0]} ${L.view[1]}`} width="100%" height="100%" aria-hidden="true">
       {/* The key of the red: the visitor's own time on each floor. Wide: over its column; narrow: over the tower. */}
-      <g opacity={measured ? 1 : 0.0001}>
+      <g opacity={Math.max(0.0001, measured)}>
         <circle cx={L.scale.x0 + 6} cy={narrow ? 26 : 34} r={6} fill={c.signal} />
         <text x={L.scale.x0 + 20} y={narrow ? 34 : 40} fontSize={narrow ? 22 : 17} style={{ ...mono, fill: c.ink }}>
           YOUR TIME ON EACH FLOOR
@@ -231,7 +236,7 @@ export const StayinFigure = ({ palette: c, share, narrow }: { palette: Palette; 
       {/* The tower: each floor lights up, walls, stairs and ceiling, when the iPad reaches it. */}
       {FLOORS.map((floor, k) => {
         const lit = reached(k);
-        const stroke = lit ? c.ink : c.hair;
+        const stroke = mix(c.hair, c.ink, lit);
         const y0 = top(k);
         const y1 = slabs[k];
         const { from, to } = flight(L, k);
@@ -242,16 +247,16 @@ export const StayinFigure = ({ palette: c, share, narrow }: { palette: Palette; 
         ).join(' ')}`;
         return (
           <g key={floor.level}>
-            <line x1={x0} x2={x0} y1={y0} y2={k === 0 ? y1 - door : y1} stroke={stroke} strokeWidth={lit ? 3 : 2} />
-            <line x1={x1} x2={x1} y1={y0} y2={y1} stroke={stroke} strokeWidth={lit ? 3 : 2} />
-            <line x1={x0} x2={x1} y1={y0} y2={y0} stroke={stroke} strokeWidth={lit ? 3 : 2} />
-            {k < FLOORS.length - 1 && <path d={stair} fill="none" stroke={reached(k + 1) ? c.ink : c.hair} strokeWidth={1.5} />}
+            <line x1={x0} x2={x0} y1={y0} y2={k === 0 ? y1 - door : y1} stroke={stroke} strokeWidth={2 + lit} />
+            <line x1={x1} x2={x1} y1={y0} y2={y1} stroke={stroke} strokeWidth={2 + lit} />
+            <line x1={x0} x2={x1} y1={y0} y2={y0} stroke={stroke} strokeWidth={2 + lit} />
+            {k < FLOORS.length - 1 && <path d={stair} fill="none" stroke={mix(c.hair, c.ink, reached(k + 1))} strokeWidth={1.5} />}
             {!narrow && <Station k={k} slab={y1} stroke={stroke} />}
           </g>
         );
       })}
       {/* A plain roof over the section. */}
-      <path d={`M ${x0 - 12} ${ceiling} L ${(x0 + x1) / 2} ${apex} L ${x1 + 12} ${ceiling}`} fill="none" stroke={roofLit ? c.ink : c.hair} strokeWidth={roofLit ? 3 : 2} strokeLinejoin="round" />
+      <path d={`M ${x0 - 12} ${ceiling} L ${(x0 + x1) / 2} ${apex} L ${x1 + 12} ${ceiling}`} fill="none" stroke={mix(c.hair, c.ink, roofLit)} strokeWidth={2 + roofLit} strokeLinejoin="round" />
 
       {/* The labels of each floor: the department always, what the iPad does from the moment it gets there. */}
       {FLOORS.map((floor, k) => {
@@ -267,7 +272,7 @@ export const StayinFigure = ({ palette: c, share, narrow }: { palette: Palette; 
               <text x={44} y={y0 + 40} fontSize={22} style={{ ...mono, fill: c.mute }}>
                 {floor.level}
               </text>
-              <text x={42} y={y0 + 84} fontSize={34} style={{ fontFamily: fonts.sans, fontWeight: 600, letterSpacing: -0.8, fill: lit ? c.ink : c.mute }}>
+              <text x={42} y={y0 + 84} fontSize={34} style={{ fontFamily: fonts.sans, fontWeight: 600, letterSpacing: -0.8, fill: mix(c.mute, c.ink, lit) }}>
                 {floor.name}
               </text>
               <text x={44} y={y0 + 124} fontSize={22} style={{ ...mono, fill: c.ink }}>
@@ -285,7 +290,7 @@ export const StayinFigure = ({ palette: c, share, narrow }: { palette: Palette; 
             <text x={60} y={top(k) + 26} fontSize={15} style={{ ...mono, fill: c.mute }}>
               {floor.level}
             </text>
-            <text x={L.labels} y={slab - 64} fontSize={28} style={{ fontFamily: fonts.sans, fontWeight: 600, letterSpacing: -0.6, fill: lit ? c.ink : c.mute }}>
+            <text x={L.labels} y={slab - 64} fontSize={28} style={{ fontFamily: fonts.sans, fontWeight: 600, letterSpacing: -0.6, fill: mix(c.mute, c.ink, lit) }}>
               {floor.name}
             </text>
             <text x={L.labels} y={slab - 36} fontSize={L.mono} style={{ ...mono, fill: c.ink }}>
@@ -303,11 +308,11 @@ export const StayinFigure = ({ palette: c, share, narrow }: { palette: Palette; 
         const y = slabs[k] - L.scale.rise;
         const t = TIMES[k];
         return (
-          <g key={floor.level} opacity={measured ? 1 : 0.0001}>
+          <g key={floor.level} opacity={Math.max(0.0001, measured)}>
             <line x1={L.scale.x0} x2={L.scale.x1} y1={y} y2={y} stroke={c.hair} strokeWidth={2} />
             <line x1={L.scale.x0} x2={L.scale.x0} y1={y - 8} y2={y + 8} stroke={c.mute} strokeWidth={2} />
             <line x1={L.scale.x1} x2={L.scale.x1} y1={y - 8} y2={y + 8} stroke={c.mute} strokeWidth={2} />
-            {left(k) && <circle cx={lerp(L.scale.x0, L.scale.x1, t)} cy={y} r={narrow ? 9 : 7} fill={c.signal} />}
+            {left(k) > 0 && <circle cx={lerp(L.scale.x0, L.scale.x1, t)} cy={y} r={narrow ? 9 : 7} fill={c.signal} opacity={left(k)} />}
           </g>
         );
       })}
@@ -332,7 +337,7 @@ export const StayinFigure = ({ palette: c, share, narrow }: { palette: Palette; 
       <g transform={`translate(${ix - L.ipad.w / 2} ${iy - L.ipad.h - 3})`}>
         <rect width={L.ipad.w} height={L.ipad.h} rx={5} fill={c.ground} stroke={c.ink} strokeWidth={2.5} />
         <rect x={4} y={5} width={L.ipad.w - 8} height={L.ipad.h - 10} fill="none" stroke={c.hair} strokeWidth={1.5} />
-        {measured && <circle cx={L.ipad.w / 2} cy={L.ipad.h / 2} r={narrow ? 7 : 6} fill={c.signal} />}
+        {measured > 0 && <circle cx={L.ipad.w / 2} cy={L.ipad.h / 2} r={narrow ? 7 : 6} fill={c.signal} opacity={measured} />}
       </g>
     </svg>
   );

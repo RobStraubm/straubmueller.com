@@ -9,7 +9,8 @@
 // a screen of its own. Channel names are the interview sketch's, times and rooms the prototype blocks'; the
 // objects follow Robert's line drawings, simplified. The stage at the top already plays the film's three acts.
 import type { Palette } from '../../../motion/src/style';
-import { fonts, stepped } from '../../../motion/src/style';
+import { fonts } from '../../../motion/src/style';
+import { mix } from '../../../motion/src/tealucent/Tealucent';
 import { cupBody, cupHandle, cupRim, grooves } from '../../../motion/src/conactive/Conactive';
 
 type Point = [number, number];
@@ -142,7 +143,8 @@ const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (share: number, from: number, to: number) => clamp((share - from) / (to - from));
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const on = (share: number, from: number) => stepped(span(share, from, from + 0.01), 1);
+/** Fade in: nothing pops, it comes up over a short stretch of scroll (Robert, 27 Oct 2026). */
+const on = (share: number, from: number) => span(share, from, from + 0.04);
 
 /** The point a share `t` of the way along a polyline. */
 const along = (points: Point[], t: number): Point => {
@@ -172,7 +174,7 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
   const chatRoute = span(share, 0.54, 0.6);
   const dot = ease(span(share, 0.58, 0.64));
   const cupDrawn = span(share, 0.56, 0.64);
-  const lit = share >= 0.64;
+  const lit = on(share, 0.64);
   const trayDrawn = span(share, 0.62, 0.7);
   const apptRoute = span(share, 0.66, 0.72);
   const carried = ease(span(share, 0.7, 0.76));
@@ -283,11 +285,13 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
         {...draw(span(share, 0.5, 0.54))}
       />
       {AFTER.map((name, k) => {
-        if (!on(share, 0.18 + k * 0.02)) return null;
+        const shown = on(share, 0.18 + k * 0.02);
+        if (shown <= 0) return null;
         const box = row(k);
-        const left = (k === NOTE && noteRoute > 0) || (k === APPOINTMENT && apptRoute > 0);
+        // A channel that leaves the screen fades to a dashed gap as its route starts.
+        const left = k === NOTE ? on(share, 0.72) : k === APPOINTMENT ? on(share, 0.66) : 0;
         return (
-          <g key={name}>
+          <g key={name} opacity={shown}>
             {/* Each channel keeps a box of its own until it lands in the list; a channel that left is a gap. */}
             <rect
               x={box.x}
@@ -295,12 +299,12 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
               width={box.w}
               height={box.h}
               fill="none"
-              stroke={left ? c.hair : c.ink}
+              stroke={mix(c.ink, c.hair, left)}
               strokeWidth={2}
-              strokeDasharray={left ? '6 6' : undefined}
-              opacity={left ? 1 : 1 - span(share, 0.46, 0.52)}
+              strokeDasharray={left > 0 ? '6 6' : undefined}
+              opacity={lerp(1 - span(share, 0.46, 0.52), 1, left)}
             />
-            <text x={box.x + (thin ? 12 : 14)} y={cellText(box)} {...mono} fill={left ? c.mute : c.ink}>
+            <text x={box.x + (thin ? 12 : 14)} y={cellText(box)} {...mono} fill={mix(c.ink, c.mute, left)}>
               {name}
             </text>
           </g>
@@ -313,9 +317,12 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
           cx={statusDot[0]}
           cy={statusDot[1]}
           r={thin ? 8 : 7}
-          fill={dot > 0 ? 'none' : c.signal}
-          stroke={dot > 0 ? c.hair : 'none'}
+          fill={c.signal}
+          fillOpacity={1 - clamp(dot * 4)}
+          stroke={c.hair}
+          strokeOpacity={clamp(dot * 4)}
           strokeWidth={2}
+          opacity={on(share, 0.5)}
         />
       )}
 
@@ -344,7 +351,7 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
           ))}
           <path d={cupRim} {...draw(cupDrawn)} />
         </g>
-        {cupDrawn >= 1 &&
+        {cupDrawn >= 0.9 &&
           [0, 1, 2, 3].map((k) => (
             <line
               key={k}
@@ -354,10 +361,11 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
               y2={470 + [15, 23, 19, 12][k]}
               stroke={c.mute}
               strokeWidth={4}
+              opacity={(cupDrawn - 0.9) / 0.1}
             />
           ))}
-        {lit && (
-          <>
+        {lit > 0 && (
+          <g opacity={lit}>
             <ellipse cx={CUP.centre} cy={CUP.rim} rx={CUP.rx} ry={CUP.ry} fill="none" stroke={c.signal} strokeWidth={6 / cup.scale} />
             <ellipse
               cx={CUP.centre}
@@ -369,7 +377,7 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
               strokeWidth={2 / cup.scale}
               opacity={0.45}
             />
-          </>
+          </g>
         )}
       </g>
       <g opacity={span(share, 0.62, 0.66)}>
@@ -407,12 +415,13 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
         return <line key={depth} x1={x} y1={y} x2={x + length * clamp(writing * 3 - i)} y2={y} stroke={c.mute} strokeWidth={2} />;
       })}
       {BLOCKS.map((block, k) => {
-        if (carried < 1 || !on(share, 0.76 + k * 0.015)) return null;
+        const shown = on(share, 0.76 + k * 0.015);
+        if (carried < 1 || shown <= 0) return null;
         const box = blockFront(k);
         const dx = blockDepth * t.dx;
         const dy = blockDepth * t.dy;
         return (
-          <g key={block.time}>
+          <g key={block.time} opacity={shown}>
             <path
               d={`${poly([
                 [box.x, box.y],
@@ -462,7 +471,7 @@ export const ConactiveFigure = ({ palette: c, share, narrow: thin }: { palette: 
         />
       </g>
       {share >= 0.88 && (
-        <g fill={c.mute}>
+        <g fill={c.mute} opacity={on(share, 0.88)}>
           <circle cx={head[0]} cy={head[1]} r={b.hgt * 0.07} />
           <path
             d={`M ${head[0] - b.hgt * 0.15} ${head[1] + b.hgt * 0.24} A ${b.hgt * 0.15} ${b.hgt * 0.12} 0 0 1 ${head[0] + b.hgt * 0.15} ${head[1] + b.hgt * 0.24} Z`}
