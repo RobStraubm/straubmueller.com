@@ -33,6 +33,8 @@ import { LakeGoal } from './LakeGoal';
 import { FlowculateName } from './FlowculateName';
 import { SayFitFigure } from './SayFitFigure';
 import { LevelworkFigure } from './LevelworkFigure';
+import { LevelworkMark } from './LevelworkMark';
+import { LevelworkInterview } from './LevelworkInterview';
 import { NotenFigure } from './NotenFigure';
 import { MinutesFigure } from './MinutesFigure';
 import { TealucentFigure } from './TealucentFigure';
@@ -276,6 +278,10 @@ const figures: Record<string, (palette: Palette, share: number, narrow: boolean)
   'sayfit-prompts': (palette, share, narrow) => h(SayFitFigure, { palette, share, narrow }),
   // "How fast we learn": the first run captures nothing, the replay with the new guide finds four roles after three answers.
   'levelwork-roles': (palette, share, narrow) => h(LevelworkFigure, { palette, share, narrow }),
+  // "What I made": the frame is the role as designed, the bar the role as lived, its overshoot the part nobody wrote down; then the lockup.
+  'levelwork-mark': (palette, share, narrow) => h(LevelworkMark, { palette, share, narrow }),
+  // "What I made", the experience: a vague answer is followed up, not noted; the next one lands in the record with its passage.
+  'levelwork-interview': (palette, share, narrow) => h(LevelworkInterview, { palette, share, narrow }),
   // "Check, don't retype": every bar of every voice, then only the open questions stay.
   'noten-questions': (palette, share, narrow) => h(NotenFigure, { palette, share, narrow }),
   // "Agenda items from the meeting documents": the first run went by what the chair announced; now the documents set the items and empty ones are flagged.

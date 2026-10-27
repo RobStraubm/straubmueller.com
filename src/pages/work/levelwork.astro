@@ -1,18 +1,76 @@
 ---
 // Case: Levelwork and its first product, Constat. Facts come from the Levelwork repositories (company/team.md,
-// what-we-sell.md, method.md, traction.md, imagery/README.md) and levelwork.ai; the dates are those documents'.
-// Images: pages of the Constat brochure and sections of the Constat page (levelwork repo, website/constat/), rendered
-// locally. The brand's picture series is left out until it is clear how it was made.
+// what-we-sell.md, method.md, traction.md, brand/guidelines.md, imagery/README.md) and levelwork.ai; the dates are
+// those documents'. Robert's part, confirmed by him on 27 Oct 2026: the UX, done and still in development (the
+// conversation design of the AI interview, the report and how a finding is laid out and read, the flows in the app),
+// logo and brand, the image world (made with an AI image generator, directed and curated by him), the Constat
+// brochure and the website. Not his: the fix to the interview guide of 22/23 Sep, which stays a team story.
+// Michael Gajda builds the product and sells it; that he committed all of it to git says nothing about authorship.
+// The interview's abilities, its 8–12 minute target and what held in testing come from research/method/
+// 2026-10-12-what-running-interviews-taught-us.md; the rules of a finding from company/method.md and what-we-sell.md;
+// the finding card's wording from levelwork.ai/constat. Track record: the founder-approved wording of
+// company/traction.md, used as written, and the reference case with what followed, as told by the founder.
+// Sources of the pictures, all exported at display size and never retouched:
+// - The interview (LevelworkInterview.tsx): an exchange written for this page that shows the tested behaviour.
+// - The mark (LevelworkMark.tsx): geometry and wordmark outlines from brand/logo/Levelwork-lockup-colour.svg.
+// - Image world: five originals from imagery/ (series 05, 06, 09, 10, 17), cropped and exported at up to 3200 px.
+// - Colours and type: values from brand/guidelines.md; Space Grotesk is the website's own file
+//   (website/assets/design-system/fonts), served from public/cases/levelwork.
+// - Website: levelwork.ai home and /constat, served locally from website/ and captured with Playwright at 1440 px (2×)
+//   and 390 px (3×) on 27 Oct 2026; the founder demo's start page from app/packages/api/public/founder, which needs
+//   no backend.
+// - Brochure: the cover and pages 4–5 of the print file ~/Desktop/Job/GYV/Broschüre/260916_GYV_Broschüre_DRUCK3.pdf,
+//   rendered at 240 dpi inside the trim box. Shown once; the pages with outside statistics are left out.
 // The team story and the dated milestones are approved by Michael Gajda (Robert, 26 Oct 2026).
+import { Image } from 'astro:assets';
 import Shot from '../../components/case/Shot.astro';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
-import week from '../../assets/cases/levelwork/constat-week.jpg';
-import finding from '../../assets/cases/levelwork/constat-finding.jpg';
-import evidence from '../../assets/cases/levelwork/constat-evidence.jpg';
-import siteWeek from '../../assets/cases/levelwork/site-week.jpg';
-import siteMethod from '../../assets/cases/levelwork/site-method.jpg';
-import siteFinding from '../../assets/cases/levelwork/site-finding.jpg';
+import { full } from '../../lib/widths';
+import silhouette from '../../assets/cases/levelwork/imagery/interview-silhouette.jpg';
+import glassPanel from '../../assets/cases/levelwork/imagery/glass-panel.jpg';
+import officeDark from '../../assets/cases/levelwork/imagery/office-dark.jpg';
+import corridor from '../../assets/cases/levelwork/imagery/corridor.jpg';
+import face from '../../assets/cases/levelwork/imagery/interview-face.jpg';
+import homeDesk from '../../assets/cases/levelwork/site/home-desk.jpg';
+import homePhone from '../../assets/cases/levelwork/site/home-phone.jpg';
+import constatDesk from '../../assets/cases/levelwork/site/constat-desk.jpg';
+import founderPhone from '../../assets/cases/levelwork/site/founder-phone.jpg';
+import cover from '../../assets/cases/levelwork/brochure/cover.jpg';
+import spreadFinding from '../../assets/cases/levelwork/brochure/spread-finding.jpg';
+
+/** Everything Robert made for Levelwork, as one row of facts; each entry links to its part below. */
+const made = [
+  ['#experience', 'Experience', 'The interview conversation, the report, the flows in the app. In progress'],
+  ['#mark', 'Logo and brand', 'The mark, chosen from four candidates; colours and type'],
+  ['#images', 'Image world', '111 images in 20 series, made with an AI image generator'],
+  ['#website', 'Website', 'levelwork.ai: home, Constat, Loop'],
+  ['#brochure', 'Brochure', 'Constat, A5, twelve pages'],
+];
+
+/** What the conversation has to be able to do: the five abilities of the product plan of September 2026. */
+const abilities = [
+  ['Follow up', 'when an answer is vague: what was the last project, which part was yours, who decided.'],
+  ['Hear what was not asked', 'Work that is not in the role as designed is a deviation taking shape.'],
+  ['Hear silence', 'A part of the role nobody mentions is the other half of the finding.'],
+  ['Never judge', 'Never “should”, never “only”, no question that sounds like an exam.'],
+  ['Stop', 'when the role as designed is covered, not after a fixed list of questions.'],
+];
+
+/** How a finding is read, keyed to the markers on the card. */
+const reading = [
+  ['Number and severity first', 'The head names the finding and says how serious it is, so findings can be referred to and ranked.'],
+  ['The statement in plain words', 'What was observed and how it differs from the role profile, in the language of the week.'],
+  ['The source always attached', 'The passage of the interview it comes from. No source, no finding.'],
+  ['Observation kept apart from hypothesis', 'What was said is never mixed with what was inferred; the status says which it is.'],
+];
+
+/** The brand's colours (brand/guidelines.md, "Colours"). */
+const colours = [
+  { name: 'Ink', hex: '#1C1C1B', role: 'The mark and the wordmark on light grounds. Text on light grounds.' },
+  { name: 'Cream', hex: '#EDEAE2', role: 'The mark and the wordmark on dark grounds. The light ground itself.' },
+  { name: 'Accent', hex: '#FF4D00', role: 'Inside the logo, only ever the short bar on the right.' },
+];
 ---
 
 <CaseLayout
@@ -20,7 +78,7 @@ import siteFinding from '../../assets/cases/levelwork/site-finding.jpg';
   years="2026–"
   summary="Two founders in Konstanz making visible how work is really distributed in an organisation, one role at a time."
   meta={[
-    ['Role', 'Co-founder, human experience design'],
+    ['Role', 'Co-founder, human experience design: the UX of interview, report and app; brand, image world, website, brochure'],
     ['Team', 'Michael Gajda (product and sales) and me'],
     ['Period', 'Building together since 2026'],
     ['Product', 'Constat, available today. Loop, in development'],
@@ -38,17 +96,6 @@ import siteFinding from '../../assets/cases/levelwork/site-finding.jpg';
       The job description says one thing, the calendar four weeks later says another. Extra tasks pile up, coordination
       eats the core work, and everyone feels it. Nobody can prove it, so nobody can fix it.
     </p>
-    <figure class="c-wide">
-      <Shot
-        src={siteWeek}
-        source="levelwork.ai/constat"
-        label="01 The gap"
-        alt="A working week drawn as a calendar, Monday to Friday, with the blocks the role profile plans: team syncs, focus time, feature work"
-        widths={[800, 1080]}
-        sizes="(max-width: 900px) 100vw, 75vw"
-      />
-      <figcaption>The week as the role profile plans it. On the Constat page it fills up with what really happens.</figcaption>
-    </figure>
   </section>
 
   <section>
@@ -62,83 +109,343 @@ import siteFinding from '../../assets/cases/levelwork/site-finding.jpg';
       Both are broken down the same way, into tasks, competencies and accountability. Every difference carries its
       source, a passage of the conversation or a line of the role profile. No source, no finding.
     </p>
-    <figure class="c-wide">
-      <Shot
-        src={siteMethod}
-        source="levelwork.ai/constat"
-        label="03 How it works"
-        alt="Three steps on a dark page: Capture, Compare, Evidence, under the headline One interview. One comparison. Evidenced findings."
-        widths={[800, 1080]}
-        sizes="(max-width: 900px) 100vw, 75vw"
-      />
-      <figcaption>The method in three steps, from the Constat page.</figcaption>
-    </figure>
   </section>
 
-  <section>
-    <h2>The proof</h2>
-    <p class="c-lead">Our public reference case: one pilot role, not an average.</p>
-    <dl class="c-numbers">
-      <div><dt>26</dt><dd>evidenced findings from one role</dd></div>
-      <div><dt>15</dt><dd>of them classified as critical</dd></div>
-      <div><dt>12 : 5</dt><dd>task areas lived against task areas planned</dd></div>
-    </dl>
-    <figure class="c-wide">
-      <Shot
-        src={siteFinding}
-        source="levelwork.ai/constat"
-        label="05 The proof"
-        alt="A quote from the interview next to a finding card: F-07, critical, source interview passage 14:22, observation, evidenced, deviation from role profile"
-        widths={[800, 1080]}
-        sizes="(max-width: 900px) 100vw, 75vw"
-      />
-      <figcaption>One finding with its source, as it appears on the Constat page.</figcaption>
-    </figure>
-  </section>
-
-  <section>
-    <h2>What I do</h2>
-    <p class="c-lead">The method only works if people are willing to talk honestly about their week.</p>
+  <section class="lw-section">
+    <h2>What I made</h2>
+    <p class="c-lead">The experience, the brand, its pictures, the website and the brochure are my work.</p>
     <p>
       I work on human experience design: making Levelwork something people want to use, and not only something they
       have to. That means how a finding is laid out, so that it is understood before anyone has to explain it, how the
       conversation feels to the person in it, and the look of the company.
     </p>
     <p>I am trained in AI engineering, which helps me read what the analysis pipeline can and cannot say.</p>
-    <div class="c-trio">
-      <figure>
-        <Shot
-          src={week}
-          source="Constat brochure"
-          label="01 The gap"
-          alt="Brochure page: the week everyone assumes, as neat calendar blocks, and below it the week that happens instead, full of extra tasks"
-          widths={[560, 1128]}
-          sizes="(max-width: 900px) 100vw, 30vw"
-        />
-        <figcaption>The gap, as the brochure tells it.</figcaption>
+
+    <dl class="lw-made">
+      {
+        made.map(([href, term, value]) => (
+          <div>
+            <dt><a href={href}>{term}</a></dt>
+            <dd>{value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <!-- The experience: the conversation, the finding, the flows. Robert's, and still being developed. -->
+    <div class="lw-part" id="experience">
+      <div class="lw-rail">
+        <h3>The experience</h3>
+        <p class="lw-note">
+          Mine, and in progress: the conversation design of the AI interview, the report and how a finding is laid out
+          and read, and the flows in the app, from the manager’s and the employee’s path to the invitation and the
+          onboarding.
+        </p>
+      </div>
+      <div class="lw-media">
+        <p class="lw-kicker">What the conversation has to be able to do</p>
+        <ol class="lw-abilities">
+          {
+            abilities.map(([name, text]) => (
+              <li>
+                <strong>{name}</strong> {text}
+              </li>
+            ))
+          }
+        </ol>
+        <p class="lw-target">
+          <span class="lw-target-num">8–12 min</span>
+          <span class="lw-target-text">
+            for one conversation with a person who has not prepared. A target I design towards, not a measurement.
+          </span>
+        </p>
+        <figure class="lw-interview">
+          <ScrubFigure kind="levelwork-interview" ratio="1200 / 500" narrow="600 / 1080" />
+          <figcaption>
+            What held in testing against the live model: a vague answer was followed up instead of written down, and work
+            that appears in no role description was recorded as invisible work without anyone asking. The exchange is
+            written for this page.
+          </figcaption>
+        </figure>
+        <div class="lw-finding">
+          <article class="lw-card" aria-label="Example finding F-07 from levelwork.ai">
+            <div class="lw-card-head">
+              <span><span class="lw-pin" aria-hidden="true">1</span>F-07</span>
+              <span>Critical</span>
+            </div>
+            <dl class="lw-card-rows">
+              <div><dt>Source</dt><dd><span class="lw-pin" aria-hidden="true">3</span>Interview passage 14:22</dd></div>
+              <div><dt>Status</dt><dd><span class="lw-pin" aria-hidden="true">4</span>Observation, evidenced</dd></div>
+              <div><dt>Type</dt><dd>Deviation from role profile</dd></div>
+            </dl>
+            <p class="lw-card-text">
+              <span class="lw-pin" aria-hidden="true">2</span>Cross-team coordination absorbs a substantial share of the
+              working week. It appears in no role profile, and only the person carrying it can see it.
+            </p>
+          </article>
+          <ol class="lw-reading">
+            {
+              reading.map(([name, text]) => (
+                <li>
+                  <strong>{name}</strong>
+                  <span>{text}</span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <p class="lw-cap">
+          The public example finding from levelwork.ai, rebuilt here, with the reading decisions behind its layout.
+        </p>
+      </div>
+    </div>
+
+    <!-- The mark: construction, meaning, lockup. -->
+    <div class="lw-part" id="mark">
+      <div class="lw-rail">
+        <h3>The mark</h3>
+        <p class="lw-note">
+          The square frame is the role as designed. The bar is the role as lived: it starts inside the frame and breaks
+          out on the right, and the part that breaks out is the part nobody wrote down.
+        </p>
+      </div>
+      <figure class="lw-media">
+        <ScrubFigure kind="levelwork-mark" ratio="1200 / 520" narrow="600 / 960" />
+        <figcaption>
+          The logo I designed for Levelwork, built on a grid of 100 units: frame, bar and the one element in colour, then
+          the lockup with the wordmark.
+        </figcaption>
       </figure>
-      <figure>
-        <Shot
-          src={evidence}
-          source="Constat brochure"
-          label="02 What Constat does"
-          alt="Brochure page: From assumption to evidence, the expected role as outlined bars next to the actual week as filled bars"
-          widths={[560, 1128]}
-          sizes="(max-width: 900px) 100vw, 30vw"
+    </div>
+
+    <!-- The image world, as a campaign on the brand's own black. -->
+    <div class="lw-world" id="images">
+      <div class="lw-world-head">
+        <h3>The image world</h3>
+        <p class="lw-note">
+          From the image world I developed for Levelwork with an AI image generator: 111 images in 20 series, directed
+          and curated by me. Five of them, one per idea.
+        </p>
+      </div>
+      <figure class="lw-bleed">
+        <Image
+          src={silhouette}
+          alt="Two people in conversation at a small table, seen in silhouette against a frosted wall lit orange from behind; a third figure passes blurred on the left."
+          widths={full([800, 1200, 1600, 2400], silhouette)}
+          sizes="100vw"
+          loading="lazy"
         />
-        <figcaption>Expected next to actual, the core of every report.</figcaption>
+        <figcaption>Interview, silhouette</figcaption>
       </figure>
-      <figure>
-        <Shot
-          src={finding}
-          source="Constat brochure"
-          label="Findings"
-          alt="Brochure page: deviations on the left become numbered findings on the right, with the line: It’s a finding."
-          widths={[400, 800]}
-          sizes="(max-width: 900px) 100vw, 30vw"
+      <div class="lw-duo">
+        <figure>
+          <Image
+            src={glassPanel}
+            alt="One person stands still in front of a tall lit glass panel while a crowd walks past blurred; a thin orange line runs across the whole picture at waist height."
+            widths={full([600, 900, 1200], glassPanel)}
+            sizes="(max-width: 640px) 100vw, 50vw"
+            loading="lazy"
+          />
+          <figcaption>Glass panel</figcaption>
+        </figure>
+        <figure>
+          <Image
+            src={officeDark}
+            alt="A dark open-plan office in a storm of flying paper; in the middle one desk is lit warm, a person working at a screen."
+            widths={full([600, 900, 1200], officeDark)}
+            sizes="(max-width: 640px) 100vw, 50vw"
+            loading="lazy"
+          />
+          <figcaption>Office, dark</figcaption>
+        </figure>
+      </div>
+      <figure class="lw-bleed">
+        <Image
+          src={corridor}
+          alt="Three figures walk along a lit glass corridor in the dark, motion-blurred; an orange band of light runs the full length of the glass."
+          widths={full([800, 1200, 1600, 2400], corridor)}
+          sizes="100vw"
+          loading="lazy"
         />
-        <figcaption>A deviation is not a verdict. It’s a finding.</figcaption>
+        <figcaption>Corridor</figcaption>
       </figure>
+      <div class="lw-close">
+        <p class="lw-brief">
+          Work is a blur of people, paper and motion. Somewhere in it, one person or one conversation is in focus.
+        </p>
+        <figure>
+          <Image
+            src={face}
+            alt="A woman sits at a round table behind a glass wall and faces the camera, framed by two blurred people in the foreground; a broad orange band of light crosses the room behind her."
+            widths={full([800, 1200, 1800], face)}
+            sizes="(max-width: 900px) 100vw, 66vw"
+            loading="lazy"
+          />
+          <figcaption>Interview, face</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Colours and type, set in the brand's own values. -->
+    <div class="lw-part" id="brand">
+      <div class="lw-rail">
+        <h3>Colours and type</h3>
+        <p class="lw-note">Three colours and two typefaces, the same in print and on the web.</p>
+      </div>
+      <div class="lw-media lw-spec">
+        <ul class="lw-swatches">
+          {
+            colours.map((colour) => (
+              <li class={`lw-swatch lw-swatch-${colour.name.toLowerCase()}`} style={`--swatch: ${colour.hex}`}>
+                <span class="lw-swatch-name">{colour.name}</span>
+                <span class="lw-swatch-hex">{colour.hex}</span>
+                <span class="lw-swatch-role">{colour.role}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="lw-faces">
+          <div class="lw-face lw-face-grotesk">
+            <span class="lw-face-label">Space Grotesk · 300 running text, 400 headings and the wordmark</span>
+            <span class="lw-face-big" aria-hidden="true">Aa</span>
+            <span class="lw-face-line">Evidence for how organizations really work.</span>
+            <span class="lw-face-set" aria-hidden="true">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />abcdefghijklmnopqrstuvwxyz 0123456789</span>
+          </div>
+          <div class="lw-face lw-face-mono">
+            <span class="lw-face-label">Fragment Mono · labels, captions, small technical text</span>
+            <span class="lw-face-big" aria-hidden="true">F-07</span>
+            <span class="lw-face-line">Source · Interview passage 14:22<br />Status · Observation, evidenced</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Website and app, captured fresh. -->
+    <div class="lw-part" id="website">
+      <div class="lw-rail">
+        <h3>Website and app</h3>
+        <p class="lw-note">
+          levelwork.ai, which I designed, and the interface of the app, at desktop and phone width.
+        </p>
+      </div>
+      <figure class="lw-media">
+        <div class="lw-screens">
+          <div class="lw-d1">
+            <Shot
+              src={constatDesk}
+              source="levelwork.ai/constat"
+              label="1440 px"
+              alt="The Constat page of levelwork.ai on a desktop: the word CONSTAT and the line Evidence for how organizations really work, over a blurred orange picture of a conversation."
+              widths={[800, 1200, 1600, 2200]}
+              sizes="(max-width: 900px) 100vw, 56vw"
+            />
+          </div>
+          <div class="lw-p1">
+            <Shot
+              src={homePhone}
+              source="levelwork.ai"
+              label="390 px"
+              alt="The levelwork.ai homepage on a phone: the wordmark LEVELWORK and the line Organizations decide about people using a picture of themselves that stopped being true years ago."
+              widths={[400, 600, 900]}
+              sizes="(max-width: 900px) 45vw, 17vw"
+            />
+          </div>
+          <div class="lw-d2">
+            <Shot
+              src={homeDesk}
+              source="levelwork.ai"
+              label="1440 px"
+              alt="The levelwork.ai homepage on a desktop: LEVELWORK in large capitals on black, a thin orange line of light behind it, and the opening sentence below."
+              widths={[800, 1200, 1600, 2200]}
+              sizes="(max-width: 900px) 100vw, 56vw"
+            />
+          </div>
+          <div class="lw-p2">
+            <Shot
+              src={founderPhone}
+              source="Levelwork app"
+              label="Demo"
+              alt="The start page of the founder interview in the Levelwork app on a phone, on a cream ground: How many roles are you actually filling? A short text, an e-mail field and an orange Start button."
+              widths={[400, 600, 900]}
+              sizes="(max-width: 900px) 45vw, 17vw"
+            />
+          </div>
+        </div>
+        <figcaption>
+          The Constat page and the homepage of levelwork.ai, and the start of the founder interview in the app. Captured
+          on 27 October 2026.
+        </figcaption>
+      </figure>
+    </div>
+
+    <!-- The brochure, as a printed piece. -->
+    <div class="lw-part" id="brochure">
+      <div class="lw-rail">
+        <h3>Brochure</h3>
+        <p class="lw-note">Constat in print: A5, twelve pages, set in the brand’s two typefaces.</p>
+      </div>
+      <figure class="lw-media">
+        <div class="lw-print lw-print-set">
+          <div class="lw-page">
+            <Image
+              src={cover}
+              alt="Brochure cover: a glass room full of motion-blurred people and flying paper, reflected in a dark floor, and the word CONSTAT with the line Evidence for how organizations really work."
+              widths={full([400, 700, 1000], cover)}
+              sizes="(max-width: 900px) 33vw, 24vw"
+              loading="lazy"
+            />
+          </div>
+          <div class="lw-spread">
+            <Image
+              src={spreadFinding}
+              alt="Brochure spread: From assumption to evidence. Expected and actual work as outlined and filled bars, then deviations in orange becoming numbered findings, with the lines A deviation is not a verdict. It’s a finding."
+              widths={full([700, 1000, 1400, 2000], spreadFinding)}
+              sizes="(max-width: 900px) 66vw, 48vw"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <figcaption>
+          The cover and pages 4 and 5 of the Constat brochure I designed: from assumption to evidence, and a deviation
+          that becomes a finding.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="lw-track">
+    <h2>Track record</h2>
+    <p class="c-lead">The method was paid for before the product existed.</p>
+    <dl class="lw-big">
+      <div><dt>280</dt><dd>role assessments delivered with the method</dd></div>
+      <div><dt><small>about EUR</small>80k</dt><dd>in paid work before a self-serve product existed</dd></div>
+      <div><dt>5</dt><dd>paying clients, EUR 4k to 30k each</dd></div>
+      <div><dt>24</dt><dd>European early-stage investors at TechVillage Moldova, September 2026</dd></div>
+    </dl>
+    <blockquote class="lw-wording">
+      280 role assessments delivered with the method and about EUR 80k in paid work before a self-serve product
+      existed; five paying clients, EUR 4k to 30k each. The product itself is pre-revenue. Pitched to 24 European
+      early-stage investors at TechVillage Moldova, September 2026.
+    </blockquote>
+    <p>
+      The assessments and the paid work are consulting: Michael delivering his method, before I joined and before
+      there was a product. None of it is software revenue, and none of it recurs. The figures are as the founder
+      approved them.
+    </p>
+
+    <div class="lw-case">
+      <p class="lw-kicker">The public reference case: one role, one AI-assisted conversation, not an average</p>
+      <dl class="lw-big lw-big-case">
+        <div><dt>26</dt><dd>evidenced findings from one role</dd></div>
+        <div><dt>15</dt><dd>of them classified as critical</dd></div>
+        <div><dt>12 : 5</dt><dd>task areas lived against task areas planned</dd></div>
+      </dl>
+      <p class="lw-kicker">What followed, in the founder’s account</p>
+      <ol class="lw-after">
+        <li>The client restructured the role.</li>
+        <li>It hired half a position.</li>
+        <li>It came back for more work.</li>
+      </ol>
     </div>
   </section>
 
@@ -178,3 +485,761 @@ import siteFinding from '../../assets/cases/levelwork/site-finding.jpg';
     </p>
   </section>
 </CaseLayout>
+
+<style is:global>
+  /* Levelwork's own typeface, only for the specimen below: the website's file, weights 300 to 500. */
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('/cases/levelwork/SpaceGrotesk.woff2') format('woff2');
+    font-weight: 300 500;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
+
+<style>
+  /* CaseLayout sizes every p, li and figure in the body through `.c-body p` and `section > *`; Astro's scoping adds
+     no specificity, so the classes below are doubled to win. */
+
+  /* The parts below carry their own names in the rail, so the section's name does not follow them down. */
+  .lw-section.lw-section > h2 {
+    position: static;
+  }
+
+  /* Everything I made, in one ruled row, before the parts. */
+  .lw-made.lw-made {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0 var(--gap);
+    margin: clamp(24px, 3vw, 48px) 0 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .lw-made div {
+    padding: 14px 0 18px;
+  }
+
+  .lw-made dt {
+    margin-bottom: 6px;
+    font-size: clamp(17px, 1.4vw, 21px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .lw-made dt a {
+    text-decoration: none;
+  }
+
+  .lw-made dt a:hover {
+    text-decoration: underline;
+  }
+
+  .lw-made dd {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+
+  /* The experience: the five abilities, the target, the finding and how it is read. */
+  .lw-kicker.lw-kicker {
+    margin: 0 0 12px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
+
+  .lw-abilities.lw-abilities {
+    counter-reset: ability;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0 var(--gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .lw-abilities li.lw-abilities-item,
+  .lw-abilities li {
+    counter-increment: ability;
+    margin: 0;
+    padding: 12px 0 0;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--mute);
+  }
+
+  .lw-abilities li::before {
+    content: counter(ability);
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--signal);
+  }
+
+  .lw-abilities strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: clamp(18px, 1.5vw, 22px);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .lw-target.lw-target {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 24px;
+    margin: 32px 0 clamp(40px, 5vw, 72px);
+    padding: 14px 0 18px;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .lw-target-num {
+    font-size: clamp(48px, 6vw, 96px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lw-target-text {
+    max-width: 40ch;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--mute);
+  }
+
+  .lw-interview.lw-interview {
+    margin: 0 0 clamp(48px, 6vw, 96px);
+  }
+
+  .lw-finding {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  /* The card in Levelwork's own colours and type, as the report and the website set it. */
+  .lw-card {
+    border: 1px solid #ff4d00;
+    background: #000;
+    color: #edeae2;
+    font-family: 'Space Grotesk', var(--f-sans);
+  }
+
+  .lw-card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #ff4d00;
+    color: #000;
+    font-family: var(--f-mono);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .lw-card-rows {
+    margin: 0;
+    padding: 12px 16px 4px;
+  }
+
+  .lw-card-rows div {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 12px;
+    padding: 5px 0;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .lw-card-rows dt {
+    color: #8f8c85;
+  }
+
+  .lw-card-rows dd {
+    margin: 0;
+  }
+
+  .lw-card-text.lw-card-text {
+    margin: 0;
+    padding: 12px 16px 22px;
+    font-size: clamp(19px, 1.6vw, 24px);
+    font-weight: 300;
+    line-height: 1.3;
+    color: #edeae2;
+  }
+
+  /* Markers tie a part of the card to its line in the list beside it. */
+  .lw-pin {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    border: 1px solid currentColor;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0;
+    vertical-align: 2px;
+  }
+
+  .lw-reading.lw-reading {
+    counter-reset: reading;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+
+  .lw-reading li {
+    counter-increment: reading;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 0 8px;
+    margin: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .lw-reading li::before {
+    content: counter(reading);
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border: 1px solid var(--ink);
+    font-family: var(--f-mono);
+    font-size: 11px;
+  }
+
+  .lw-reading strong {
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .lw-reading span {
+    color: var(--mute);
+  }
+
+  .lw-cap.lw-cap {
+    max-width: 62ch;
+    margin: 12px 0 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+
+  /* Track record: the approved figures large, the wording as written, then the reference case and what followed. */
+  .lw-big.lw-big {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 var(--gap);
+    margin: clamp(24px, 3vw, 48px) 0 clamp(28px, 3vw, 44px);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .lw-big div {
+    padding: 18px 0 22px;
+  }
+
+  .lw-big dt {
+    font-size: clamp(52px, 6vw, 108px);
+    font-weight: 600;
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .lw-big dt small {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
+
+  .lw-big dd {
+    max-width: 26ch;
+    margin: 12px 0 0;
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+
+  .lw-wording.lw-wording {
+    margin: 0 0 18px;
+    padding: 2px 0 2px 18px;
+    border-left: 2px solid var(--signal);
+    font-size: clamp(18px, 1.4vw, 21px);
+    line-height: 1.45;
+  }
+
+  .lw-case.lw-case {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: var(--cols);
+    gap: 0 var(--gap);
+    margin-top: clamp(48px, 6vw, 96px);
+  }
+
+  .lw-case > * {
+    grid-column: 4 / 13;
+  }
+
+  .lw-case .lw-big-case.lw-big-case {
+    grid-column: 4 / 13;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 0;
+  }
+
+  .lw-after.lw-after {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 var(--gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lw-after li {
+    position: relative;
+    margin: 0;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--ink);
+    font-size: clamp(20px, 1.9vw, 30px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .lw-after li + li::before {
+    content: '→';
+    position: absolute;
+    top: 12px;
+    left: calc(-1 * var(--gap) + 2px);
+    font-size: 18px;
+    color: var(--mute);
+  }
+
+  /* One part: its name and a sentence in the rail, the work across the rest of the grid. */
+  .lw-part.lw-part {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: var(--cols);
+    gap: 0 var(--gap);
+    align-items: start;
+    margin-top: clamp(64px, 8vw, 128px);
+    scroll-margin-top: 24px;
+  }
+
+  .lw-rail {
+    grid-column: 1 / 4;
+    position: sticky;
+    top: 24px;
+  }
+
+  .lw-media.lw-media {
+    grid-column: 4 / 13;
+    margin: 0;
+  }
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: clamp(22px, 2vw, 30px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .lw-note.lw-note {
+    max-width: 30ch;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--mute);
+  }
+
+  .lw-media figcaption {
+    max-width: 62ch;
+    margin-top: 12px;
+  }
+
+  /* The image world on Levelwork's own black, across the whole window: a campaign, not a contact sheet. */
+  .lw-world.lw-world {
+    --lw-ground: #000;
+    --lw-text: #edeae2;
+    --lw-mute: #8f8c85;
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: var(--cols);
+    gap: 0 var(--gap);
+    margin: clamp(64px, 8vw, 128px) calc(-1 * var(--m)) 0;
+    padding: clamp(40px, 5vw, 80px) var(--m) clamp(48px, 6vw, 96px);
+    background: var(--lw-ground);
+    color: var(--lw-text);
+    scroll-margin-top: 0;
+  }
+
+  .lw-world-head {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: end;
+    margin-bottom: clamp(28px, 3.5vw, 56px);
+  }
+
+  .lw-world-head h3 {
+    grid-column: 1 / 4;
+    margin: 0;
+    font-size: clamp(34px, 4.4vw, 72px);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+
+  .lw-world-head .lw-note.lw-note {
+    grid-column: 4 / 10;
+    max-width: 52ch;
+    font-size: clamp(16px, 1.25vw, 19px);
+    color: var(--lw-text);
+  }
+
+  .lw-world :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #111;
+  }
+
+  .lw-world figcaption {
+    margin-top: 10px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--lw-mute);
+  }
+
+  /* Edge to edge: out of the band's padding to the window's sides. */
+  .lw-bleed.lw-bleed {
+    grid-column: 1 / 13;
+    margin: 0 calc(-1 * var(--m)) clamp(32px, 4vw, 64px);
+  }
+
+  .lw-bleed figcaption {
+    padding: 0 var(--m);
+  }
+
+  .lw-duo.lw-duo {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap);
+    margin-bottom: clamp(32px, 4vw, 64px);
+  }
+
+  .lw-close.lw-close {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: end;
+  }
+
+  .lw-brief.lw-brief {
+    grid-column: 1 / 5;
+    max-width: 16ch;
+    margin: 0 0 34px;
+    font-size: clamp(24px, 2.4vw, 38px);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--lw-text);
+  }
+
+  .lw-close figure {
+    grid-column: 5 / 13;
+  }
+
+  /* Colours as fields, the accent as narrow as its place in the mark. */
+  .lw-swatches.lw-swatches {
+    display: grid;
+    grid-template-columns: 5fr 5fr 2fr;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--ink);
+  }
+
+  .lw-swatch.lw-swatch {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: clamp(200px, 20vw, 300px);
+    margin: 0;
+    padding: 16px;
+    background: var(--swatch);
+    font-family: var(--f-mono);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .lw-swatch-ink {
+    color: #edeae2;
+  }
+
+  .lw-swatch-cream,
+  .lw-swatch-accent {
+    color: #1c1c1b;
+  }
+
+  .lw-swatch-name {
+    font-family: 'Space Grotesk', var(--f-sans);
+    font-size: clamp(22px, 2vw, 30px);
+    letter-spacing: -0.01em;
+  }
+
+  .lw-swatch-role {
+    margin-top: auto;
+    max-width: 28ch;
+  }
+
+  .lw-faces {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    border: 1px solid var(--ink);
+    border-top: 0;
+  }
+
+  .lw-face {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 16px 20px;
+    min-width: 0;
+  }
+
+  .lw-face + .lw-face {
+    border-left: 1px solid var(--ink);
+  }
+
+  .lw-face-label {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .lw-face-big {
+    font-size: clamp(88px, 11vw, 176px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+
+  .lw-face-grotesk {
+    font-family: 'Space Grotesk', var(--f-sans);
+    font-weight: 400;
+  }
+
+  .lw-face-grotesk .lw-face-line {
+    font-weight: 300;
+    font-size: clamp(20px, 1.8vw, 28px);
+    line-height: 1.2;
+  }
+
+  .lw-face-mono {
+    font-family: var(--f-mono);
+  }
+
+  .lw-face-mono .lw-face-big {
+    font-size: clamp(64px, 7.4vw, 124px);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    color: #ff4d00;
+  }
+
+  .lw-face-set {
+    margin-top: auto;
+    font-size: 15px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    color: var(--mute);
+    overflow-wrap: anywhere;
+  }
+
+  .lw-face-mono .lw-face-line {
+    font-size: 13px;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+
+  /* Desktop and phone at the same height: column widths follow the screens' aspect ratios (1440 / 900 and 390 / 844). */
+  .lw-screens {
+    display: grid;
+    grid-template-columns: 1.6fr 0.462fr;
+    grid-template-areas: 'd1 p1' 'd2 p2';
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  .lw-d1 { grid-area: d1; }
+  .lw-d2 { grid-area: d2; }
+  .lw-p1 { grid-area: p1; }
+  .lw-p2 { grid-area: p2; }
+
+  /* Print on a band of paper: the pages share one height, a hairline marks the fold. */
+  .lw-print {
+    display: flex;
+    gap: clamp(16px, 2.4vw, 40px);
+    align-items: flex-start;
+    padding: clamp(16px, 3vw, 48px);
+    background: var(--soft);
+  }
+
+  .lw-print-set .lw-page {
+    flex: 1 1 0;
+  }
+
+  .lw-print-set .lw-spread {
+    flex: 2 1 0;
+  }
+
+  .lw-spread {
+    position: relative;
+    flex: 1 1 auto;
+  }
+
+  .lw-spread::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 50%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .lw-print :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 900px) {
+    .lw-made.lw-made {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .lw-abilities.lw-abilities {
+      grid-template-columns: 1fr;
+      border-top: 0;
+    }
+    .lw-abilities li {
+      padding: 12px 0 14px;
+      border-top: 1px solid var(--hair);
+    }
+    .lw-abilities li::before {
+      display: inline;
+      margin-right: 10px;
+    }
+    .lw-abilities strong {
+      display: inline;
+    }
+    .lw-finding {
+      grid-template-columns: 1fr;
+    }
+    .lw-big.lw-big {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .lw-big dt {
+      font-size: clamp(44px, 12vw, 72px);
+    }
+    .lw-case > *,
+    .lw-case .lw-big-case.lw-big-case {
+      grid-column: 1 / -1;
+    }
+    .lw-case .lw-big-case.lw-big-case {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .lw-case .lw-big-case dt {
+      font-size: clamp(36px, 10vw, 64px);
+    }
+    .lw-after.lw-after {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .lw-after li + li::before {
+      content: none;
+    }
+    .lw-rail,
+    .lw-media.lw-media,
+    .lw-world-head h3,
+    .lw-world-head .lw-note.lw-note,
+    .lw-brief.lw-brief,
+    .lw-close figure {
+      grid-column: 1 / -1;
+    }
+    .lw-rail {
+      position: static;
+      margin-bottom: 20px;
+    }
+    .lw-world-head h3 {
+      margin-bottom: 14px;
+    }
+    .lw-brief.lw-brief {
+      margin-bottom: 24px;
+    }
+    .lw-screens {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: 'd1 d1' 'd2 d2' 'p1 p2';
+    }
+    .lw-faces {
+      grid-template-columns: 1fr;
+    }
+    .lw-face + .lw-face {
+      border-left: 0;
+      border-top: 1px solid var(--ink);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .lw-duo.lw-duo {
+      grid-template-columns: 1fr;
+    }
+    .lw-swatches.lw-swatches {
+      grid-template-columns: 1fr;
+    }
+    .lw-swatch.lw-swatch {
+      min-height: 120px;
+    }
+    .lw-print-set {
+      flex-direction: column;
+    }
+    .lw-print-set .lw-page {
+      width: 46%;
+    }
+    .lw-print-set .lw-spread {
+      width: 100%;
+    }
+  }
+</style>
