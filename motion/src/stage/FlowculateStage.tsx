@@ -61,7 +61,9 @@ export const FlowculateStage = ({
   const tabW = [62, 128, 150];
 
   return (
-    <svg viewBox={view} width="100%" height="100%" overflow="visible" aria-hidden="true">
+    // As a crop (`pages`) nothing may reach past the frame: the stage's own title rule, address and counter
+    // would otherwise run over the case text around the figure.
+    <svg viewBox={view} width="100%" height="100%" overflow={pages ? 'hidden' : 'visible'} aria-hidden="true">
       {/* Act 1: the input, typed row by row, the way it had to be entered before the app. */}
       {rows.map((_, i) => {
         const text = rowText(i);
@@ -173,10 +175,12 @@ export const FlowculateStage = ({
       </g>
 
       {/* Act 3: the program around the simulation. The page title is its logo now. */}
-      <line x1={0} y1={214} x2={1600} y2={214} stroke={c.ink} strokeWidth={2} style={line(f, T.app + 2, 1600)} />
-      <text x={1600} y={176} fontSize={26} textAnchor="end" style={{ ...mono, fill: c.mute }}>
-        {'flowculate.eu'.slice(0, Math.round(13 * progress(f, T.app + 10, T.app + 22)))}
-      </text>
+      {!pages && <line x1={0} y1={214} x2={1600} y2={214} stroke={c.ink} strokeWidth={2} style={line(f, T.app + 2, 1600)} />}
+      {!pages && (
+        <text x={1600} y={176} fontSize={26} textAnchor="end" style={{ ...mono, fill: c.mute }}>
+          {'flowculate.eu'.slice(0, Math.round(13 * progress(f, T.app + 10, T.app + 22)))}
+        </text>
+      )}
       {['Plan', 'Scenario', 'Simulation'].map((tab, i) => (
         <text
           key={tab}
@@ -195,7 +199,7 @@ export const FlowculateStage = ({
         <line x1={1072} y1={294} x2={1222} y2={294} stroke={c.ink} strokeWidth={3} style={line(f, T.app + 20, 150)} />
       )}
 
-      <g opacity={app(20, 24)}>
+      <g opacity={pages ? 0 : app(20, 24)}>
         <text x={0} y={470} fontSize={22} letterSpacing={0.4} style={{ ...mono, fill: c.mute }}>
           PERSONS IN ROOM
         </text>

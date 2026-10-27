@@ -268,7 +268,7 @@ const figures: Record<string, (palette: Palette, share: number, narrow: boolean)
     const frame =
       share < 0.25 ? 61 : share < 0.42 ? 71 : Math.round(72 + clamp((share - 0.42) / 0.5) * (FLOWCULATE_FRAMES - 73));
     return h(FrameContext.Provider, { value: { frame, width: 1600, height: 900 } }, [
-      h(FlowculateStage, { palette, pages: true, view: '790 236 810 630' }),
+      h(FlowculateStage, { palette, pages: true, view: '800 236 830 670' }),
     ]);
   },
   'saunter-lake': (palette, share) => h(LakeGoal, { palette, share }),

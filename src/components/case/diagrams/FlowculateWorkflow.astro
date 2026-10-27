@@ -1,0 +1,252 @@
+---
+// The way to a simulation before and after, side by side. Before: the proof-of-concept workflow from Robert's
+// annotated board (old site, image 11; poc-notes.jpg): ten manual steps in five programs, three hand-made files,
+// no evaluation at the end. After: Robert's concept for the web app from his UX board (old site, image 12): upload
+// the plan, three pages, the results; mesh and crowd are computed on their own by the mathematicians' C code,
+// running as WebAssembly. Rows and wording follow the two boards.
+const before = [
+  { step: 'Photograph a sketch of the site plan', tool: 'photo' },
+  { step: 'Vectorise it', tool: 'CAD program' },
+  { step: 'Export the outline as CSV', tool: 'online tool', file: 1 },
+  { step: 'Build the point cloud and the mesh', tool: 'MATLAB' },
+  { step: 'Type the simulation data into a .json file', tool: 'by hand', file: 2 },
+  { step: 'Create the simulation', tool: 'pFlow' },
+  { step: 'Export the configuration', tool: 'pFlow', file: 3 },
+  { step: 'Calculate', tool: 'eFlow.sim' },
+  { step: 'Import the data', tool: 'MATLAB' },
+  { step: 'Start the visualisation', tool: 'MATLAB' },
+];
+
+const after = [
+  { page: 'Plan', step: 'Set up the environment', items: ['Upload the plan', 'Draw walls as polygons', 'Draw in objects'] },
+  { page: 'Scenario', step: 'Define the scenario', items: ['Object details', 'Scenario data', 'Preferences of individuals'], auto: 'Mesh generated' },
+  {
+    page: 'Simulation',
+    step: 'Create the simulation',
+    items: ['Simulation data', 'Infection data', 'Behaviour of the agents', 'When to stop'],
+    auto: 'Crowd flow, agents and infection computed',
+  },
+  { page: 'Results', tab: false, step: 'Evaluate the results', items: ['Evaluate the simulation', 'Export the data'] },
+];
+---
+
+<div class="wf">
+  <div class="wf-side wf-before">
+    <h3 class="wf-title">Before <span>the proof of concept, 2022</span></h3>
+    <p class="wf-count">5 programs · 3 hand-made files · 10 steps</p>
+    <ol class="wf-steps">
+      {
+        before.map((row, i) => (
+          <li class:list={['wf-row', { 'wf-switch': i > 0 && before[i - 1].tool !== row.tool }]}>
+            <span class="wf-n">{String(i + 1).padStart(2, '0')}</span>
+            <span class="wf-step">
+              {row.step}
+              {row.file && <span class="wf-file">file {row.file}</span>}
+            </span>
+            <span class="wf-tool">{row.tool}</span>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="wf-end wf-open"><b aria-hidden="true">?</b> No evaluation, no graphics</p>
+  </div>
+
+  <div class="wf-side wf-after">
+    <h3 class="wf-title">After <span>Flowculate in the browser</span></h3>
+    <p class="wf-count">1 browser tab · 3 pages · the results</p>
+    <ol class="wf-pages">
+      {
+        after.map((row) => (
+          <li class="wf-page">
+            <span class:list={['wf-tab', { 'wf-no-tab': 'tab' in row }]}>{row.page}</span>
+            <span class="wf-step">{row.step}</span>
+            <span class="wf-items">{row.items.join(' · ')}</span>
+            {row.auto && (
+              <span class="wf-auto">
+                <span>runs on its own</span> {row.auto}
+              </span>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+    <p class="wf-end">PDF report · CSV · raw data</p>
+    <p class="wf-note">The calculation: the mathematicians’ C code, as WebAssembly in the browser.</p>
+  </div>
+</div>
+
+<style>
+  .wf {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 32px);
+    align-items: start;
+  }
+
+  .wf .wf-side {
+    padding-top: 12px;
+    border-top: 1px solid var(--ink);
+  }
+
+  .wf .wf-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .wf .wf-title span {
+    margin-left: 6px;
+    font-weight: 400;
+    color: var(--mute);
+  }
+
+  .wf .wf-count {
+    margin: 4px 0 16px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+
+  .wf .wf-steps,
+  .wf .wf-pages {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Before: one row per step. A darker rule marks every change of program. */
+  .wf .wf-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: baseline;
+    margin: 0;
+    padding: 8px 0;
+    border-top: 1px solid var(--hair);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .wf .wf-row.wf-switch {
+    border-top-color: var(--ink);
+  }
+
+  .wf .wf-n,
+  .wf .wf-tool,
+  .wf .wf-file,
+  .wf .wf-tab,
+  .wf .wf-auto span,
+  .wf .wf-note {
+    font-family: var(--f-mono);
+    font-size: 12px;
+  }
+
+  .wf .wf-n {
+    color: var(--mute);
+  }
+
+  .wf .wf-tool {
+    color: var(--mute);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .wf .wf-file {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 0 5px;
+    border: 1px solid var(--ink);
+    line-height: 16px;
+    vertical-align: 1px;
+    white-space: nowrap;
+  }
+
+  .wf .wf-end {
+    margin: 0;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .wf .wf-open {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--signal);
+  }
+
+  .wf .wf-open b {
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  /* After: one block per page of the app, with what runs on its own in between. */
+  .wf .wf-page {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 2px 10px;
+    margin: 0;
+    padding: 10px 0 12px;
+    border-top: 1px solid var(--ink);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .wf .wf-tab {
+    grid-row: 1 / span 2;
+    align-self: start;
+    justify-self: start;
+    padding: 2px 6px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* the results are not a tab of the app, they come out of the simulation page */
+  .wf .wf-tab.wf-no-tab {
+    padding: 1px 5px;
+    border: 1px solid var(--ink);
+    background: none;
+    color: var(--ink);
+  }
+
+  .wf .wf-step {
+    font-weight: 600;
+  }
+
+  .wf .wf-row .wf-step {
+    font-weight: 400;
+  }
+
+  .wf .wf-items {
+    color: var(--mute);
+  }
+
+  .wf .wf-auto {
+    grid-column: 2;
+    margin-top: 8px;
+    padding: 6px 0 0 10px;
+    border-left: 2px solid var(--signal);
+  }
+
+  .wf .wf-auto span {
+    display: block;
+    color: var(--signal);
+  }
+
+  .wf .wf-note {
+    margin: 10px 0 0;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+
+  @media (max-width: 760px) {
+    .wf {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+    }
+  }
+</style>

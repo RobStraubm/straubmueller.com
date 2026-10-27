@@ -17,6 +17,7 @@ import version2 from '../../assets/cases/flowculate/version-2.jpg';
 import FlowculateParts from '../../components/case/diagrams/FlowculateParts.astro';
 import FlowculateIdentity from '../../components/case/diagrams/FlowculateIdentity.astro';
 import FlowculateRoadmap from '../../components/case/diagrams/FlowculateRoadmap.astro';
+import FlowculateWorkflow from '../../components/case/diagrams/FlowculateWorkflow.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
 
 const widths = [480, 800, 1200, 1800];
@@ -76,6 +77,10 @@ const { stage = true } = Astro.props as { stage?: boolean };
       back: I ran the user research, benchmarked competitors, mapped the requirements and designed the interface
       and the brand. The code was written by the development team.
     </p>
+    <figure class="c-wide">
+      <FlowculateWorkflow />
+      <figcaption>The way to one simulation: ten steps in five programs before I joined, three pages in the browser in the program I designed. Redrawn from my working boards.</figcaption>
+    </figure>
     <p>
       On 28 June 2023 I ran a user-testing workshop at HTWG Konstanz with the project partners, the people who would use
       and fund the tool. They tested version 1.0, and we sorted every wish by effort and timing, so that a small team
@@ -108,7 +113,7 @@ const { stage = true } = Astro.props as { stage?: boolean };
     {
       stage && (
         <figure>
-          <ScrubFigure kind="flowculate-pages" ratio="810 / 630" />
+          <ScrubFigure kind="flowculate-pages" ratio="830 / 670" />
           <figcaption>The plan from the top of the page, through the app's three pages as you scroll: plan, scenario, simulation.</figcaption>
         </figure>
       )

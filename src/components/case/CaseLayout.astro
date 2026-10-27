@@ -408,6 +408,10 @@ const reel = films.find((item) => item.key === film);
     grid-column: 1 / 4;
     grid-row: 1;
     margin: 0;
+    /* in the rail, like the sticky section label: the caption passes over it */
+    position: relative;
+    z-index: 1;
+    background: var(--paper);
   }
 
   .c-body :global(.c-pair),
@@ -416,6 +420,18 @@ const reel = films.find((item) => item.key === film);
     display: grid;
     gap: var(--gap);
     align-items: start;
+  }
+
+  /* Rows across the whole grid pass over the rail, where the section label sticks: they slide over it on the
+     page's own ground, so the label never shows through an image or a caption. */
+  .c-body :global(.c-pair),
+  .c-body :global(.c-split),
+  .c-body :global(.c-trio),
+  .c-body :global(.c-numbers),
+  .c-body :global(.c-timeline) {
+    position: relative;
+    z-index: 1;
+    background: var(--paper);
   }
 
   /* A row may set --row (src/lib/row.ts) so its columns follow the images' aspect ratios and all stand equally
