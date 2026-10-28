@@ -1,0 +1,349 @@
+---
+// Case: Ambacta, version 2 (28 Oct 2026, local until Robert approves; version 1 is meeting-minutes.astro).
+// New in v2: the office's review of 30 Sep 2026 as research (paraphrased, nobody named), a guided walkthrough through
+// the editor (the same app run locally with a fictional session swapped in at load time: "Landkreis Musterkreis",
+// invented speakers and speech, a leak scan on every capture), the pipeline with Robert's steps marked, the failures
+// and fixes (first full run of 15 Oct 2026, changelogs of 28 Sep – 27 Oct), name, brand and website (Robert's
+// update to Michael Gajda, 27 Oct 2026, pp. 3–4), and the pace from the repository: 58 commits by Robert, 28 Sep –
+// 27 Oct 2026 (git log of nautilus-web, author Rob/Robert). Dropped from v1: "37 resolutions" (not verified for the
+// real session). Not used: the hours figures from the office's survey (not approved for publication), real names.
+// Robert, 28 Oct 2026: no client named, only that Robert has worked on it since August 2026; the name Ambacta may be public.
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import Walkthrough from '../../components/case/Walkthrough.astro';
+import FixList from '../../components/case/FixList.astro';
+import Tempo from '../../components/case/Tempo.astro';
+import AmbactaPipeline from '../../components/case/diagrams/AmbactaPipeline.astro';
+import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
+import { row } from '../../lib/row';
+import review from '../../assets/cases/minutes-v2/01-review.jpg';
+import documents from '../../assets/cases/minutes-v2/02-documents.jpg';
+import check from '../../assets/cases/minutes-v2/03-check.jpg';
+import editor from '../../assets/cases/minutes-v2/04-editor.jpg';
+import textblock from '../../assets/cases/minutes-v2/04b-textblock.jpg';
+import insert from '../../assets/cases/minutes-v2/04c-insert.jpg';
+import exportDialog from '../../assets/cases/minutes-v2/05-export.jpg';
+import draft from '../../assets/cases/minutes-v2/05b-pdf.jpg';
+import phone from '../../assets/cases/minutes-v2/06-phone.jpg';
+import webHero from '../../assets/cases/minutes-v2/web-hero.jpg';
+import webSigned from '../../assets/cases/minutes-v2/web-ton-4.jpg';
+import webName from '../../assets/cases/minutes-v2/web-name.jpg';
+
+const media = '/cases/minutes-v2';
+const steps = [
+  {
+    title: 'Review what the machine was unsure of',
+    text: 'The record arrives in sections. Names the recognition was unsure of and passages that were hard to hear are marked; a click plays the original at that spot.',
+    image: review,
+    alt: 'Review of a fictional council meeting, section 3: speech with timestamps, lines marked “hard to hear” and “name unconfirmed”, names from the dictionary highlighted, the audio bar playing below.',
+  },
+  {
+    title: 'Upload the meeting documents',
+    text: 'The resolution record and the office’s blank minutes, as Word or PDF. The editor says what it read from them, and warns where a PDF had to be rebuilt from its page layout.',
+    image: documents,
+    alt: 'Dialog “Sitzungsunterlagen” for a fictional session: what was read from the resolution record and from the blank template, with a warning that a PDF was reconstructed from its layout.',
+  },
+  {
+    title: 'Check the agenda items',
+    text: 'Speech is sorted into agenda items from the documents. The check view lists items without speech, how each start was found, and warns when the recording is shorter than the meeting.',
+    image: check,
+    alt: 'Check view “Zuordnung prüfen”: 24 of 31 agenda items have speech, the items without speech are listed, a warning says the recording is about 40 minutes shorter than the meeting, and each item shows how its start was found.',
+  },
+  {
+    title: 'One decision per contribution',
+    text: 'Edit, keep verbatim, leave out, or replace with a standard text; indirect speech is planned and shown disabled. The minutes on the right follow along as they will print.',
+    image: editor,
+    video: `${media}/editor.mp4`,
+    poster: `${media}/editor-poster.jpg`,
+    alt: 'Minutes editor at agenda item 17 of a fictional session: each contribution with the choices edit, verbatim, leave out and text block, indirect greyed out; on the right the minutes page following along.',
+  },
+  {
+    title: 'Standard texts from the office’s own minutes',
+    text: 'Phrases that recur in the office’s minutes, counted rather than invented, replace a contribution with one click. The most common one appears in nine of nine past minutes.',
+    image: textblock,
+    alt: 'The text-block menu open on a contribution, listing the office’s recurring phrases with how often they appeared in past minutes.',
+  },
+  {
+    title: 'One place to insert',
+    text: 'Between any two contributions: an editorial note, a table or a standard text. It used to be four different ways.',
+    image: insert,
+    alt: 'Between two contributions the single insertion point is open, offering an editorial text, a table or a text block.',
+  },
+  {
+    title: 'Export in the office’s template',
+    text: 'Word or PDF, in the office’s own layout, with a “draft” watermark until it is signed.',
+    image: exportDialog,
+    alt: 'Export dialog: format Word or PDF, PDF selected, the watermark “Entwurf” switched on.',
+  },
+];
+---
+
+<CaseLayout
+  title="Ambacta"
+  years="2026–"
+  summary="A council meeting ends with a transcript. The district office needs signed minutes. I designed and built the editor in between."
+  meta={[
+    ['Role', 'UX research with the district office, design and build of the minutes editor; name, brand and website'],
+    ['Team', 'Michael Gajda leads the project and built the transcription platform; me since August 2026'],
+    ['Client', 'Landratsamt Konstanz, district council and its committees'],
+    ['Pace', '58 commits in my name between 28 Sep and 27 Oct 2026, built with Claude Code'],
+    ['Status', 'Pilot; full use planned from 2 Nov 2026'],
+  ]}
+  film="ai-meeting-minutes"
+  stage="minutes"
+  next={{ href: '/work/flowculate/', title: 'Flowculate' }}
+>
+  <section>
+    <h2>The problem</h2>
+    <p class="c-lead">A transcript records what was said. The minutes record what was decided.</p>
+    <p>
+      After every council meeting the district office writes the official minutes: every resolution with its vote, the
+      statements that belong on record, who was present, who left the room and when, and who has to sign. The
+      transcription the office had commissioned delivers the words. The minutes were still written in Word, by listening
+      again and checking every resolution against a separate resolution record.
+    </p>
+    <p>
+      I care about this kind of problem because it is the one Levelwork works on: turning a conversation into a record
+      that people can check and sign off.
+    </p>
+  </section>
+
+  <section>
+    <h2>What the office told us</h2>
+    <p class="c-lead">Nobody had time to check a transcript line by line. They needed the minutes.</p>
+    <p>
+      On 30 September we sat down with the office and went through a real meeting in the tool. Four things changed the
+      plan. The person who writes the minutes had no time to proofread every line; what mattered was getting to the
+      minutes fast. Jumping from a line of text into the recording was the feature they used most. A marked pause in a
+      council meeting almost always means something was not captured. And the office’s management set the goal: press
+      export once and have the finished minutes in Word, in the office’s own template.
+    </p>
+    <p>
+      We had been commissioned for the verbatim record. After that meeting we moved the focus to the minutes, and I
+      designed the minutes editor. Eighteen points came out of that meeting; on 16 October the export to Word and PDF,
+      the synced preview and the phone layout went live.
+    </p>
+  </section>
+
+  <section>
+    <h2>Walkthrough</h2>
+    <p class="c-lead">From the checked record to minutes the office can sign.</p>
+    <Walkthrough steps={steps} note="Fictional session “Landkreis Musterkreis” · German UI" />
+    <div class="c-pair" style={`${row(draft, phone)}; width: min(100%, 760px); justify-self: end`}>
+      <figure>
+        <Image
+          src={draft}
+          alt="First page of an exported draft of fictional minutes: letterhead with a placeholder coat of arms, the agenda, and the watermark “Entwurf” across the page."
+          widths={full([600, 1200], draft)}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>The exported draft, page 1. Fictional session and letterhead.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={phone}
+          alt="The review of a fictional session on a phone, 390 pixels wide: speech with timestamps, flagged lines and the audio bar."
+          widths={full([400, 800, 1170], phone)}
+          sizes="(max-width: 640px) 100vw, 30vw"
+        />
+        <figcaption>The review on a phone.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p class="c-lead">The machine prepares, a person decides, and nothing leaves the building.</p>
+    <figure>
+      <AmbactaPipeline />
+    </figure>
+    <p>
+      Michael’s platform records, transcribes and names the speakers on a server in the office’s own building. Its rules
+      hold everywhere: the language model never changes a proper name, names are corrected by the dictionary or by a
+      person; votes are never filled in by a model, they come word for word from the resolution record. My part starts
+      where the office takes over: speech sorted into the agenda items from the meeting documents, the editor with one
+      decision per contribution, and the export into the office’s template with a “draft” watermark until it is signed.
+    </p>
+  </section>
+
+  <section>
+    <h2>What didn’t work</h2>
+    <p class="c-lead">One real meeting, all real documents, and an export nobody touched.</p>
+    <p>
+      On 15 October I ran the public council meeting of 18 May 2026 through the editor with everything the office uses:
+      the record of the 2 h 39 min recording, about 17,000 words, the resolution record and the office’s template. I left
+      the export unedited and compared it, item by item, with what the office needs. The resolutions came through
+      complete and word for word, with votes and numbering. Most other things broke somewhere, and most were fixed the
+      same day.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="minutes-agenda" ratio="1200 / 460" narrow="600 / 680" />
+      <figcaption>
+        In the first run, speech landed under the wrong item whenever the chair did not announce it. Now the items come
+        from the meeting documents, and every item without speech is flagged.
+      </figcaption>
+    </figure>
+    <FixList
+      fixes={[
+        {
+          date: '29 Sep',
+          broke: 'Dragging a text block into the minutes did nothing, and there were four different ways to insert one.',
+          changed: 'One insertion point instead of four. The drag mechanics were removed, not repaired.',
+          numbers: ['4 ways', '1'],
+        },
+        {
+          date: '1 Oct',
+          broke: 'Notes inserted into the minutes never reached the Word export. Nothing said so.',
+          changed: 'Found by reading the exported file, not the screen. Every insert now goes into the export.',
+        },
+        {
+          date: '15 Oct',
+          broke: 'Speech landed under the wrong agenda item whenever the chair did not say “agenda item 14” in so many words. Nine items had no speech at all.',
+          changed: 'Items are assigned from the meeting documents: the chair’s announcements, the titles, the resolution texts. Unsure items are flagged.',
+          numbers: ['9 empty', '1 empty, 2 flagged'],
+        },
+        {
+          date: '15 Oct',
+          broke: 'The recording had stopped in the middle of item 19, about 50 minutes before the end, and the export did not say so.',
+          changed: 'A check view warns when the recording is shorter than the meeting and lists every item without speech.',
+        },
+        {
+          date: '15 Oct',
+          broke: 'Placeholders like “Speaker B” and lost question marks ended up in the official document.',
+          changed: 'A wording check before export lists unsure speakers and duplicates; pause markers no longer print.',
+        },
+        {
+          date: '15 Oct',
+          broke: 'The export ran to 42 pages instead of 16, because every contribution was set to verbatim. The signature line printed as “_”, in Arial instead of Calibri.',
+          changed: 'Signature line and house font fixed the same day. Whether verbatim should be the default is the office’s call.',
+        },
+        {
+          date: '15 Oct',
+          broke: 'Uploading the resolution record as a PDF failed in Safari: “undefined is not a function”.',
+          changed: 'The PDF reader’s stream handling is filled in for Safari; tested in Safari.',
+        },
+        {
+          date: '15 Oct',
+          broke: 'In dark mode the cards stood against the background at a contrast of 1.06 to 1.',
+          changed: 'Dark mode re-tuned in lightness layers; text and controls checked to WCAG AA, blue text at 7.8 to 1.',
+        },
+        {
+          date: '27 Oct',
+          broke: 'The office asked why play and stop did not always respond: an interrupted playback locked every audio button.',
+          changed: 'The button follows the audio itself, not the request to play; a click in the waveform jumps to the text.',
+        },
+        {
+          date: 'Open',
+          broke: 'Names are still misheard, although the right spelling is in the meeting documents.',
+          changed: 'Proposed: correct names from the documents. Not built yet.',
+          open: true,
+        },
+      ]}
+    />
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">Choices instead of typing, documents instead of retyping, and the page always in view.</p>
+    <p>
+      <strong>A choice per contribution.</strong> A free text editor would have been quicker to build. But the office
+      does not rewrite the meeting; for each contribution it decides what the minutes need: edit, keep verbatim, leave
+      out, replace with a standard text, or indirect speech, which is still being built. Choices make that decision fast
+      and leave a trace of it.
+    </p>
+    <p>
+      <strong>No rich-text library.</strong> Bold, italic and underline are a small markup string, not an editable HTML
+      field. The state has to sync into a second window, go through undo, and break into Word’s own text runs; a text
+      editor library would have fought all three.
+    </p>
+    <p>
+      <strong>Read the documents, say how sure we are.</strong> The resolution record arrives as Word or PDF. The editor
+      reads both, shows what it found, and warns when a PDF had to be reconstructed from the page layout.
+    </p>
+    <p>
+      <strong>The minutes stay in view.</strong> Editing and preview scroll together, so the office always sees the page
+      that will be signed, not a form that becomes a page later.
+    </p>
+  </section>
+
+  <section>
+    <h2>Name, brand and website</h2>
+    <p class="c-lead">“Serves the office. Stays on premises.” I gave the product its name and its face.</p>
+    <p>
+      Inside the team it was called Nautilus, a name that did not carry outside. The first candidate, Hoheit, fell
+      through: the domains were taken, and it sounds as if the AI held authority itself. Ambacta goes back to ambactus,
+      Caesar’s word for a man in another’s service, the root of the German “Amt”, office. The name sets the order: the AI
+      serves, the office decides. That is the worry staff councils bring to every AI purchase, so the name answers it.
+    </p>
+    <p>
+      I built three design directions, Clear, Glass and File, and chose Glass, so that website and app look like one
+      piece. Deliberately absent: eagles, crests and seals, because German law forbids signs that can be confused with
+      state emblems. The website shows the app with a fictional session and lets visitors try the review themselves.
+    </p>
+    <figure class="c-wide">
+      <Image
+        src={webHero}
+        alt="The Ambacta website: on a dark petrol ground the claim “Dient dem Amt. Bleibt im Haus.” and a glass card with a review visitors can try, three open passages and a waveform."
+        widths={full([800, 1600, 2880], webHero)}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>The website’s first screen: the review card can be tried. German, not yet public.</figcaption>
+    </figure>
+    <div class="c-pair" style={row(webSigned, webName)}>
+      <figure>
+        <Image
+          src={webSigned}
+          alt="Website section “Vom Ton zur Akte”, last step: a signed minutes sheet with a resolution and the stamp “Freigegeben”."
+          widths={full([700, 1400, 2880], webSigned)}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>“From sound to file”: the recording turns into words, names and a signed sheet as you scroll.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={webName}
+          alt="Website section “Woher der Name kommt” with a manuscript page of Caesar’s De bello Gallico and the pronunciation am-BAK-ta."
+          widths={full([700, 1400, 2880], webName)}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>Where the name comes from. Manuscript page: Bibliothèque nationale de France, public domain.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pace</h2>
+    <p class="c-lead">58 commits on seven days, five weeks from the first beta to the pilot.</p>
+    <Tempo
+      days={{
+        '2026-09-28': 6,
+        '2026-09-29': 5,
+        '2026-10-13': 1,
+        '2026-10-14': 22,
+        '2026-10-15': 13,
+        '2026-10-16': 10,
+        '2026-10-27': 1,
+      }}
+      from="2026-09-28"
+      to="2026-10-27"
+      unit="commits"
+      marks={{ '2026-09-28': 'First beta', '2026-10-15': 'First full run', '2026-10-27': 'Audio fix' }}
+    >
+      <figcaption>
+        My commits to the app’s repository, per day (git log, author me). The work of 1 October was committed on 13
+        October. Weekends are marked under the line.
+      </figcaption>
+    </Tempo>
+    <ol class="c-timeline">
+      <li><time>27 Jul 2026</time><span>Contract with the district for the transcription of council meetings.</span></li>
+      <li><time>Aug 2026</time><span>I join Michael Gajda on the project.</span></li>
+      <li><time>28 Sep</time><span>First beta of the minutes editor.</span></li>
+      <li><time>30 Sep</time><span>Review with the district office.</span></li>
+      <li><time>15 Oct</time><span>First full run with all real documents.</span></li>
+      <li><time>16 Oct</time><span>The office’s points live, Word and PDF export, phone layout.</span></li>
+      <li><time>26 Oct</time><span>Name, brand and website.</span></li>
+      <li><time>2 Nov</time><span>Full use planned.</span></li>
+    </ol>
+  </section>
+</CaseLayout>

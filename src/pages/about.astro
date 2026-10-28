@@ -13,7 +13,7 @@ const sections = [
   { id: 'education', title: 'Education', items: education },
 ];
 
-/** CV evidence keys to film keys; the gyv station has no evidence key but a film. */
+/** CV evidence keys to film keys; the Ambacta station has no evidence key but a film. */
 const filmKeys: Record<string, string> = {
   levelwork: 'levelwork',
   flowculate: 'flowculate',
@@ -23,7 +23,7 @@ const filmKeys: Record<string, string> = {
   stayin: 'stayin-alive',
 };
 const filmFor = (item: { evidence?: string; org?: string }) =>
-  item.org === 'gyv' ? 'ai-meeting-minutes' : filmKeys[item.evidence ?? ''];
+  item.org === 'Ambacta' ? 'ai-meeting-minutes' : filmKeys[item.evidence ?? ''];
 const used = new Set([...experience, ...education, ...awards].map(filmFor));
 ---
 

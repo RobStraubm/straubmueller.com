@@ -32,6 +32,52 @@
   box-sizing: border-box;
 }
 
+/* Comparison, local only (27 Oct 2026): white paper and black ink with no tint in the neutrals, switched on with
+   data-palette="bw" on <html> (Base.astro). The tinted palette above stays the default until Robert decides. */
+:root[data-palette='bw'] {
+  --paper: #ffffff;
+  --ink: #0a0a0a;
+  --hair: #d6d6d6;
+  --mute: #5c5c5c;
+  --soft: #f0f0f0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-palette='bw'] {
+    --paper: #000000;
+    --ink: #f2f2f2;
+    --hair: #2b2b2b;
+    --mute: #a3a3a3;
+    --soft: #121212;
+  }
+}
+
+.palette-switch {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 100;
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  font: 12px/1 var(--f-mono);
+}
+
+.palette-switch button {
+  padding: 8px 10px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.palette-switch button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   scroll-padding-top: calc(var(--header-h) + 16px);

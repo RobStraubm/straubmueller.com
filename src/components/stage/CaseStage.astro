@@ -106,6 +106,12 @@ const { scene, title, years, summary, acts } = Astro.props;
     line-height: 1;
   }
 
+  /* Where the title heads the stage, the kicker moves up so the capitals of the title do not touch it. Saunter
+     keeps it level with the walking pad's readout, Conactive's title stands at the bottom. */
+  .st:not([data-stage='saunter'], [data-stage='conactive']) .st-kicker {
+    top: 0.4cqw;
+  }
+
   .st-title {
     font-weight: 600;
     line-height: 0.8;
@@ -326,13 +332,13 @@ const { scene, title, years, summary, acts } = Astro.props;
     font-size: 2.4cqw;
   }
 
-  /* Sustainable IoT: the title in one line top left; in the first act the network's backbone runs on from its
+  /* Sustainable IoT (8.4, not 9: at 9 its T nearly touched the globe): the title in one line top left; in the first act the network's backbone runs on from its
      end, as if the title named the wiring. The summary under it on the left, the model on the right. The title
      may wrap on narrow screens, or "Sustainable IoT" runs off a phone. */
   [data-stage='iot'] .st-title {
     top: 3.4cqw;
     left: -0.4cqw;
-    font-size: 9cqw;
+    font-size: 8.4cqw;
     white-space: normal;
   }
 
@@ -382,9 +388,12 @@ const { scene, title, years, summary, acts } = Astro.props;
       font-size: 13px;
       margin-bottom: 10px;
     }
+    /* Line height 0.92, not the wide stage's 0.8: in the flow a two-line title and the summary need the room of
+       the descenders, or "SayFit" and "Stayin’ Alive" touch the line below. */
     .st-title {
       order: 1;
       font-size: clamp(56px, 17vw, 120px) !important;
+      line-height: 0.92;
       white-space: normal;
     }
     .st-kicker {
@@ -392,7 +401,7 @@ const { scene, title, years, summary, acts } = Astro.props;
     }
     .st-summary {
       order: 2;
-      margin-top: 14px;
+      margin-top: 18px;
       font-size: clamp(18px, 4.6vw, 26px) !important;
     }
     .st-steps {

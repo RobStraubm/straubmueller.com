@@ -53,7 +53,7 @@ export const log: LogEntry[] = [
     linkLabel: 'GitHub',
   },
   {
-    date: '2026',
+    date: 'Aug 2026',
     sort: '2026-08',
     text: 'Started building Levelwork with Michael Gajda',
     home: true,

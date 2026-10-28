@@ -32,7 +32,7 @@ export const work: WorkItem[] = [
     title: 'Ambacta',
     short: 'Product design & build',
     role: 'Product design, AI-assisted build',
-    context: 'Freelance for gyv · pilot at a district administration',
+    context: 'Since August 2026 · pilot at a district administration',
     proof: { label: '' },
   },
   {

@@ -1,0 +1,126 @@
+---
+// Ambacta from the recording to the signed minutes, in the site's style (after the "Vom Ton zur Akte" sequence of
+// the Ambacta website and the one-pager diagram of 20 Oct 2026). Steps marked `mine` are Robert's: the agenda items
+// taken from the meeting documents (15 Oct 2026), the minutes editor and the export to Word or PDF (export in the
+// office's form together with Michael Gajda). Michael built recording, recognition, speakers and review.
+const steps = [
+  { n: '1', title: 'Recording', note: 'Uploaded in the browser, processed on a server in the office’s own building' },
+  { n: '2', title: 'Speech to text', note: 'With the office’s dictionary: a word corrected once stays corrected' },
+  { n: '3', title: 'Speakers', note: 'Matched to the members list; unsure ones go on the review list' },
+  { n: '4', title: 'Agenda items', note: 'Speech assigned from the meeting documents, unsure items flagged', mine: true },
+  { n: '5', title: 'Review', note: 'Marked names and terms checked against the original audio' },
+  { n: '6', title: 'Minutes editor', note: 'One choice per contribution, resolutions word for word', mine: true },
+  { n: '7', title: 'Export', note: 'Word or PDF in the office’s own template, “draft” watermark', mine: true },
+  { n: '8', title: 'Signature', note: 'Signed and filed by the office, outside the tool' },
+];
+---
+
+
+<div class="sf">
+  <ol class="sf-steps" aria-label="Ambacta in eight steps, from the recording to the signed minutes; steps 4, 6 and 7 are my part">
+    {
+      steps.map((step) => (
+        <li class:list={{ 'is-mine': step.mine }}>
+          <span class="sf-n">Step {step.n}</span>
+          <strong>{step.title}</strong>
+          <span class="sf-note">{step.note}</span>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="sf-key" aria-hidden="true">
+    <span class="is-mine">My part</span>
+    <span>Michael Gajda</span>
+  </div>
+</div>
+
+<style>
+  .sf {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .sf-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+  }
+
+  .sf .sf-steps li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 12px 14px 14px;
+    border: 1px solid var(--hair);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  /* The arrow from one step to the next, inside a row. */
+  .sf .sf-steps li:not(:nth-child(4n))::after {
+    content: '→';
+    position: absolute;
+    right: -11px;
+    top: 12px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .sf .sf-steps li.is-mine {
+    border-color: var(--ink);
+    border-top: 2px solid var(--signal);
+  }
+
+  .sf-n,
+  .sf-note {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .is-mine .sf-n {
+    color: var(--signal);
+  }
+
+  .sf strong {
+    font-weight: 600;
+  }
+
+  .sf-key {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .sf-key span::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border-top: 1px solid var(--hair);
+  }
+
+  .sf-key .is-mine::before {
+    border-top: 2px solid var(--signal);
+  }
+
+  @media (max-width: 760px) {
+    .sf-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sf .sf-steps li::after {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,156 @@
+---
+// The pace of the work, one column per calendar day from the first to the last date: the bar's height is the count
+// of that day (commits, or another unit named in `unit`), weekends in a lighter ground, and a few days labelled
+// with what shipped. Counts come from the repository's log; the caption says how they were taken.
+interface Props {
+  /** ISO date → count. */
+  days: Record<string, number>;
+  from: string;
+  to: string;
+  unit: string;
+  /** ISO date → short label under the bar. */
+  marks?: Record<string, string>;
+}
+
+const { days, from, to, unit, marks = {} } = Astro.props;
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+const all: { date: string; count: number; weekend: boolean }[] = [];
+for (let d = new Date(`${from}T12:00:00Z`); iso(d) <= to; d.setUTCDate(d.getUTCDate() + 1)) {
+  const day = d.getUTCDay();
+  all.push({ date: iso(d), count: days[iso(d)] ?? 0, weekend: day === 0 || day === 6 });
+}
+const most = Math.max(...all.map((d) => d.count));
+const total = all.reduce((sum, d) => sum + d.count, 0);
+const label = (date: string) =>
+  new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+---
+
+<figure class="tp" aria-label={`${total} ${unit} between ${label(from)} and ${label(to)}`}>
+  <ol class="tp-days" style={`--n: ${all.length}`}>
+    {
+      all.map((d, i) => (
+        <li class:list={['tp-day', { 'is-weekend': d.weekend, 'is-on': d.count > 0, 'is-late': i > all.length - 5 }]} title={`${label(d.date)}: ${d.count} ${unit}`}>
+          <span class="tp-count">{d.count > 0 ? d.count : ''}</span>
+          <span class="tp-bar" style={`--h: ${d.count / most}`} />
+          {marks[d.date] && <span class="tp-mark">{marks[d.date]}</span>}
+        </li>
+      ))
+    }
+  </ol>
+  <div class="tp-axis" aria-hidden="true">
+    <span>{label(from)}</span>
+    <span>{total} {unit} on {all.filter((d) => d.count > 0).length} days</span>
+    <span>{label(to)}</span>
+  </div>
+  <slot />
+</figure>
+
+<style>
+  /* :global(.c-body section) >: the case layout puts every child of a section in the text column; this one spans the grid. */
+  :global(.c-body section) > .tp {
+    grid-column: 1 / 13;
+    margin: clamp(24px, 3vw, 48px) 0;
+    position: relative;
+    z-index: 1;
+    background: var(--paper);
+  }
+
+  .tp-days {
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    align-items: end;
+    gap: 3px;
+    height: clamp(140px, 16vw, 220px);
+    margin: 0;
+    padding: 0 0 56px;
+    list-style: none;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .tp .tp-day {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    margin: 0;
+  }
+
+  /* Weekends: a short grey mark under the line, not a column, so the bars carry the picture. */
+  .tp-day.is-weekend::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 1px);
+    height: 5px;
+    background: var(--hair);
+  }
+
+  .tp-bar {
+    display: block;
+    height: calc(var(--h) * (100% - 18px));
+    min-height: 1px;
+    background: var(--hair);
+  }
+
+  .tp-day.is-on .tp-bar {
+    background: var(--ink);
+  }
+
+  .tp-count {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .tp-mark {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: max-content;
+    max-width: 14ch;
+    padding-top: 8px;
+    border-left: 1px solid var(--signal);
+    padding-left: 5px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--mute);
+  }
+
+  /* Marks near the right end open to the left, or they run off the page. */
+  .tp-day.is-late .tp-mark {
+    left: auto;
+    right: 50%;
+    border-left: 0;
+    padding-left: 0;
+    border-right: 1px solid var(--signal);
+    padding-right: 5px;
+    text-align: right;
+  }
+
+  .tp-axis {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 8px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  .tp :global(figcaption) {
+    margin-top: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .tp-count,
+    .tp-mark {
+      display: none;
+    }
+    .tp-days {
+      padding-bottom: 0;
+    }
+  }
+</style>

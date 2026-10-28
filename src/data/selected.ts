@@ -28,7 +28,7 @@ export const selected: Selected[] = [
     years: '2026',
     title: 'Ambacta',
     line: 'AI meeting minutes: product design and build, in pilot at a district administration.',
-    client: 'gyv',
+    client: 'Landratsamt Konstanz',
     status: 'Pilot',
     live: true,
   },

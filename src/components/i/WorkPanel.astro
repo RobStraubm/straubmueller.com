@@ -97,7 +97,9 @@ const { films, portrait = seated } = Astro.props;
     const prepare = (key: string) => {
       const video = videoFor(key);
       if (!video || video.src || !panel.getClientRects().length) return;
-      const base = `${video.dataset.base}-${scheme()}`;
+      // The palette comparison (local only, Base.astro) plays the films rendered in black and white.
+      const folder = document.documentElement.dataset.palette === 'bw' ? '/motion/i-bw/' : '/motion/i/';
+      const base = `${video.dataset.base?.replace('/motion/i/', folder)}-${scheme()}`;
       // The last frame stands in for the film when motion is reduced.
       if (reduce.matches) video.poster = `${base}.jpg`;
       video.src = `${base}.mp4`;

@@ -32,7 +32,7 @@ export const scripts: Record<string, Script> = {
     ],
   },
   'ai-meeting-minutes': {
-    label: 'AI meeting minutes · for gyv',
+    label: 'Ambacta · since August 2026',
     years: '2026',
     beats: [
       { at: 0, kind: 'stack', lines: [ink('RECORD.')], caption: 'A COUNCIL MEETING' },

@@ -42,7 +42,7 @@ export const recent: Project[] = [
     start: 2026.8,
     title: 'Ambacta',
     line: 'AI meeting minutes: product design and build, in pilot at a district administration.',
-    client: 'gyv',
+    client: 'Landratsamt Konstanz',
     field: 'Product',
   },
   {

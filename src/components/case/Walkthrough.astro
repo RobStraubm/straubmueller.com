@@ -1,0 +1,254 @@
+---
+// A guided tour through a program: the steps scroll in the text column, the screen of the current step stands
+// beside them (sticky) and crossfades when the next step reaches the middle of the window. Below 900 px every step
+// carries its own screen, above its text. A step shows an image or a looping video (muted, plays while its step is
+// current). The media of one tour share a frame: give images of the same size.
+import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
+
+interface Step {
+  title: string;
+  text: string;
+  alt: string;
+  image: ImageMetadata;
+  /** A loop of the same frame, played while the step is current; the image is its poster. */
+  video?: string;
+  /** The video's first frame, where it differs from the image. */
+  poster?: string;
+}
+
+interface Props {
+  steps: Step[];
+  /** Small mono line under the screen, e.g. "Fictional session · German UI". */
+  note?: string;
+}
+
+const { steps, note } = Astro.props;
+const first = steps[0].image;
+const widths = (image: ImageMetadata) => full([700, 1100, 1600, 2200], image);
+---
+
+<div class="wt" style={`--ratio: ${first.width} / ${first.height}`} data-walkthrough>
+  <ol class="wt-steps">
+    {
+      steps.map((step, i) => (
+        <li class="wt-step" data-step={i}>
+          <div class="wt-inline">
+            <Image src={step.image} alt={step.alt} widths={widths(step.image)} sizes="100vw" loading="lazy" />
+          </div>
+          <p class="wt-n">
+            {String(i + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}
+          </p>
+          <h3 class="wt-title">{step.title}</h3>
+          <p class="wt-text">{step.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="wt-stage" aria-hidden="true">
+    <div class="wt-frame">
+      {
+        steps.map((step, i) => (
+          <div class:list={['wt-shot', { 'is-on': i === 0 }]} data-shot={i}>
+            <Image
+              src={step.image}
+              alt=""
+              widths={widths(step.image)}
+              sizes="(max-width: 900px) 100vw, 66vw"
+              loading={i === 0 ? 'eager' : 'lazy'}
+            />
+            {step.video && (
+              <video muted loop playsinline disablepictureinpicture preload="none" poster={step.poster ?? step.image.src} data-src={step.video} />
+            )}
+          </div>
+        ))
+      }
+    </div>
+    {note && <p class="wt-note">{note}</p>}
+  </div>
+</div>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  for (const tour of document.querySelectorAll<HTMLElement>('[data-walkthrough]')) {
+    const shots = [...tour.querySelectorAll<HTMLElement>('[data-shot]')];
+    const steps = [...tour.querySelectorAll<HTMLElement>('[data-step]')];
+    let current = -1;
+    const show = (index: number) => {
+      if (index === current) return;
+      current = index;
+      shots.forEach((shot, i) => {
+        shot.classList.toggle('is-on', i === index);
+        const video = shot.querySelector('video');
+        if (!video) return;
+        if (i === index && !reduce.matches) {
+          if (!video.src) video.src = video.dataset.src ?? '';
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+      steps.forEach((step, i) => step.classList.toggle('is-on', i === index));
+    };
+    // The step whose middle band crosses the middle of the window is current.
+    const watch = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) show(Number((entry.target as HTMLElement).dataset.step));
+        }
+      },
+      { rootMargin: '-48% 0px -48% 0px' },
+    );
+    steps.forEach((step) => watch.observe(step));
+    show(0);
+  }
+</script>
+
+<style>
+  /* :global(.c-body section) >: the case layout puts every child of a section in the text column; this one spans the grid. */
+  :global(.c-body section) > .wt {
+    grid-column: 1 / 13;
+    display: grid;
+    grid-template-columns: var(--cols);
+    gap: 0 var(--gap);
+    margin: clamp(24px, 3vw, 48px) 0;
+    position: relative;
+    z-index: 1;
+    background: var(--paper);
+  }
+
+  .wt-steps {
+    grid-column: 1 / 5;
+    grid-row: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Each step is a stretch of scroll; the last one ends with the screen. */
+  .wt .wt-step {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 62svh;
+    margin: 0;
+    padding: 0 0 0 16px;
+    border-left: 1px solid var(--hair);
+    transition: border-color 0.3s;
+  }
+
+  .wt .wt-step.is-on {
+    border-left-color: var(--signal);
+  }
+
+  .wt .wt-n {
+    margin: 0 0 10px;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--signal);
+  }
+
+  .wt .wt-title {
+    margin: 0 0 10px;
+    font-size: clamp(22px, 1.9vw, 30px);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  .wt .wt-text {
+    max-width: 38ch;
+    margin: 0;
+    font-size: clamp(16px, 1.15vw, 18px);
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .wt .wt-step:not(.is-on) .wt-title,
+  .wt .wt-step:not(.is-on) .wt-text {
+    opacity: 0.45;
+    transition: opacity 0.3s;
+  }
+
+  .wt-inline {
+    display: none;
+  }
+
+  .wt-stage {
+    grid-column: 5 / 13;
+    grid-row: 1;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--bar-h, 58px) + 24px);
+  }
+
+  .wt-frame {
+    position: relative;
+    aspect-ratio: var(--ratio);
+    border: 1px solid var(--hair);
+    background: var(--soft);
+    overflow: hidden;
+  }
+
+  .wt-shot {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  .wt-shot.is-on {
+    opacity: 1;
+  }
+
+  .wt-shot :global(img),
+  .wt-shot video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+  }
+
+  .wt .wt-note {
+    margin: 8px 0 0;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wt-shot {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .wt-steps {
+      grid-column: 1 / -1;
+    }
+    .wt-stage {
+      display: none;
+    }
+    .wt .wt-step {
+      min-height: 0;
+      padding: 0 0 40px;
+      border: 0;
+    }
+    .wt .wt-step:not(.is-on) .wt-title,
+    .wt .wt-step:not(.is-on) .wt-text {
+      opacity: 1;
+    }
+    .wt-inline {
+      display: block;
+      margin-bottom: 14px;
+      border: 1px solid var(--hair);
+    }
+    .wt-inline :global(img) {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+</style>

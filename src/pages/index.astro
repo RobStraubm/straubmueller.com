@@ -30,19 +30,30 @@ interface Row {
 
 const now = [
   {
-    text: 'Building Levelwork full time with Michael Gajda. Constat shows how work is really distributed in an organisation, one structured conversation per role.',
+    text: 'Building Levelwork full time with Michael Gajda since August 2026. Constat shows how work is really distributed in an organisation, one structured conversation per role.',
     href: 'https://levelwork.ai',
     link: 'levelwork.ai',
   },
-  { text: 'Working on Ambacta, AI meeting minutes now in pilot at a district administration (freelance, for gyv).' },
-  { text: 'Built Colla parte in nine days: choir sheet-music PDFs become editable scores and a practice MP3 for my own voice.' },
+  {
+    text: 'Just launched the first version of Ambacta: a council meeting goes in, the minutes come out in minutes.',
+    href: '/work/meeting-minutes/',
+    link: 'Case',
+  },
+  {
+    text: 'Always curious how apps can make everyday life a little easier: ',
+    tools: [
+      { name: 'Colla parte', for: 'for my choir’s sheet music', href: '/work/colla-parte/' },
+      { name: 'Stub', for: 'for receipts', href: '/work/stub/' },
+      { name: 'Saunter', for: 'for my walking pad', href: '/work/saunter/' },
+    ],
+  },
 ];
 
 const work: Row[] = [
   {
     years: '2026–',
     title: 'Levelwork',
-    line: 'Co-founder. Building Constat with Michael Gajda.',
+    line: 'Co-founder since August 2026. Building Constat with Michael Gajda.',
     more: 'Constat sets the week a role is meant to have against the week it actually has. A deviation is not a verdict, it is a finding.',
     client: 'Own',
     status: 'Startup',
@@ -54,9 +65,9 @@ const work: Row[] = [
     years: '2026',
     title: 'Ambacta',
     film: 'ai-meeting-minutes',
-    line: 'AI meeting minutes: UX research and the minutes editor for the Landratsamt Konstanz.',
+    line: 'AI meeting minutes: UX research and the minutes editor, since August 2026.',
     more: 'Recordings of council meetings become minutes: uncertain passages are flagged for review, and each contribution is kept verbatim, put into indirect speech or left out.',
-    client: 'gyv',
+    client: 'Landratsamt Konstanz',
     status: 'Pilot',
     case: '/work/meeting-minutes/',
   },
@@ -199,10 +210,16 @@ const work: Row[] = [
             now.map((item) => (
               <li>
                 {item.text}
+                {item.tools?.map((tool, i, all) => (
+                  <>
+                    <a class="i-tool" href={tool.href}>{tool.name}</a> {tool.for}
+                    {i < all.length - 1 ? ', ' : '.'}
+                  </>
+                ))}
                 {item.href && (
                   <>
                     {' '}
-                    <a href={item.href}>{item.link} ↗</a>
+                    <a href={item.href}>{item.link} {item.href.startsWith('http') ? '↗' : '→'}</a>
                   </>
                 )}
               </li>
@@ -313,7 +330,8 @@ const work: Row[] = [
     const dark = window.matchMedia('(prefers-color-scheme: dark)');
     const rows = [...document.querySelectorAll<HTMLElement>('.i-rows li.has-film')];
     const videoOf = (row: HTMLElement) => row.querySelector('video')!;
-    const base = (video: HTMLVideoElement) => `${video.dataset.base}-${dark.matches ? 'dark' : 'light'}`;
+    const folder = document.documentElement.dataset.palette === 'bw' ? '/motion/i-bw/' : '/motion/i/';
+    const base = (video: HTMLVideoElement) => `${video.dataset.base?.replace('/motion/i/', folder)}-${dark.matches ? 'dark' : 'light'}`;
     let playing: HTMLElement | null = null;
 
     // The last frame comes in as the row nears the screen; the film itself only when it is chosen.
@@ -506,6 +524,14 @@ const work: Row[] = [
   .i-now li a {
     white-space: nowrap;
     font-size: 0.8em;
+  }
+
+  /* The tools named in a sentence read as part of it, underlined. */
+  .i-now li a.i-tool {
+    font-size: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
   }
 
   .i-list {

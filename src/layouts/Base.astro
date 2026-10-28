@@ -38,6 +38,18 @@ const person = {
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <script is:inline>
+      // Palette comparison, local only: ?palette=bw or the switch at the bottom left sets it, and it is remembered.
+      (() => {
+        if (!['localhost', '127.0.0.1'].includes(location.hostname)) return;
+        const asked = new URLSearchParams(location.search).get('palette');
+        try {
+          if (asked) localStorage.setItem('palette', asked);
+          const palette = asked ?? localStorage.getItem('palette');
+          if (palette === 'bw') document.documentElement.dataset.palette = 'bw';
+        } catch {}
+      })();
+    </script>
     <script type="application/ld+json" set:html={JSON.stringify(person)} />
   </head>
   <body>
@@ -49,6 +61,29 @@ const person = {
     </main>
     {chrome && <SiteFooter />}
     <slot name="footer" />
+    <script is:inline>
+      // The switch for the palette comparison, shown only on this machine.
+      if (['localhost', '127.0.0.1'].includes(location.hostname)) {
+        const bw = document.documentElement.dataset.palette === 'bw';
+        const box = document.createElement('div');
+        box.className = 'palette-switch';
+        box.setAttribute('aria-label', 'Palette');
+        for (const [key, label] of [['original', 'Original'], ['bw', 'Schwarz-Weiß']]) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = label;
+          button.setAttribute('aria-pressed', String((key === 'bw') === bw));
+          button.addEventListener('click', () => {
+            try { localStorage.setItem('palette', key); } catch {}
+            const url = new URL(location.href);
+            url.searchParams.delete('palette');
+            location.href = url.toString();
+          });
+          box.append(button);
+        }
+        document.body.append(box);
+      }
+    </script>
     <script>
       // The bar's height, which wraps to two lines on a phone, for the room the page keeps above its content.
       const bar = document.querySelector<HTMLElement>('.bar');

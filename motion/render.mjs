@@ -64,7 +64,7 @@ if (!only || only === 'i') {
   const keys = process.argv[3] ? process.argv[3].split(',') : Object.keys(I_FILMS);
   for (const key of keys) {
     const [id, props] = I_FILMS[key];
-    for (const theme of ['light', 'dark']) film(id, `${out}/i/${key}-${theme}`, { ...props, theme });
+    for (const theme of ['light', 'dark']) film(id, `${out}/${process.env.I_DIR ?? 'i'}/${key}-${theme}`, { ...props, theme });
   }
 }
 if (only === 'cards-light') {

@@ -23,10 +23,10 @@ export interface Award {
 
 /**
  * Approved by Robert on 23 Oct 2026 (revised version in befund/about-material.md). Uses the name instead of a
- * pronoun on purpose. The last sentence says “Since 2026” until levelwork.ai and the CV agree on the month.
+ * pronoun on purpose. Levelwork and Ambacta since August 2026 (Robert, 28 Oct 2026).
  */
 export const aboutText =
-  'Robert grew up helping in the family restaurant from age 12 and has designed from the guest’s side ever since. From 2014, alongside design school, Robert assisted advertising photographers in Munich and Stuttgart, organising and running large commercial shoots, and from 2017 ran a freelance design practice, including the visual identity of the women’s handball team FRISCH AUF Göppingen from 2017 to 2022. Then came UX: co-leading the UX team on an award-winning exhibition, senior UX work at a design agency, turning simulation maths into a product at a research institute, and retraining full time in AI engineering. Since 2026 Robert has been building Levelwork full time as co-founder.';
+  'Robert grew up helping in the family restaurant from age 12 and has designed from the guest’s side ever since. From 2014, alongside design school, Robert assisted advertising photographers in Munich and Stuttgart, organising and running large commercial shoots, and from 2017 ran a freelance design practice, including the visual identity of the women’s handball team FRISCH AUF Göppingen from 2017 to 2022. Then came UX: co-leading the UX team on an award-winning exhibition, senior UX work at a design agency, turning simulation maths into a product at a research institute, and retraining full time in AI engineering. Since August 2026 Robert has been building Levelwork full time as co-founder.';
 
 /** Robert's own words (22 Oct 2026), translated. */
 export const strengths = ['Structure and logic', 'Thinking in data', 'Leading people', 'Making interaction simple'];
@@ -38,15 +38,15 @@ export const experience: CvItem[] = [
     title: 'Co-founder',
     org: 'Levelwork, Konstanz',
     evidence: 'levelwork',
-    note: 'Full time. Building Constat with Michael Gajda.',
+    note: 'Full time since August 2026. Building Constat with Michael Gajda.',
     href: 'https://levelwork.ai',
   },
   {
     years: '2026–',
     start: 2026,
-    title: 'Freelance UX and AI',
-    org: 'gyv',
-    note: 'Ambacta, AI meeting minutes for council meetings, in pilot at a district administration.',
+    title: 'Product design and build',
+    org: 'Ambacta',
+    note: 'Since August 2026. AI meeting minutes for council meetings, in pilot at a district administration.',
   },
   {
     years: '2022–25',

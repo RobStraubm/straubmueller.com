@@ -1,0 +1,375 @@
+---
+// Case: Colla parte, version 2 (28 Oct 2026, local until Robert approves; version 1 is colla-parte.astro).
+// New in v2: a guided walkthrough through the app (screens from a copy of the library with public-domain pieces
+// only), the iterations as "what didn't work → what changed" with dated, measured before/after figures, and the
+// figures corrected against today's measurements. Sources: the Colla parte sessions of 18–27 Oct 2026 and the
+// re-measurement of 28 Oct 2026 (scratchpad colla-parte-research.md): 116 tests; test piece 0 of 124 voice-bars wrong;
+// every bar found on the page in the 6 pieces with stored geometry (374 bars); reading 1–3 minutes per page; MP3 and
+// MusicXML in about 7 s. Only public-domain pieces are shown (Bach, Victoria, Mundy, Parry, Schumann); Poulenc and
+// Whitacre appear in text only.
+import { Image } from 'astro:assets';
+import { full } from '../../lib/widths';
+import CaseLayout from '../../components/case/CaseLayout.astro';
+import ScrubFigure from '../../components/stage/ScrubFigure.astro';
+import Walkthrough from '../../components/case/Walkthrough.astro';
+import FixList from '../../components/case/FixList.astro';
+import beforeUi from '../../assets/cases/notenprogramm/before-first-ui.jpg';
+import pianoScore from '../../assets/cases/notenprogramm/direction-piano-score.jpg';
+import macNative from '../../assets/cases/notenprogramm/direction-mac.jpg';
+import marks from '../../assets/cases/notenprogramm/marks.jpg';
+import folder from '../../assets/cases/colla-parte-v2/01-folder.jpg';
+import reading from '../../assets/cases/colla-parte-v2/02b-reading-dialog.jpg';
+import voice from '../../assets/cases/colla-parte-v2/03-voice.jpg';
+import check from '../../assets/cases/colla-parte-v2/04-check.jpg';
+import octave from '../../assets/cases/colla-parte-v2/04b-octave.jpg';
+import otherReading from '../../assets/cases/colla-parte-v2/04c-other-reading.jpg';
+import edit from '../../assets/cases/colla-parte-v2/05-edit.jpg';
+import play from '../../assets/cases/colla-parte-v2/07-play.jpg';
+import exportDialog from '../../assets/cases/colla-parte-v2/06-export.jpg';
+import done from '../../assets/cases/colla-parte-v2/06b-done.jpg';
+import beforeEditor from '../../assets/cases/colla-parte-v2/before-editor.jpg';
+import afterEditor from '../../assets/cases/colla-parte-v2/after-editor.jpg';
+import { row } from '../../lib/row';
+
+const media = '/cases/colla-parte-v2';
+const steps = [
+  {
+    title: 'Drop the PDF into the folder',
+    text: 'The start page is a choir folder: pieces still to check, pieces ready to practise, and the practice track playing at the bottom.',
+    image: folder,
+    alt: 'Start page “Meine Mappe”: a black folder with six score sheets, five still to check with their open questions, Parry checked and ready to practise, and the Parry practice MP3 playing in the bar at the bottom.',
+  },
+  {
+    title: 'Two readers, page by page',
+    text: 'Audiveris and homr read the same PDF independently, each on its own page. Reading takes one to three minutes a page; the app says to do something else meanwhile.',
+    image: reading,
+    video: `${media}/reading-full.mp4`,
+    poster: `${media}/reading-full.jpg`,
+    alt: 'Reading dialog for “Zwei Choräle (Bach)”, three pages: 25 %, the classic reader on page 1, the AI reader on page 2, page thumbnails with scan lines.',
+  },
+  {
+    title: 'Choose your voice',
+    text: 'Open a piece and the first question is which voice is yours. From then on the app only asks about that voice. Organ staves are recognised as accompaniment and never asked.',
+    image: voice,
+    alt: 'Voice chooser over Mundy’s “Lord Maker”: soprano, alto, alto 2, tenor and bass with their open questions, and a note that four organ staves are accompaniment.',
+  },
+  {
+    title: 'Answer, don’t proofread',
+    text: 'Left the same bars from the PDF, enlarged; right my transcription. The uncertain note sits in brackets in both. Enter means “yes, that’s right” and jumps to the next one.',
+    image: check,
+    video: `${media}/check-loop.mp4`,
+    poster: `${media}/check-loop.jpg`,
+    alt: 'Victoria’s “Ave Maria”, tenor I, question 3 of 25: the original bars with pencil brackets on the left, the transcription with the bracketed note on the right, and the question whether the C4 is a half note.',
+  },
+  {
+    title: 'One question for a whole line',
+    text: 'When the readers disagree by exactly an octave across a line, the app asks once for the line, not once per note.',
+    image: octave,
+    alt: 'Schumann’s “An die Sterne”, tenor II, bars 53–55: the question which octave is right in this line, with the answers “as it is”, “an octave higher” and “show the other reading”.',
+  },
+  {
+    title: 'See the other reading',
+    text: 'If I am not sure, the other reader’s version of the bar opens underneath and can be taken over with one click.',
+    image: otherReading,
+    alt: 'The same Victoria question with the AI reader’s version of bar 3 opened underneath and a button to take it over for tenor I.',
+  },
+  {
+    title: 'Fix it where it is',
+    text: 'Click a note and the tools open at the note: higher, lower, accidentals, note values, rest, delete. Almost everything has a key, too.',
+    image: edit,
+    alt: 'Parry’s “Crossing the Bar”, bar 6: a dark palette open at a tenor note with higher, lower, sharp, flat, natural, note values, rest and delete; the same note bracketed in the original.',
+  },
+  {
+    title: 'Listen to the bar',
+    text: 'Space plays the bar, Shift and Space only my voice. The notes light up while they sound.',
+    image: play,
+    video: `${media}/play.mp4`,
+    alt: 'Bach’s “O Food to Pilgrims Given”, bar 25, playing: the notes that sound are highlighted in the transcription.',
+  },
+  {
+    title: 'Export the practice track',
+    text: 'My voice on harmonica, the others on flute, clarinet and horn, all equally loud. The tempo is typed in, with the top of the first page shown for reference.',
+    image: exportDialog,
+    alt: 'Export dialog for Parry: tenor on harmonica, soprano flute, alto clarinet, bass horn, tempo 80 with the opening of the original shown, MP3 and MusicXML.',
+  },
+  {
+    title: 'Seven seconds later',
+    text: 'The MP3 and the MusicXML lie next to the piece. The track plays right away, and I learn my part while I work.',
+    image: done,
+    alt: 'The finished export: a player at 0:32 of 3:57 and the two files, MP3 and MusicXML, with buttons to show them in the Finder or open them in MuseScore.',
+  },
+];
+---
+
+<CaseLayout
+  title="Colla parte"
+  years="2026"
+  summary="A Mac app that turns the choir director’s PDF into checked sheet music and a practice MP3 for my own voice."
+  meta={[
+    ['Role', 'Problem, requirements, every design decision, testing with real pieces'],
+    ['Built with', 'Claude Code as AI pair programmer'],
+    ['Period', '10 days, 18–27 Oct 2026'],
+    ['Proof', '116 automated tests; on a test piece with known notes, 0 of 124 voice-bars wrong'],
+    ['Status', 'In use for my choir. Not on GitHub: the test scores are under copyright'],
+  ]}
+  film="notenprogramm"
+  stage="notenprogramm"
+  next={{ href: '/work/stub/', title: 'Stub' }}
+>
+  <section>
+    <h2>The itch</h2>
+    <p class="c-lead">I learn my choir part by ear while I work, and I made those practice tracks by hand.</p>
+    <p>
+      I sing tenor in a choir. The music arrives as a PDF from the choir director, and I learn my part by listening to a
+      practice track while I work, until I know the melody by heart.
+    </p>
+    <p>
+      Software that reads sheet music exists, but it makes mistakes, and the tools around it are complicated. To trust
+      the result I would have had to check every bar against the original myself. I wanted the opposite: a program that
+      tells me which few notes it is unsure about, in my voice, and lets me fix them right there.
+    </p>
+  </section>
+
+  <section>
+    <h2>Walkthrough</h2>
+    <p class="c-lead">From the choir director’s PDF to the practice track.</p>
+    <Walkthrough steps={steps} note="Public-domain pieces only · German UI" />
+  </section>
+
+  <section>
+    <h2>What didn’t work</h2>
+    <p class="c-lead">Every real piece broke something. Each break changed the program.</p>
+    <p>
+      I tested with what my choir actually sings, from a Renaissance double choir to Whitacre, and kept a dated note of
+      every failure. Where there is a number, it was measured on the piece that failed, before and after the change.
+    </p>
+    <FixList
+      fixes={[
+        {
+          date: '18 Oct',
+          broke: 'The first version wrote a check report: every bar as a picture, errors in colour. I told Claude: that’s no use to me, I want to answer in the program and never fix anything in MuseScore afterwards.',
+          changed: 'The report was dropped the same evening. An editor took its place: click a note, change it, Enter confirms the bar.',
+        },
+        {
+          date: '18 Oct',
+          broke: 'A Bach chorale for four voices came out with eight. A few misread note values made notes overlap, and the voice count came from the busiest bar.',
+          changed: 'Voices are counted by majority across all bars.',
+          numbers: ['8 voices', '4'],
+        },
+        {
+          date: '18 Oct',
+          broke: 'One reader alone (homr) misread durations, so in a Bach chorale eight bars did not add up. A third engine, oemer, took over four minutes a page and made the same kind of errors.',
+          changed: 'Two readers check each other: Audiveris reads the skeleton, homr cross-checks. Where they disagree, I am asked.',
+          numbers: ['8 bars off', '0'],
+        },
+        {
+          date: '18 Oct',
+          broke: 'Poulenc’s “Salve Regina” came out with 164 bars and five voices instead of 57 and four: a publisher’s catalogue page, parallel runs that blocked each other, missed meter changes.',
+          changed: 'Bars are matched by their position on the page, bar lengths are decided by vote, pages are read one by one with a watchdog.',
+          numbers: ['164 bars', '57'],
+        },
+        {
+          date: '19 Oct',
+          broke: 'My own pass through four Poulenc voices: both real errors had been asked, but 15 ties were missing from the result.',
+          changed: 'Slurs between two equal notes become ties.',
+          numbers: ['15 ties lost', '0'],
+        },
+        {
+          date: '20 Oct',
+          broke: 'A test piece where every note is known (two Bach chorales, engraved by MuseScore) showed that key changes were ignored.',
+          changed: 'The key is tracked bar by bar.',
+          numbers: ['44 wrong notes', '4'],
+        },
+        {
+          date: '22 Oct',
+          broke: 'Victoria’s double-choir “Ave Maria” opens with incipits in old clefs. They became extra bars: 194 instead of 92, and 642 open questions.',
+          changed: 'The incipits are blanked out before reading.',
+          numbers: ['194 bars', '92'],
+        },
+        {
+          date: '23 Oct',
+          broke: 'An idea: blank out the sung text before reading, to help recognition. Measured on five pieces, four got more open questions, Schumann more than three times as many.',
+          changed: 'Not built. The measurement decided it.',
+          numbers: ['34 open', '114 without text'],
+        },
+        {
+          date: '23 Oct',
+          broke: 'I said it still looked too AI-generated: blue pills, cards, status dots.',
+          changed: 'An audit, three directions, and the choir folder (below).',
+        },
+        {
+          date: '26 Oct',
+          broke: 'About one mark in fifteen sat beside the printed note, and the whole PDF page was too small to compare.',
+          changed: 'Marks snap to the printed note head; the same bars are shown large next to the transcription.',
+          numbers: ['1 in 15 off', 'on the note'],
+        },
+        {
+          date: '26 Oct',
+          broke: 'A tenor line read an octave too low produced a question for every note.',
+          changed: 'One question for the whole line.',
+          numbers: ['22 questions', '10'],
+        },
+        {
+          date: '26 Oct',
+          broke: 'The MP3 export failed on Parry, bar 38: MuseScore stopped with “code 40” on triplets that do not close.',
+          changed: 'The MP3 is made from a copy rounded to sixteenths; the MusicXML stays exact.',
+        },
+        {
+          date: '27 Oct',
+          broke: 'The start page said 22 open questions, the editor 25.',
+          changed: 'Both count the same way, checked on every piece.',
+          numbers: ['22 vs 25', 'same'],
+        },
+        {
+          date: 'Open',
+          broke: 'Both readers read a breve, a note of two whole bars, as a whole note.',
+          changed: 'A key sets a breve by hand. The reading itself is not fixed.',
+          open: true,
+        },
+      ]}
+    />
+  </section>
+
+  <section>
+    <h2>Can I trust it?</h2>
+    <p class="c-lead">Check, don’t retype: I answer a handful of questions instead of checking every bar.</p>
+    <p>
+      The two readers rarely make the same mistake, so the questions sit where errors are likely. On the test piece with
+      known notes, nothing is wrong after reading; all eleven questions only ask me to confirm. When I checked 57 bars of
+      four Poulenc voices by hand, no error in pitch, duration or accidentals had slipped through unasked.
+    </p>
+    <figure class="c-wide">
+      <ScrubFigure kind="noten-questions" ratio="1200 / 580" narrow="600 / 900" />
+      <figcaption>
+        Schumann’s “An die Sterne”, 83 bars for eight voices, on 26 Oct: most voices had one to three questions, one had
+        22 because a whole line had been read an octave off. With one question per line it now has 10.
+      </figcaption>
+    </figure>
+    <dl class="c-numbers">
+      <div><dt>0 / 124</dt><dd>voice-bars wrong on the test piece with known notes</dd></div>
+      <div><dt>374</dt><dd>bars found on the PDF page, all of them, in the 6 pieces checked</dd></div>
+      <div><dt>116</dt><dd>automated tests, all passing</dd></div>
+      <div><dt>7 s</dt><dd>for MusicXML and a practice MP3 of a four-minute piece</dd></div>
+    </dl>
+    <p>
+      Reading is the slow part: one to three minutes per page on a laptop, while I do something else. How many questions
+      a voice gets depends on the print: one to three for most of the Schumann voices, a few dozen for Victoria’s
+      double choir.
+    </p>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <p class="c-lead">Right notes over fewer questions, and the program on my Mac only.</p>
+    <p>
+      <strong>Accuracy over fewer questions.</strong> In my Poulenc pass the questions about notes only one reader had
+      seen found nothing. Dropping them would have cut the questions to about a third. I kept them: pitch, duration and
+      accidentals matter more to me than ties, so ties are not cross-checked, notes are.
+    </p>
+    <p>
+      <strong>All voices equally loud.</strong> Claude assumed my voice should be louder in the practice track. I said no:
+      I want to hear where my line sits in the chord. Every voice was measured and set within one loudness unit; mine
+      plays on harmonica, the others on flute, clarinet and horn. That is where the name comes from: colla parte, in
+      music, means an instrument plays along with the voice.
+    </p>
+    <p>
+      <strong>Local, and not on GitHub.</strong> The PDFs and the practice tracks stay on the Mac, nothing goes to a
+      cloud. I considered publishing the code, but the test scores are under copyright and two of the libraries are
+      AGPL, so it stays private.
+    </p>
+  </section>
+
+  <section>
+    <h2>From “looks like AI” to a choir folder</h2>
+    <p class="c-lead">The first interface looked like every AI-built app, so I had three directions drawn up.</p>
+    <p>
+      An audit named the patterns: blue pill buttons, identical cards with soft shadows, a dashed “+ New” tile, status
+      dots. The three directions were a piano score, a choir folder with pencil, and plain Mac-native. I chose the choir
+      folder: a black frame with white sheets inside. Pencil grey means “still to check”, highlighter yellow only “my
+      voice”, red pencil only real errors, and there is no blue at all. The type is Edwin, in the style of Century
+      Schoolbook, with music symbols from Bravura.
+    </p>
+    <div class="c-pair" style={row(beforeEditor, afterEditor)}>
+      <figure>
+        <Image
+          src={beforeEditor}
+          alt="The editor on 23 October: Bach’s “O Food to Pilgrims Given”, tenor, bar 25, with blue buttons and a sidebar full of tools."
+          widths={full([640, 1280], beforeEditor)}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>Before, 23 Oct: every tool visible at once.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={afterEditor}
+          alt="The same bar and question in today’s editor: the original and the transcription side by side like an open folder, the question underneath."
+          widths={full([640, 1280, 2560], afterEditor)}
+          sizes="(max-width: 640px) 100vw, 45vw"
+        />
+        <figcaption>After: the same question, bar and window size today.</figcaption>
+      </figure>
+    </div>
+    <div class="c-trio">
+      <figure>
+        <Image
+          src={beforeUi}
+          alt="The first version: score thumbnails as cards with status dots, a blue rounded button “PDF öffnen” and a pill-shaped play button."
+          widths={full([430], beforeUi)}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>Before: blue pills, cards and status dots.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={pianoScore}
+          alt="Direction one: a white page titled “Chorpartituren” with dark blue covers for each piece, set like a printed score."
+          widths={full([440, 880], pianoScore)}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>Not taken: a piano score.</figcaption>
+      </figure>
+      <figure>
+        <Image
+          src={macNative}
+          alt="Direction three: a Mac-native window with a sidebar of filters and the scores as a grid of thumbnails."
+          widths={full([460, 920], macNative)}
+          sizes="(max-width: 900px) 100vw, 30vw"
+        />
+        <figcaption>Not taken: Mac-native.</figcaption>
+      </figure>
+    </div>
+    <p>
+      For an uncertain note I turned down a pencil circle and tested three marks: grey like a pencil sketch, brackets
+      like urtext editions, and a question mark. Brackets won. The correction screen had three layouts too; the open
+      folder won, and the tool opens right at the note instead of as a wall of buttons.
+    </p>
+    <figure class="c-wide">
+      <Image
+        src={marks}
+        alt="Three ways to mark an uncertain note on a highlighted line: drawn in grey pencil, in square brackets, or with a small question mark above it."
+        widths={full([800, 1600], marks)}
+        sizes="(max-width: 900px) 100vw, 75vw"
+      />
+      <figcaption>Three marks for an uncertain note. Brackets won, the way urtext editions mark doubtful notes.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Built with Claude Code</h2>
+    <p class="c-lead">My part was the problem, the decisions and the testing; Claude Code wrote the code with me.</p>
+    <p>
+      I brought the problem, the requirements, the tests with real pieces, every design decision and the feedback
+      rounds. The code was written with Claude Code as an AI pair programmer: Python with a local server in its own Mac
+      window (pywebview), Audiveris and homr for reading, music21 and verovio for engraving, PyMuPDF for the PDF and
+      MuseScore 4 for the MP3. The interface is plain HTML, CSS and JavaScript.
+    </p>
+    <ol class="c-timeline">
+      <li><time>18 Oct 2026</time><span>Script, second reader, the editor instead of a report.</span></li>
+      <li><time>20 Oct</time><span>A test piece with known notes; a Mac app with its own window.</span></li>
+      <li><time>22 Oct</time><span>Four harder pieces, from Victoria to Whitacre.</span></li>
+      <li><time>23 Oct</time><span>Text removal measured and dropped; three design directions.</span></li>
+      <li><time>26 Oct</time><span>The choir folder, brackets, marks on the note head.</span></li>
+      <li><time>27 Oct</time><span>Renamed Colla parte; eight fixes from a design review.</span></li>
+    </ol>
+  </section>
+</CaseLayout>
