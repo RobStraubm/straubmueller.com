@@ -25,9 +25,13 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run build
 
-      # Only the chosen version goes live; the drafts under /varianten and their films stay local.
+      # Only the chosen version goes live; the drafts under /varianten, the case drafts (*-v2) and the black-and-white
+      # palette, with their films and images, stay local (Robert, 28 Oct 2026: "online nur den aktuellen Stand").
       - name: Keep drafts off the live site
-        run: rm -rf dist/varianten dist/motion/f dist/motion/kinetic dist/motion/bauhaus dist/motion/dots dist/motion/cards-light dist/motion/flowculate-light.* dist/motion/flowculate-dark.*
+        run: |
+          rm -rf dist/varianten dist/motion/f dist/motion/kinetic dist/motion/bauhaus dist/motion/dots dist/motion/cards-light dist/motion/flowculate-light.* dist/motion/flowculate-dark.*
+          rm -rf dist/work/*-v2 dist/cases/*-v2 dist/motion/i-bw
+          node scripts/prune-unused.mjs dist
 
       - name: Upload to webgo
         env:

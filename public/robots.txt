@@ -1,0 +1,6 @@
+# Every crawler may read the site, AI crawlers included. Until the launch each page still says noindex.
+User-agent: *
+Allow: /
+Disallow: /varianten/
+
+Sitemap: https://straubmueller.com/sitemap.xml

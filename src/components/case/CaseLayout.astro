@@ -33,9 +33,21 @@ interface Props {
 }
 const { title, years, summary, meta, links = [], film, next, description, stage } = Astro.props;
 const reel = films.find((item) => item.key === film);
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop();
+const role = meta.find(([label]) => label === 'Role')?.[1];
+const work = {
+  '@type': 'CreativeWork',
+  name: title,
+  description: summary,
+  url: new URL(Astro.url.pathname, Astro.site).href,
+  image: new URL(`/og/${slug}.jpg`, Astro.site).href,
+  dateCreated: years.slice(0, 4),
+  creator: { '@type': 'Person', name: 'Robert Straubmüller', url: 'https://straubmueller.com' },
+  ...(role && { abstract: `Robert's role: ${role}` }),
+};
 ---
 
-<Base title={`${title} · Robert Straubmüller`} description={description ?? summary} chrome={false}>
+<Base title={`${title} · Robert Straubmüller`} description={description ?? summary} chrome={false} image={`/og/${slug}.jpg`} schema={work}>
   <header class="c-header bar" slot="header">
     <a class="c-name" href="/">Robert Straubmüller</a>
     <span>Co-founder, Levelwork</span>
