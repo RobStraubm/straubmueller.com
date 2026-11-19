@@ -8,16 +8,16 @@ import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
 import checkSchumann from '../../assets/cases/notenprogramm/check-schumann.jpg';
-import toolParry from '../../assets/cases/notenprogramm/tool-parry.jpg';
-import exportDialog from '../../assets/cases/notenprogramm/export.jpg';
-import marks from '../../assets/cases/notenprogramm/marks.jpg';
+import exportDialog from '../../assets/cases/notenprogramm-v3/export.jpg';
 import mappe from '../../assets/cases/notenprogramm/mappe.jpg';
 import beforeUi from '../../assets/cases/notenprogramm/before-first-ui.jpg';
-import pianoScore from '../../assets/cases/notenprogramm/direction-piano-score.jpg';
-import macNative from '../../assets/cases/notenprogramm/direction-mac.jpg';
-import layoutFolder from '../../assets/cases/notenprogramm/layout-1.jpg';
-import layoutMargin from '../../assets/cases/notenprogramm/layout-2.jpg';
-import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
+import toolParry from '../../assets/cases/notenprogramm-v4/tool-parry.jpg';
+import pianoScore from '../../assets/cases/notenprogramm-v4/direction-piano-score.jpg';
+import macNative from '../../assets/cases/notenprogramm-v4/direction-mac.jpg';
+import marks from '../../assets/cases/notenprogramm-v4/marks.jpg';
+import layoutFolder from '../../assets/cases/notenprogramm-v4/layout-1.jpg';
+import layoutMargin from '../../assets/cases/notenprogramm-v4/layout-2.jpg';
+import layoutBar from '../../assets/cases/notenprogramm-v4/layout-3.jpg';
 ---
 
 <CaseLayout
@@ -71,26 +71,25 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       on flute, clarinet and horn, all equally loud. I asked for that on purpose: no louder own voice. That is where
       the name comes from: colla parte, in music, means an instrument plays along with the voice.
     </p>
-    <div class="c-pair">
-      <figure>
-        <Image
-          src={toolParry}
-          alt="Correction screen for Parry’s “Crossing the Bar”: a small dark toolbar under the selected note offers higher, lower, accidentals and note values, and the panel below says nothing is open in the tenor any more."
-          widths={full([800, 1600], toolParry)}
-          sizes="(max-width: 640px) 100vw, 45vw"
-        />
-        <figcaption>The tool opens at the note you click. Parry’s “Crossing the Bar”, every question answered. German UI.</figcaption>
-      </figure>
-      <figure>
-        <Image
-          src={exportDialog}
-          alt="Export dialog for a Bach chorale: a practice MP3 for the tenor at tempo 80, the opening of the original, flute, clarinet and horn for the other voices, harmonica for mine, and MusicXML."
-          widths={full([800, 1600], exportDialog)}
-          sizes="(max-width: 640px) 100vw, 45vw"
-        />
-        <figcaption>The export: one instrument per voice, harmonica for mine. German UI.</figcaption>
-      </figure>
-    </div>
+    <figure class="c-wide">
+      <Image
+        src={toolParry}
+        alt="Correction screen for Parry’s “Crossing the Bar”: a dark toolbar under the selected tenor note offers higher, lower, accidentals and note values, and the panel below says nothing is open in the tenor any more."
+        widths={[800, 1200, 1402]}
+        sizes="(max-width: 640px) 100vw, 70vw"
+      />
+      <figcaption>The tool opens at the note you click. Parry’s “Crossing the Bar”, every question answered. German UI.</figcaption>
+    </figure>
+    <figure class="c-wide">
+      <Image
+        src={exportDialog}
+        alt="Export dialog for Parry’s “Crossing the Bar”: a practice MP3 for the tenor at tempo 80, the opening of the original, flute, clarinet and horn for the other voices, harmonica for mine, and MusicXML."
+        widths={[640, 1000, 1280]}
+        sizes="(max-width: 640px) 100vw, 560px"
+        style="width: min(100%, 560px); height: auto;"
+      />
+      <figcaption>The export: one instrument per voice, harmonica for mine. German UI.</figcaption>
+    </figure>
   </section>
 
   <section>
@@ -146,21 +145,21 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       voice”, red pencil only real errors, and there is no blue at all. The type is Edwin, in the style of Century
       Schoolbook, with music symbols from Bravura.
     </p>
-    <figure>
+    <figure class="c-stamp">
       <Image
         src={beforeUi}
         alt="The first version: score thumbnails as cards with status dots, a blue rounded button “PDF öffnen” and a pill-shaped play button."
         widths={full([430], beforeUi)}
-        sizes="(max-width: 640px) 100vw, 430px"
+        sizes="215px"
       />
-      <figcaption>Before: blue pills, cards and status dots. German UI.</figcaption>
+      <figcaption>Before: blue pills, cards and status dots. The first version, kept only at this size. German UI.</figcaption>
     </figure>
     <div class="c-pair">
       <figure>
         <Image
           src={pianoScore}
-          alt="Direction one: a white page titled “Chorpartituren” with dark blue covers for each piece, set like a printed score."
-          widths={full([440, 880], pianoScore)}
+          alt="Direction one: a white page titled “Chorpartituren” with dark blue covers for each piece, set like a printed score; the whole window, with a player at the bottom."
+          widths={full([800, 1200, 1600, 2400], pianoScore)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>Direction one, not taken: a piano score.</figcaption>
@@ -168,8 +167,8 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <figure>
         <Image
           src={macNative}
-          alt="Direction three: a Mac-native window with a sidebar of filters and the scores as a grid of thumbnails."
-          widths={full([460, 920], macNative)}
+          alt="Direction three: a Mac-native window with a sidebar of filters and the scores as a grid of thumbnails; the whole window."
+          widths={full([800, 1200, 1600, 2400], macNative)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>Direction three, not taken: Mac-native.</figcaption>
@@ -198,7 +197,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <Image
         src={marks}
         alt="Three ways to mark an uncertain note on a highlighted line: drawn in grey pencil, in square brackets, or with a small question mark above it."
-        widths={full([800, 1600], marks)}
+        widths={full([800, 1600, 2400], marks)}
         sizes="(max-width: 900px) 100vw, 75vw"
       />
       <figcaption>Three marks for an uncertain note. Brackets won, the way urtext editions mark doubtful notes. German UI.</figcaption>
@@ -207,7 +206,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
       <Image
         src={layoutFolder}
         alt="Layout one: the printed page on the left, the transcription on the right with the question underneath, like an open folder."
-        widths={full([800, 1200], layoutFolder)}
+        widths={full([800, 1600, 2400], layoutFolder)}
         sizes="(max-width: 900px) 100vw, 75vw"
       />
       <figcaption>Layout one, chosen: the open folder, original left, transcription and question right. German UI.</figcaption>
@@ -217,7 +216,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={layoutMargin}
           alt="Layout two: the original above the transcription, with the question as a note in the right margin."
-          widths={full([600, 1200], layoutMargin)}
+          widths={full([800, 1200, 1600, 2400], layoutMargin)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>Proofreading with a margin note.</figcaption>
@@ -226,7 +225,7 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
         <Image
           src={layoutBar}
           alt="Layout three: one bar of the original and of the transcription, both very large, with the question above."
-          widths={full([600, 1200], layoutBar)}
+          widths={full([800, 1200, 1600, 2400], layoutBar)}
           sizes="(max-width: 640px) 100vw, 45vw"
         />
         <figcaption>One bar, large. Bach chorale, German UI.</figcaption>
@@ -250,3 +249,11 @@ import layoutBar from '../../assets/cases/notenprogramm/layout-3.jpg';
     </p>
   </section>
 </CaseLayout>
+
+<style>
+  /* Bild-Check: the first UI exists only at 430 px, so it is shown at half that, never enlarged. */
+  .c-stamp.c-stamp :global(img) {
+    width: 215px;
+    height: auto;
+  }
+</style>

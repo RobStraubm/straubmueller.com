@@ -1,0 +1,133 @@
+---
+// The booking types of the Tealucent design system, rebuilt in 2026 as vector from Robert's board
+// (~/Portfolio/tealucentDesignSystem/tealucentDesSys-03.jpg, where the bars run off the right edge). Left, each
+// gradient as the two tokens it is made of with their opacity; right, the bars as they appear in the calendar.
+// The board cuts the end time off; 17:20 stands in for it.
+import '@fontsource/ibm-plex-mono/400.css';
+
+const gg = '#0A373A';
+const go = '#FF8C65';
+const g50 = '#678482';
+const paper = '#E7EAEA';
+
+type Booking = {
+  pill: string;
+  label: string;
+  colour: string;
+  from: number;
+  to: number;
+  icon: 'plane' | 'cube' | 'bulb' | 'wave';
+  iconFill: string;
+  iconInk: string;
+  ink: string;
+  time: string;
+};
+const bookings: Booking[] = [
+  { pill: 'home booking', label: 'remote work', colour: gg, from: 0.7, to: 0.3, icon: 'plane', iconFill: gg, iconInk: '#fff', ink: '#F3F5F5', time: gg },
+  { pill: 'ressource', label: 'equipment', colour: gg, from: 0.1, to: 0.4, icon: 'cube', iconFill: '#CED7D8', iconInk: '#47696B', ink: '#47696B', time: '#F3F5F5' },
+  { pill: 'office booking', label: 'creative', colour: go, from: 0.9, to: 0.3, icon: 'bulb', iconFill: go, iconInk: '#fff', ink: '#fff', time: go },
+  { pill: 'holiday', label: 'holiday', colour: g50, from: 1, to: 1, icon: 'wave', iconFill: g50, iconInk: '#fff', ink: '#fff', time: '#fff' },
+];
+const tokenName = (b: Booking) => (b.colour === go ? 'go_go' : b.colour === g50 ? 'gg_50' : 'gg_gg');
+const pct = (v: number) => `${Math.round(v * 100)}%`;
+const rowY = [150, 286, 422, 558];
+const W = 1600;
+const H = 700;
+---
+
+<svg class="tl-book" viewBox={`0 100 ${W} ${H - 100}`} role="img" aria-label="Booking types as gradient bars: remote work, equipment, creative in orange and holiday, each gradient made of one colour token at two opacities">
+  <defs>
+    <pattern id="tl-check" width="12" height="12" patternUnits="userSpaceOnUse">
+      <rect width="12" height="12" fill="#fff" />
+      <rect width="6" height="6" fill="#dfe3e3" />
+      <rect x="6" y="6" width="6" height="6" fill="#dfe3e3" />
+    </pattern>
+    {
+      bookings.map((b, i) => (
+        <linearGradient id={`tl-g${i}`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color={b.colour} stop-opacity={b.from} />
+          <stop offset="1" stop-color={b.colour} stop-opacity={b.to} />
+        </linearGradient>
+      ))
+    }
+    <clipPath id="tl-top"><rect x="-40" y="-40" width="80" height="40" /></clipPath>
+    <clipPath id="tl-bottom"><rect x="-40" y="0" width="80" height="40" /></clipPath>
+  </defs>
+  <rect width={W} height={H} fill={paper} />
+
+  {
+    bookings.map((b, i) => {
+      const y = rowY[i];
+      const circle = (x: number, opacity: number) => (
+        <g transform={`translate(${x} ${y + 46})`}>
+          <circle r="35" fill={b.colour} clip-path="url(#tl-top)" />
+          <circle r="35" fill="url(#tl-check)" clip-path="url(#tl-bottom)" />
+          <circle r="35" fill={b.colour} fill-opacity={opacity} clip-path="url(#tl-bottom)" />
+          <text y="-9" text-anchor="middle" font-size="13" fill="#fff">{tokenName(b)}</text>
+          <text y="23" text-anchor="middle" font-size="12" fill={opacity > 0.5 ? '#fff' : b.colour}>{pct(opacity)}</text>
+        </g>
+      );
+      return (
+        <g>
+          <rect x="16" y={y} width="490" height="92" rx="46" fill="#fff" />
+          {circle(61, b.from)}
+          <rect x="110" y={y + 11} width="301" height="70" rx="35" fill="#fff" />
+          <rect x="110" y={y + 11} width="301" height="70" rx="35" fill={`url(#tl-g${i})`} />
+          <text x="260" y={y + 53} text-anchor="middle" font-size="19" fill={b.from > 0.5 ? '#fff' : '#2F5558'}>{b.pill}</text>
+          {circle(461, b.to)}
+        </g>
+      );
+    })
+  }
+
+  <rect x="522" y="121" width="1062" height="556" rx="40" fill="#fff" />
+  {
+    bookings.map((b, i) => {
+      const y = rowY[i] + 26;
+      return (
+        <g>
+          <rect x="548" y={y} width="1010" height="94" rx="20" fill={`url(#tl-g${i})`} />
+          <rect x="548" y={y} width="94" height="94" rx="20" fill={b.iconFill} />
+          <g transform={`translate(571 ${y + 23}) scale(2)`} fill={b.iconInk} stroke={b.iconInk}>
+            {b.icon === 'plane' && (
+              <path stroke="none" d="M2.5 19h19v2h-19v-2zm19.57-9.36c-.21-.8-1.04-1.28-1.84-1.06L14.92 10l-6.9-6.43-1.93.51 4.14 7.17-4.97 1.33-1.97-1.54-1.45.39 2.59 4.49L21 11.49c.81-.23 1.28-1.05 1.07-1.85z" />
+            )}
+            {b.icon === 'cube' && (
+              <g fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7V4h3M18 4h3v3M21 17v3h-3M6 20H3v-3" />
+                <path d="M12 5.5l5.5 3.2v6.6L12 18.5l-5.5-3.2V8.7z" />
+                <path d="M6.5 8.7L12 12l5.5-3.3M12 12v6.5" />
+              </g>
+            )}
+            {b.icon === 'bulb' && (
+              <g stroke="none">
+                <path d="M10 2.5a6.5 6.5 0 0 0-3.9 11.7c.6.5.9 1.1.9 1.8v.5h6v-.5c0-.7.3-1.3.9-1.8A6.5 6.5 0 0 0 10 2.5z" />
+                <rect x="7" y="17.6" width="6" height="1.6" rx=".8" />
+                <rect x="7.8" y="20.2" width="4.4" height="1.6" rx=".8" />
+                <path d="M19 1.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7zM21.5 8l.45 1.05 1.05.45-1.05.45L21.5 11l-.45-1.05L20 9.5l1.05-.45z" />
+              </g>
+            )}
+            {b.icon === 'wave' && (
+              <g fill="none" stroke-width="2" stroke-linecap="round">
+                <path d="M2 16c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5" />
+                <path d="M2 20c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5" />
+                <path stroke="none" fill={b.iconInk} d="M3 13.2C4.2 8 8.6 4 14 4c2.8 0 5 1 6.6 2.6-3.6-.5-7 1.5-7.6 5.2 1.3-1.1 3-1.5 4.6-1.1-2.4.9-4.1 3-4.6 5.5-1.6-.6-3.2-.8-4.6-.2-1.8.7-3 .3-3.4-2.8z" />
+              </g>
+            )}
+          </g>
+          <text x="676" y={y + 66} font-size="56" fill={b.ink}>{b.label}</text>
+          <text x="1536" y={y + 66} text-anchor="end" font-size="56" fill={b.time}>16:30–17:20</text>
+        </g>
+      );
+    })
+  }
+</svg>
+
+<style>
+  .tl-book {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+</style>

@@ -329,7 +329,7 @@ const colours = [
         </p>
       </div>
       <figure class="lw-media">
-        <div class="lw-screens">
+        <div class="lw-screens lw-screens-v2">
           <div class="lw-d1">
             <Shot
               src={constatDesk}
@@ -337,7 +337,7 @@ const colours = [
               label="1440 px"
               alt="The Constat page of levelwork.ai on a desktop: the word CONSTAT and the line Evidence for how organizations really work, over a blurred orange picture of a conversation."
               widths={[800, 1200, 1600, 2200]}
-              sizes="(max-width: 900px) 100vw, 56vw"
+              sizes="(max-width: 900px) 100vw, 36vw"
             />
           </div>
           <div class="lw-p1">
@@ -347,7 +347,7 @@ const colours = [
               label="390 px"
               alt="The levelwork.ai homepage on a phone: the wordmark LEVELWORK and the line Organizations decide about people using a picture of themselves that stopped being true years ago."
               widths={[400, 600, 900]}
-              sizes="(max-width: 900px) 45vw, 17vw"
+              sizes="(max-width: 900px) 45vw, 340px"
             />
           </div>
           <div class="lw-d2">
@@ -357,7 +357,7 @@ const colours = [
               label="1440 px"
               alt="The levelwork.ai homepage on a desktop: LEVELWORK in large capitals on black, a thin orange line of light behind it, and the opening sentence below."
               widths={[800, 1200, 1600, 2200]}
-              sizes="(max-width: 900px) 100vw, 56vw"
+              sizes="(max-width: 900px) 100vw, 36vw"
             />
           </div>
           <div class="lw-p2">
@@ -367,7 +367,7 @@ const colours = [
               label="Demo"
               alt="The start page of the founder interview in the Levelwork app on a phone, on a cream ground: How many roles are you actually filling? A short text, an e-mail field and an orange Start button."
               widths={[400, 600, 900]}
-              sizes="(max-width: 900px) 45vw, 17vw"
+              sizes="(max-width: 900px) 45vw, 340px"
             />
           </div>
         </div>
@@ -1102,6 +1102,19 @@ const colours = [
   }
 
   /* Desktop and phone at the same height: column widths follow the screens' aspect ratios (1440 / 900 and 390 / 844). */
+  /* Bild-Check: both desktop pages in one row, the phones below at a size where their text can be read. */
+  .lw-screens.lw-screens-v2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'd1 d2' 'p1 p2';
+    row-gap: calc(var(--gap) * 2);
+  }
+
+  .lw-screens-v2 .lw-p1,
+  .lw-screens-v2 .lw-p2 {
+    width: min(340px, 100%);
+    justify-self: center;
+  }
+
   .lw-screens {
     display: grid;
     grid-template-columns: 1.6fr 0.462fr;
@@ -1214,7 +1227,8 @@ const colours = [
     .lw-brief.lw-brief {
       margin-bottom: 24px;
     }
-    .lw-screens {
+    .lw-screens,
+    .lw-screens.lw-screens-v2 {
       grid-template-columns: 1fr 1fr;
       grid-template-areas: 'd1 d1' 'd2 d2' 'p1 p2';
     }

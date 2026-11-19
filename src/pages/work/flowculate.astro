@@ -7,11 +7,10 @@ import { full } from '../../lib/widths';
 import CaseLayout from '../../components/case/CaseLayout.astro';
 import maths from '../../assets/cases/flowculate/maths.jpg';
 import workshop from '../../assets/cases/flowculate/workshop.jpg';
-import uiTests from '../../assets/cases/flowculate/ui-tests.jpg';
-import components from '../../assets/cases/flowculate/components.jpg';
-import tools from '../../assets/cases/flowculate/tools.jpg';
-import version1 from '../../assets/cases/flowculate/version-1.jpg';
-import version2 from '../../assets/cases/flowculate/version-2.jpg';
+import version1 from '../../assets/cases/flowculate-v2/version-1.jpg';
+import version2 from '../../assets/cases/flowculate-v2/version-2.jpg';
+import tools from '../../assets/cases/flowculate-v2/tools.jpg';
+import components from '../../assets/cases/flowculate-v2/components.jpg';
 
 import FlowculateParts from '../../components/case/diagrams/FlowculateParts.astro';
 import FlowculateIdentity from '../../components/case/diagrams/FlowculateIdentity.astro';
@@ -109,16 +108,10 @@ const { stage = true } = Astro.props as { stage?: boolean };
       <Image src={tools} alt="Interface details: interactive graph, DXF import, tooltips, interactive module, guidelines and the density heat map in a floor plan" widths={full(widths, tools)} sizes={wide} loading="lazy" />
       <figcaption>Tools from version 2.0: graphs, DXF import, tooltips, guidelines, the density map.</figcaption>
     </figure>
-    <div class="c-pair">
-      <figure>
-        <Image src={uiTests} alt="Four colour variants of the same floor-plan screen, tested side by side" widths={full(widths, uiTests)} sizes={half} loading="lazy" />
-        <figcaption>UI tests: four variants of one screen.</figcaption>
-      </figure>
-      <figure>
-        <Image src={components} alt="Component overview on a dark background: labels, text fields, toggles, sliders, tabs and buttons in their states" widths={full(widths, components)} sizes={half} loading="lazy" />
-        <figcaption>The components, with every state.</figcaption>
-      </figure>
-    </div>
+    <figure class="c-wide">
+      <Image src={components} alt="Component overview on a dark background: labels, text fields, toggles, sliders, tabs and buttons in their states; pointers mark the hover states" widths={full(widths, components)} sizes={wide} loading="lazy" />
+      <figcaption>The components, with every state. The pointers mark the hover states.</figcaption>
+    </figure>
     <p>
       <strong>A brand drawn from the maths.</strong> I named the project Flowculate, from flow and calculate, and built
       the logo from the Delaunay triangulation that divides a room into the triangles the model computes on. The density
@@ -159,12 +152,12 @@ const { stage = true } = Astro.props as { stage?: boolean };
     </p>
     <div class="c-pair">
       <figure>
-        <Image src={version1} alt="Version 1 of the web app: floor plan with a density heat map, parameters on the left, charts on the right" widths={full(widths, version1)} sizes={half} loading="lazy" />
-        <figcaption>Version 1.</figcaption>
+        <Image src={version1} alt="Version 1 of the web app running the classroom demo: tabs Plan, Scenario and Simulation, the parameters on the left, the density heat map in the floor plan, charts on the right" widths={full(widths, version1)} sizes={half} loading="lazy" />
+        <figcaption>Version 1, November 2023, from a screen recording.</figcaption>
       </figure>
       <figure>
-        <Image src={version2} alt="Version 2 of the web app: a calmer layout with the floor plan in the centre and grouped parameters" widths={full(widths, version2)} sizes={half} loading="lazy" />
-        <figcaption>Version 2: the plan in the centre, the parameters grouped and quiet.</figcaption>
+        <Image src={version2} alt="Version 2 of the web app on flowculate.eu running the same classroom demo: tabs Map, Scenario and Simulation, the result with its charts on the left, the floor plan with people and density in the centre" widths={full(widths, version2)} sizes={half} loading="lazy" />
+        <figcaption>Version 2 on flowculate.eu today, the same classroom: the plan in the centre, the results beside it.</figcaption>
       </figure>
     </div>
     <dl class="c-numbers">

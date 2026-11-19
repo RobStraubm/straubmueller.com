@@ -60,7 +60,7 @@ import documents from '../../assets/cases/minutes/documents.jpg';
       are uploaded, and the editor takes over the resolutions with their votes, attendance, start and end and the
       signatures, word for word. The office corrects inside the tool instead of in Word and exports to Word or PDF.
     </p>
-    <figure class="c-wide">
+    <figure class="c-wide fade-end">
       <Shot
         src={editor}
         source="Minutes editor, beta"
@@ -122,7 +122,7 @@ import documents from '../../assets/cases/minutes/documents.jpg';
       <strong>The minutes stay in view.</strong> Editing and preview scroll together, so the office always sees the
       page that will be signed, not a form that becomes a page later.
     </p>
-    <figure class="c-wide">
+    <figure class="c-wide fade-end">
       <Shot
         src={review}
         source="Minutes tool"
@@ -133,7 +133,7 @@ import documents from '../../assets/cases/minutes/documents.jpg';
       />
       <figcaption>Before the minutes: the record is checked section by section, uncertain names are marked. Fictional session.</figcaption>
     </figure>
-    <figure>
+    <figure class="fade-end">
       <Shot
         src={documents}
         source="Minutes editor, beta"
@@ -158,3 +158,14 @@ import documents from '../../assets/cases/minutes/documents.jpg';
     </ol>
   </section>
 </CaseLayout>
+
+<style>
+  /* Bild-Check: these captures stop inside a page that goes on; they run out softly instead of ending mid-line. */
+  .fade-end :global(.shot) {
+    background: #fff;
+  }
+
+  .fade-end :global(.shot img) {
+    mask-image: linear-gradient(to bottom, #000 78%, transparent);
+  }
+</style>

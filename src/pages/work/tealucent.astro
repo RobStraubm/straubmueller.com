@@ -12,10 +12,9 @@ import Shot from '../../components/case/Shot.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
 import name from '../../assets/cases/tealucent/name.jpg';
 import palette from '../../assets/cases/tealucent/palette.jpg';
-import dates from '../../assets/cases/tealucent/board-04-2.jpg';
-import tokens from '../../assets/cases/tealucent/tokens.jpg';
+import TealucentDates from '../../components/case/screens/TealucentDates.astro';
+import TealucentBookings from '../../components/case/screens/TealucentBookings.astro';
 import components from '../../assets/cases/tealucent/components.jpg';
-import bookings from '../../assets/cases/tealucent/board-03.jpg';
 
 const half = '(max-width: 900px) 100vw, 45vw';
 ---
@@ -91,17 +90,12 @@ const half = '(max-width: 900px) 100vw, 45vw';
       <ScrubFigure kind="tealucent-tokens" ratio="1200 / 520" narrow="600 / 910" />
       <figcaption>One alias, four modes: the dropdown and the input take their colour from action_background_ in each mode, and their own tokens stay the same.</figcaption>
     </figure>
-    <div class="c-split">
+    <div class="c-pair" style="--row: 0.753fr 0.738fr">
       <figure>
-        <Shot
-          src={dates}
-          source="Tealucent design system"
-          label="Date bar, dark"
-          alt="A date bar from Monday 10 to Sunday 16 on dark teal, each state labelled with its colour token, from gg_75 to gg_00"
-          widths={[800, 1600]}
-          sizes="(max-width: 900px) 100vw, 60vw"
-        />
-        <figcaption>Every state of a date bar is a step of the same teal.</figcaption>
+        <Shot source="Tealucent date bar, rebuilt 2026" label="Dark and light">
+          <TealucentDates />
+        </Shot>
+        <figcaption>Every state of the date bar is a step of the same teal, in the dark and the light mode. Rebuilt as vector from the 2023 boards.</figcaption>
       </figure>
       <figure>
         <Shot
@@ -110,46 +104,28 @@ const half = '(max-width: 900px) 100vw, 45vw';
           label="Colours"
           alt="The palette: brand orange and brand teal, and the app colours from 100 % teal through 85, 75, 50, 40, 20, 15, 10 and 5 % to white, each with its token and hex value"
           widths={[600, 1200]}
-          sizes="(max-width: 900px) 100vw, 30vw"
+          sizes={half}
         />
         <figcaption>Two brand colours, ten app colours from one teal.</figcaption>
       </figure>
     </div>
     <figure class="c-wide">
       <Shot
-        src={tokens}
+        src={components}
         source="Tealucent design system"
-        label="Tokens and modes"
-        alt="Token architecture: values become global tokens such as teal_20 and teal_85, an alias token action_background with the modes light, dark, side and trans, and component tokens for dropdown and input; below, the four modes darkmode, lightmode, translucent and action module in one layout"
-        widths={[800, 1600]}
+        label="Components"
+        alt="Component board: tabs, date bar, calendar with week numbers, dropdown, time picker, a list of people with placeholder names and a set of icons; pointers mark the hover states"
+        widths={[800, 1200, 1600]}
         sizes="(max-width: 900px) 100vw, 75vw"
       />
-      <figcaption>Value, global token, alias with four modes, component token.</figcaption>
+      <figcaption>Components, from tabs and calendar to the people list. The pointers on the board mark the hover states.</figcaption>
     </figure>
-    <div class="c-pair" style={row(components, bookings)}>
-      <figure>
-        <Shot
-          src={components}
-          source="Tealucent design system"
-          label="Components"
-          alt="Component board: tabs, date bar, calendar with week numbers, dropdown, time picker, a list of people with placeholder names and a set of icons"
-          widths={[800, 1600]}
-          sizes={half}
-        />
-        <figcaption>Components, from tabs and calendar to the people list.</figcaption>
-      </figure>
-      <figure>
-        <Shot
-          src={bookings}
-          source="Tealucent design system"
-          label="Booking types"
-          alt="Booking types as gradient bars: remote work, equipment, creative and holiday, with times, orange for the creative booking"
-          widths={[800, 1600]}
-          sizes={half}
-        />
-        <figcaption>Booking types: remote work, equipment, creative, holiday.</figcaption>
-      </figure>
-    </div>
+    <figure class="c-wide">
+      <Shot source="Tealucent booking types, rebuilt 2026" label="Gradients from tokens">
+        <TealucentBookings />
+      </Shot>
+      <figcaption>Each booking type is one token at two opacities: remote work, equipment, creative in the orange, holiday.</figcaption>
+    </figure>
   </section>
 
   <section>

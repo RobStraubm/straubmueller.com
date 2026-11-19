@@ -10,10 +10,11 @@ import CaseLayout from '../../components/case/CaseLayout.astro';
 import Shot from '../../components/case/Shot.astro';
 import SayFitPipeline from '../../components/case/diagrams/SayFitPipeline.astro';
 import ScrubFigure from '../../components/stage/ScrubFigure.astro';
-import processing from '../../assets/cases/sayfit/processing.jpg';
-import review from '../../assets/cases/sayfit/review.jpg';
-import recipes from '../../assets/cases/sayfit/recipes.jpg';
-import today from '../../assets/cases/sayfit/today.jpg';
+import processing from '../../assets/cases/sayfit-v2/processing.jpg';
+import review from '../../assets/cases/sayfit-v2/review.jpg';
+import today from '../../assets/cases/sayfit-v2/today.jpg';
+import recipes from '../../assets/cases/sayfit-v2/recipes.jpg';
+import { row } from '../../lib/row';
 
 const half = '(max-width: 900px) 100vw, 45vw';
 ---
@@ -111,14 +112,14 @@ const half = '(max-width: 900px) 100vw, 45vw';
       first, where every item can be corrected or removed. The screenshot below shows why: 150 g of avocado came back
       with 47 kcal.
     </p>
-    <div class="c-pair">
+    <div class="c-pair" style={row(processing, review)}>
       <figure>
         <Shot
           src={processing}
           source="SayFit web UI"
           label="Processing"
           alt="SayFit while a meal is analysed: the pipeline steps listed one under the other with their timings"
-          widths={[800, 1600]}
+          widths={[800, 1200]}
           sizes={half}
         />
         <figcaption>While the backend works, the steps are shown with estimated timings.</figcaption>
@@ -129,20 +130,20 @@ const half = '(max-width: 900px) 100vw, 45vw';
           source="SayFit web UI"
           label="Review"
           alt="Review dialog with four recognised foods: smoked salmon poke bowl, quinoa, avocado and spinach, each with grams, calories and macros, and a Save Meal button"
-          widths={[800, 1600]}
+          widths={[800, 1200]}
           sizes={half}
         />
         <figcaption>Review before saving. Avocado at 47 kcal for 150 g is wrong; this is where it can be caught.</figcaption>
       </figure>
     </div>
-    <div class="c-pair">
+    <div class="c-pair" style={row(today, recipes)}>
       <figure>
         <Shot
           src={today}
           source="SayFit web UI"
           label="Today"
           alt="Daily view with the logged meals and the macros of the day"
-          widths={[800, 1600]}
+          widths={[800, 1200]}
           sizes={half}
         />
         <figcaption>The day: meals and macros. In our own demo the wrong avocado went through.</figcaption>
@@ -153,7 +154,7 @@ const half = '(max-width: 900px) 100vw, 45vw';
           source="SayFit web UI"
           label="Recipes"
           alt="Recipe suggestions ranked by how well they fill the remaining macros of the day"
-          widths={[800, 1600]}
+          widths={[800, 1200]}
           sizes={half}
         />
         <figcaption>What to eat next, from the remaining macros. The recipe feature was built by a teammate.</figcaption>

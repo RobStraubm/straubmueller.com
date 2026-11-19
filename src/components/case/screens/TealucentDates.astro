@@ -1,0 +1,129 @@
+---
+// The date bar of the Tealucent design system in its dark and light mode, rebuilt in 2026 as vector from Robert's
+// boards (~/Portfolio/tealucentDesignSystem/tealucentDesSys-04-2.jpg and -04-3.jpg): the same geometry, the token
+// labels exactly as the boards give them, every colour taken from the palette board (gg_gg … gg_00).
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/600.css';
+
+const gg: Record<string, string> = {
+  gg: '#0A373A',
+  85: '#2F5558',
+  75: '#47696B',
+  50: '#678482',
+  40: '#9DAFB0',
+  20: '#CED7D8',
+  10: '#E7EAEA',
+  '05': '#F3F5F5',
+  '00': '#FFFFFF',
+};
+const days = ['mo', 'di', 'mi', 'do', 'fr', 'sa', 'so'];
+const bar = { x: 238, y: 303, w: 723, h: 89 };
+const cell = bar.w / 7;
+const cx = (i: number) => bar.x + cell * (i + 0.5);
+
+type Chip = { token: string; fill: string; ink: string; col: number; top: boolean; to?: number };
+type Mode = {
+  name: string;
+  ground: string;
+  corner: string;
+  ink: string;
+  label: string;
+  bar: string;
+  day: string;
+  num: string;
+  selected: { fill: string; num: string; day: string };
+  hover: { fill: string; num: string; day: string };
+  chips: Chip[];
+};
+
+const modes: Mode[] = [
+  {
+    name: 'darks',
+    ground: gg[85],
+    corner: 'gg_85',
+    ink: gg['00'],
+    label: gg[40],
+    bar: gg[75],
+    day: gg[20],
+    num: gg['00'],
+    selected: { fill: gg.gg, num: gg['00'], day: gg[40] },
+    hover: { fill: gg[50], num: gg['00'], day: gg[20] },
+    chips: [
+      { token: 'gg_40', fill: gg[40], ink: gg['00'], col: 0, top: true, to: 262 },
+      { token: 'gg_20', fill: gg[20], ink: gg[85], col: 3, top: true },
+      { token: 'gg_50', fill: gg[50], ink: gg['00'], col: 4, top: true },
+      { token: 'gg_75', fill: gg[75], ink: gg[20], col: 0, top: false },
+      { token: 'gg_gg', fill: gg.gg, ink: gg['00'], col: 2, top: false },
+      { token: 'gg_00', fill: gg['00'], ink: gg[85], col: 5, top: false },
+    ],
+  },
+  {
+    name: 'lights',
+    ground: gg[10],
+    corner: 'gg_20',
+    ink: gg.gg,
+    label: gg[50],
+    bar: gg[20],
+    day: gg[40],
+    num: gg.gg,
+    selected: { fill: gg['00'], num: gg.gg, day: gg[40] },
+    hover: { fill: gg['05'], num: gg.gg, day: gg[40] },
+    chips: [
+      { token: 'gg_50', fill: gg[50], ink: gg['00'], col: 0, top: true, to: 262 },
+      { token: 'gg_40', fill: gg[40], ink: gg['00'], col: 3, top: true },
+      { token: 'gg_50', fill: gg['05'], ink: gg.gg, col: 4, top: true },
+      { token: 'gg_20', fill: gg[20], ink: gg.gg, col: 0, top: false },
+      { token: 'gg_00', fill: gg['00'], ink: gg.gg, col: 2, top: false },
+      { token: 'gg_gg', fill: gg.gg, ink: gg['00'], col: 5, top: false },
+    ],
+  },
+];
+const W = 1089;
+const H = 723;
+---
+
+<svg class="tl-dates" viewBox={`0 0 ${W} ${H * 2}`} role="img" aria-label="The Tealucent date bar in its dark and light mode, Monday 10 to Sunday 16, each state labelled with its colour token">
+  {
+    modes.map((m, k) => (
+      <g transform={`translate(0 ${k * H})`}>
+        <rect width={W} height={H} fill={m.ground} />
+        <text x={W - 48} y={66} text-anchor="end" font-size="24" fill={m.ink}>{m.corner}</text>
+        <text x={68} y={352} font-size="24" fill={m.ink}>{m.name}</text>
+        <text x={bar.x} y={285} font-size="26" fill={m.label}>datum</text>
+        {m.chips.map((c) => {
+          const x = c.col === 0 ? bar.x + (c.top ? -9 : 0) : cx(c.col) - 49;
+          const y = c.top ? 139 : 480;
+          const lx = x + 49;
+          const [y1, y2] = c.top ? [184, c.to ?? bar.y] : [bar.y + bar.h, 480];
+          return (
+            <>
+              <line x1={lx} y1={y1} x2={lx} y2={y2} stroke={m.label} stroke-width="2" stroke-dasharray="2 4" />
+              <rect x={x} y={y} width={98} height={45} rx={7} fill={c.fill} />
+              <text x={lx} y={y + 31} text-anchor="middle" font-size="24" fill={c.ink}>{c.token}</text>
+            </>
+          );
+        })}
+        <rect x={bar.x} y={bar.y} width={bar.w} height={bar.h} rx={8} fill={m.bar} />
+        {days.map((d, i) => {
+          const state = i === 2 ? m.selected : i === 4 ? m.hover : null;
+          return (
+            <>
+              {state && <rect x={bar.x + cell * i} y={bar.y} width={cell} height={bar.h} rx={7} fill={state.fill} />}
+              <text x={cx(i)} y={337} text-anchor="middle" font-size="20" fill={state ? state.day : m.day}>{d}</text>
+              <text x={cx(i)} y={377} text-anchor="middle" font-size="30" font-weight="600" fill={state ? state.num : m.num}>{10 + i}</text>
+            </>
+          );
+        })}
+      </g>
+    ))
+  }
+</svg>
+
+<style>
+  .tl-dates {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+</style>
